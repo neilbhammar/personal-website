@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useSpring, animated } from '@react-spring/web';
 import FlashlightEffect from './FlashlightEffect';
 import BusAnimation from './BusAnimation';
 
@@ -44,9 +45,15 @@ const HandwritingAnimation: React.FC = () => {
     return positions;
   })();
   
-  // Typing speeds
-  const typingSpeed = 75; // ms per character
+  // Typing speeds - much more realistic now
+  const typingSpeed = 40; // ms per character
   const pauseDuration = 1200; // ms for pause at segments
+  
+  // For cursor spring animation
+  const cursorSpring = useSpring({
+    opacity: cursorVisible ? 1 : 0,
+    config: { duration: 400 }
+  });
   
   useEffect(() => {
     // Clear any existing interval first
@@ -71,8 +78,22 @@ const HandwritingAnimation: React.FC = () => {
             return;
           }
           
-          // Vary typing speed slightly for a more natural effect
-          const variance = Math.random() * 50 - 25; // -25 to +25 ms
+          // Natural typing speed variations based on characters
+          let variance = Math.random() * 30 - 15; // Basic variance
+          
+          // Slow down for punctuation
+          const currentChar = fullText[textIndexRef.current - 1];
+          if (['.', ',', '!', '?'].includes(currentChar)) {
+            variance += 100; // Longer pause after punctuation
+          } else if (currentChar === ' ') {
+            variance += 30; // Slight pause after spaces
+          }
+          
+          // Occasional "thinking" pauses (randomly)
+          if (Math.random() < 0.05) { // 5% chance of a thinking pause
+            variance += 300;
+          }
+          
           typeIntervalRef.current = setTimeout(startTyping, typingSpeed + variance);
         } else {
           stateRef.current = 'complete';
@@ -81,7 +102,7 @@ const HandwritingAnimation: React.FC = () => {
     };
     
     // Start typing after a delay
-    typeIntervalRef.current = setTimeout(startTyping, 500);
+    typeIntervalRef.current = setTimeout(startTyping, 800);
     
     // Cursor blink effect
     const cursorInterval = setInterval(() => {
@@ -102,7 +123,7 @@ const HandwritingAnimation: React.FC = () => {
     return lines.map((line, i, arr) => {
       // Process interactive elements in the line
       const formattedLine = line.split(' ').map((word, wordIndex, wordArr) => {
-        // Handle BusRight with hover effect
+        // Handle BusRight with hover effect - fancy animation
         if (word === 'BusRight') {
           return (
             <React.Fragment key={`word-${wordIndex}`}>
@@ -110,7 +131,7 @@ const HandwritingAnimation: React.FC = () => {
                 href="https://www.busright.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-primary hover:underline"
+                className="text-primary hover:text-primary relative highlight-word"
                 onMouseEnter={() => setBusActive(true)}
                 onMouseLeave={() => setBusActive(false)}
               >
@@ -129,7 +150,7 @@ const HandwritingAnimation: React.FC = () => {
                 href="https://dormroomfund.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-primary hover:underline"
+                className="text-primary hover:text-primary relative highlight-word"
               >
                 {word}
               </a>
@@ -143,7 +164,7 @@ const HandwritingAnimation: React.FC = () => {
           return (
             <React.Fragment key={`word-${wordIndex}`}>
               <span 
-                className="relative cursor-pointer"
+                className="relative cursor-pointer font-bold highlight-word"
                 onMouseEnter={() => setFlashlightActive(true)}
                 onMouseLeave={() => setFlashlightActive(false)}
               >
@@ -154,10 +175,13 @@ const HandwritingAnimation: React.FC = () => {
           );
         }
         
-        // Regular word
+        // Regular word with occasional hover effects for fun
+        const isSpecialWord = ['figuring', 'email', 'connect', 'socials'].includes(word);
         return (
           <React.Fragment key={`word-${wordIndex}`}>
-            {word}
+            <span className={isSpecialWord ? 'highlight-word' : ''}>
+              {word}
+            </span>
             {wordIndex < wordArr.length - 1 ? ' ' : ''}
           </React.Fragment>
         );
@@ -174,10 +198,21 @@ const HandwritingAnimation: React.FC = () => {
   
   return (
     <FlashlightEffect isActive={flashlightActive}>
-      <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto">
+      <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto leading-relaxed">
         <div className="inline-block relative">
           <span id="typed-text">{processText(text)}</span>
-          <span className={`typing-cursor ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}></span>
+          <animated.span 
+            className="typing-cursor" 
+            style={{
+              display: 'inline-block',
+              width: '3px',
+              height: '1.2em',
+              backgroundColor: 'currentColor',
+              marginLeft: '2px',
+              verticalAlign: 'middle',
+              opacity: cursorSpring.opacity
+            }}
+          />
         </div>
       </div>
       <BusAnimation isActive={busActive} />

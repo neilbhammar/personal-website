@@ -11,6 +11,9 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@fontsource/permanent-marker": "^5.2.5",
+    "@fontsource/rock-salt": "^5.2.5",
+    "@fontsource/shadows-into-light": "^5.2.5",
     "@hookform/resolvers": "^3.9.1",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",

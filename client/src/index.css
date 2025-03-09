@@ -79,7 +79,8 @@
   }
   
   .font-handwriting {
-    font-family: "Indie Flower", cursive;
+    font-family: "Shadows Into Light", "Permanent Marker", cursive;
+    letter-spacing: 0.5px;
   }
   
   /* Flashlight effect */
@@ -92,24 +93,57 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.92);
     pointer-events: none;
-    mask-image: radial-gradient(circle 120px at var(--x) var(--y), transparent 0%, black 120px);
-    -webkit-mask-image: radial-gradient(circle 120px at var(--x) var(--y), transparent 0%, black 120px);
+    mask-image: radial-gradient(circle 180px at var(--x) var(--y), transparent 0%, black 180px);
+    -webkit-mask-image: radial-gradient(circle 180px at var(--x) var(--y), transparent 0%, black 180px);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+  }
+  
+  .flashlight-effect.active {
+    opacity: 1;
   }
   
   /* Bus animation */
   .bus-animation-container {
     position: fixed;
-    bottom: 0;
+    bottom: 10px;
     left: -150px; /* Start off-screen */
     z-index: 50;
-    transition: transform 1.5s ease-out;
+    transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
     pointer-events: none;
+    transform: translateX(-150px);
   }
   
   .bus-animation-container.active {
     transform: translateX(calc(100vw + 150px));
+  }
+  
+  /* Word highlight effect */
+  .highlight-word {
+    position: relative;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .highlight-word:hover {
+    color: hsl(var(--primary));
+  }
+  
+  .highlight-word::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: hsl(var(--primary));
+    transition: width 0.3s ease;
+  }
+  
+  .highlight-word:hover::after {
+    width: 100%;
   }
 }
 
