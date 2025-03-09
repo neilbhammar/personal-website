@@ -40,10 +40,10 @@ const FlashlightEffect: React.FC<FlashlightEffectProps> = ({ children, isActive 
       <animated.div 
         className={`flashlight-effect ${isActive ? 'active' : ''}`}
         style={{
-          ...flashlightAnimation,
+          opacity: flashlightAnimation.opacity,
           '--x': `${mousePosition.x}px`,
           '--y': `${mousePosition.y}px`,
-        } as React.CSSProperties}
+        } as any}
       />
     </div>
   );

@@ -103,12 +103,14 @@ const BusAnimation: React.FC<BusAnimationProps> = ({ isActive }) => {
         </svg>
       </animated.div>
       
-      <style jsx>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `
+      }} />
     </div>
   );
 };

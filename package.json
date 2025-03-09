@@ -11,6 +11,8 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@fontsource/caveat": "^5.2.5",
+    "@fontsource/indie-flower": "^5.2.5",
     "@fontsource/permanent-marker": "^5.2.5",
     "@fontsource/rock-salt": "^5.2.5",
     "@fontsource/shadows-into-light": "^5.2.5",

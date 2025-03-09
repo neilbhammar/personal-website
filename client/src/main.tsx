@@ -6,5 +6,7 @@ import "./index.css";
 import "@fontsource/shadows-into-light";
 import "@fontsource/permanent-marker";
 import "@fontsource/rock-salt";
+import "@fontsource/caveat";
+import "@fontsource/indie-flower";
 
 createRoot(document.getElementById("root")!).render(<App />);
