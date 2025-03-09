@@ -1,85 +1,166 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { gsap } from 'gsap';
 
-const CustomCursor: React.FC = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
+interface CursorState {
+  x: number;
+  y: number;
+  scale: number;
+  opacity: number;
+  mixBlendMode: 'normal' | 'difference' | 'multiply' | 'screen';
+}
 
+const CustomCursor = () => {
+  const [cursorState, setCursorState] = useState<CursorState>({
+    x: 0,
+    y: 0,
+    scale: 1,
+    opacity: 0,
+    mixBlendMode: 'difference',
+  });
+  
   useEffect(() => {
-    // Only enable custom cursor on non-touch devices
-    const isTouchDevice = () => {
-      return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    };
-
-    if (isTouchDevice()) return;
+    // Create cursor elements
+    const cursorDot = document.createElement('div');
+    cursorDot.className = 'cursor-dot';
+    document.body.appendChild(cursorDot);
     
-    const updateCursorPosition = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
-    };
+    const cursorRing = document.createElement('div');
+    cursorRing.className = 'cursor-ring';
+    document.body.appendChild(cursorRing);
     
-    const updateHoverState = (hovering: boolean) => {
-      setIsHovering(hovering);
-    };
-    
-    // Track mouse movement
-    document.addEventListener('mousemove', updateCursorPosition);
-    
-    // Handle interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, input, textarea, [role="button"]');
-    interactiveElements.forEach(element => {
-      element.addEventListener('mouseenter', () => updateHoverState(true));
-      element.addEventListener('mouseleave', () => updateHoverState(false));
-    });
-    
-    // Hide when mouse leaves document
-    document.addEventListener('mouseleave', () => setIsVisible(false));
-    document.addEventListener('mouseenter', () => setIsVisible(true));
-    
-    return () => {
-      document.removeEventListener('mousemove', updateCursorPosition);
-      document.removeEventListener('mouseleave', () => setIsVisible(false));
-      document.removeEventListener('mouseenter', () => setIsVisible(true));
+    // Smooth cursor animation
+    const renderCursor = () => {
+      gsap.set(cursorDot, {
+        x: cursorState.x,
+        y: cursorState.y,
+        opacity: cursorState.opacity,
+      });
       
-      interactiveElements.forEach(element => {
-        element.removeEventListener('mouseenter', () => updateHoverState(true));
-        element.removeEventListener('mouseleave', () => updateHoverState(false));
+      gsap.to(cursorRing, {
+        x: cursorState.x,
+        y: cursorState.y,
+        scale: cursorState.scale,
+        opacity: cursorState.opacity,
+        mixBlendMode: cursorState.mixBlendMode,
+        duration: 0.15,
+        ease: 'power2.out',
       });
     };
-  }, [isVisible]);
-
-  if (!isVisible) return null;
-
-  return (
-    <>
-      <div 
-        className="fixed pointer-events-none z-[9999] mix-blend-difference hidden md:block"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          width: isHovering ? '18px' : '12px', 
-          height: isHovering ? '18px' : '12px',
-          backgroundColor: 'hsl(var(--primary))',
-          borderRadius: '50%',
-          transform: 'translate(-50%, -50%)',
-          transition: 'width 0.2s ease, height 0.2s ease',
-        }}
-      />
-      <div 
-        className="fixed pointer-events-none z-[9998] hidden md:block"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          width: isHovering ? '28px' : '36px', 
-          height: isHovering ? '28px' : '36px',
-          backgroundColor: 'hsla(var(--primary), 0.2)',
-          borderRadius: '50%',
-          transform: 'translate(-50%, -50%)',
-          transition: 'width 0.3s ease, height 0.3s ease, transform 0.3s ease, left 0.3s ease, top 0.3s ease',
-        }}
-      />
-    </>
-  );
+    
+    // Track mouse position
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorState(prev => ({
+        ...prev,
+        x: e.clientX,
+        y: e.clientY,
+        opacity: 1,
+      }));
+      
+      renderCursor();
+    };
+    
+    // Handle mouse hover over links and buttons
+    const handleLinkHover = () => {
+      setCursorState(prev => ({
+        ...prev,
+        scale: 2.5,
+      }));
+    };
+    
+    const handleLinkLeave = () => {
+      setCursorState(prev => ({
+        ...prev,
+        scale: 1,
+      }));
+    };
+    
+    // Handle mouse leaving the window
+    const handleMouseLeave = () => {
+      setCursorState(prev => ({
+        ...prev,
+        opacity: 0,
+      }));
+    };
+    
+    // Handle mouse entering the window
+    const handleMouseEnter = () => {
+      setCursorState(prev => ({
+        ...prev,
+        opacity: 1,
+      }));
+    };
+    
+    // Add event listeners
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    
+    // Add hover effect to interactive elements
+    const interactiveElements = document.querySelectorAll('a, button, .interactive');
+    interactiveElements.forEach(el => {
+      el.addEventListener('mouseenter', handleLinkHover);
+      el.addEventListener('mouseleave', handleLinkLeave);
+    });
+    
+    // Add styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .cursor-dot {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        background-color: white;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        will-change: transform;
+      }
+      
+      .cursor-ring {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        will-change: transform;
+        transition: all 0.1s ease-out;
+      }
+      
+      @media (max-width: 768px) {
+        .cursor-dot, .cursor-ring {
+          display: none;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Cleanup function
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      
+      interactiveElements.forEach(el => {
+        el.removeEventListener('mouseenter', handleLinkHover);
+        el.removeEventListener('mouseleave', handleLinkLeave);
+      });
+      
+      document.body.removeChild(cursorDot);
+      document.body.removeChild(cursorRing);
+      document.head.removeChild(style);
+    };
+  }, []);
+  
+  // This component doesn't render any visible elements itself
+  return null;
 };
 
 export default CustomCursor;
