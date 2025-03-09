@@ -5,17 +5,15 @@ const HandwritingAnimation: React.FC = () => {
   const [cursorVisible, setCursorVisible] = useState(true);
   
   // Animation state machine
-  const stateRef = useRef<'typing-initial' | 'erasing-typo' | 'typing-correction' | 'complete'>('typing-initial');
+  const stateRef = useRef<'typing' | 'complete'>('typing');
   const textIndexRef = useRef(0);
   const typeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Text with and without typo
-  const completeText = "I'm still a work in progress (both me and this website, I guess)";
-  const typoText = "I'm still a work in progres (both me and this website, I guess)";
+  // Full text content
+  const fullText = "Hi I'm Neil.\n\nStill a work in progress (both me and the website, I guess!).\n\nI spent the last 5.5 yrs building and scaling BusRight as employee #1. Before that was supporting and investing in founders @ DormRoomFund and Northeastern. Now I'm a little lost - figuring out what comes next.\n\nIf you want to connect, shoot me an email or connect w/me on socials:";
   
   // Typing speeds
-  const typingSpeed = 100; // ms per character
-  const eraseSpeed = 50; // ms per character when erasing
+  const typingSpeed = 50; // ms per character
   
   useEffect(() => {
     // Clear any existing interval first
@@ -24,45 +22,23 @@ const HandwritingAnimation: React.FC = () => {
     }
     
     const startTyping = () => {
-      if (stateRef.current === 'typing-initial') {
-        // Initial typing with typo
-        if (textIndexRef.current < typoText.length) {
-          setText(prev => prev + typoText.charAt(textIndexRef.current));
+      if (stateRef.current === 'typing') {
+        // Type the text character by character
+        if (textIndexRef.current < fullText.length) {
+          setText(fullText.substring(0, textIndexRef.current + 1));
           textIndexRef.current++;
-          typeIntervalRef.current = setTimeout(startTyping, typingSpeed);
-        } else {
-          // Pause before erasing the typo
-          typeIntervalRef.current = setTimeout(() => {
-            stateRef.current = 'erasing-typo';
-            startTyping();
-          }, 800);
-        }
-      } else if (stateRef.current === 'erasing-typo') {
-        // Erase the typo (just the last few characters)
-        if (textIndexRef.current > typoText.length - 3) {
-          setText(prev => prev.substring(0, prev.length - 1));
-          textIndexRef.current--;
-          typeIntervalRef.current = setTimeout(startTyping, eraseSpeed);
-        } else {
-          // Start typing the correction
-          stateRef.current = 'typing-correction';
-          startTyping();
-        }
-      } else if (stateRef.current === 'typing-correction') {
-        // Type the corrected text
-        if (textIndexRef.current < completeText.length) {
-          setText(completeText.substring(0, textIndexRef.current));
-          textIndexRef.current++;
-          typeIntervalRef.current = setTimeout(startTyping, typingSpeed);
+          
+          // Vary typing speed slightly for a more natural effect
+          const variance = Math.random() * 30 - 15; // -15 to +15 ms
+          typeIntervalRef.current = setTimeout(startTyping, typingSpeed + variance);
         } else {
           stateRef.current = 'complete';
-          // Keep cursor blinking
         }
       }
     };
     
     // Start typing after a delay
-    typeIntervalRef.current = setTimeout(startTyping, 1000);
+    typeIntervalRef.current = setTimeout(startTyping, 500);
     
     // Cursor blink effect
     const cursorInterval = setInterval(() => {
@@ -77,10 +53,18 @@ const HandwritingAnimation: React.FC = () => {
     };
   }, []);
   
+  // Replace newlines with <br> tags for proper HTML display
+  const formattedText = text.split('\n').map((line, i, arr) => (
+    <React.Fragment key={i}>
+      {line}
+      {i < arr.length - 1 && <br />}
+    </React.Fragment>
+  ));
+  
   return (
-    <div className="handwriting-area font-handwriting text-2xl md:text-3xl text-muted-foreground mb-12">
+    <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto">
       <div className="inline-block relative">
-        <span id="typed-text">{text}</span>
+        <span id="typed-text">{formattedText}</span>
         <span className={`typing-cursor ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}></span>
       </div>
     </div>
