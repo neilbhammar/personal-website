@@ -10,10 +10,10 @@ const HandwritingAnimation: React.FC = () => {
   const typeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Full text content
-  const fullText = "Hi I'm Neil.\n\nStill a work in progress (both me and the website, I guess!).\n\nI spent the last 5.5 yrs building and scaling BusRight as employee #1. Before that was supporting and investing in founders @ DormRoomFund and Northeastern. Now I'm a little lost - figuring out what comes next.\n\nIf you want to connect, shoot me an email or connect w/me on socials:";
+  const fullText = "Hi I'm Neil.\n\nStill a work in progress (both me and the website, I guess!).\n\nI spent the last 5.5 yrs building and scaling BusRight (www.busright.com) as employee #1. Before that was supporting and investing in founders @ DormRoomFund and Northeastern. Now I'm a little lost - figuring out what comes next.\n\nIf you want to connect, shoot me an email or connect w/me on socials:";
   
-  // Typing speeds
-  const typingSpeed = 50; // ms per character
+  // Typing speeds - faster for development, would be slower in production
+  const typingSpeed = 10; // ms per character
   
   useEffect(() => {
     // Clear any existing interval first
@@ -53,13 +53,35 @@ const HandwritingAnimation: React.FC = () => {
     };
   }, []);
   
-  // Replace newlines with <br> tags for proper HTML display
-  const formattedText = text.split('\n').map((line, i, arr) => (
-    <React.Fragment key={i}>
-      {line}
-      {i < arr.length - 1 && <br />}
-    </React.Fragment>
-  ));
+  // Replace newlines with <br> tags and make BusRight a hyperlink
+  const formattedText = text.split('\n').map((line, i, arr) => {
+    // Replace BusRight URL with hyperlink
+    if (line.includes('www.busright.com')) {
+      const parts = line.split('(www.busright.com)');
+      return (
+        <React.Fragment key={i}>
+          {parts[0]}
+          (<a 
+            href="https://www.busright.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            www.busright.com
+          </a>)
+          {parts[1]}
+          {i < arr.length - 1 && <br />}
+        </React.Fragment>
+      );
+    }
+    
+    return (
+      <React.Fragment key={i}>
+        {line}
+        {i < arr.length - 1 && <br />}
+      </React.Fragment>
+    );
+  });
   
   return (
     <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto">
