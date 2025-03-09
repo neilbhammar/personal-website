@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    --primary: 181 56% 46%;
+    --primary-foreground: 210 20% 98%;
+    
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+    
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    
+    --accent: 0 91% 71%;
+    --accent-foreground: 210 20% 98%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 20% 98%;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 181 56% 46%;
+    
+    --radius: 0.5rem;
+    
+    /* For charts if needed */
+    --chart-1: 181 56% 46%;
+    --chart-2: 0 91% 71%;
+    --chart-3: 222 47% 11%;
+    --chart-4: 220 9% 46%;
+    --chart-5: 0 0% 100%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+  }
+}
+
+@layer utilities {
+  .font-rubik {
+    font-family: "Rubik", sans-serif;
+  }
+  
+  .font-inter {
+    font-family: "Inter", sans-serif;
+  }
+  
+  .font-handwriting {
+    font-family: "Caveat", cursive;
+  }
+}
+
+@layer components {
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .social-btn {
+    @apply transition-all duration-300;
+  }
+  
+  .social-btn:hover {
+    @apply transform -translate-y-1;
+  }
+  
+  .typing-cursor {
+    display: inline-block;
+    width: 3px;
+    height: 30px;
+    background-color: hsl(var(--primary));
+    margin-left: 4px;
+    animation: blink 1s step-end infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+}
