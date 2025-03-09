@@ -12,7 +12,6 @@ export function initSmoothScroll() {
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     wheelMultiplier: 1,
     touchMultiplier: 2,
-    smooth: true,
   });
 
   // Connect Lenis with GSAP's ScrollTrigger

@@ -49,7 +49,7 @@ export function AnimatedText({
       wordSpan.className = 'word relative inline-block';
       
       // Create individual character spans
-      [...word].forEach((char) => {
+      Array.from(word).forEach((char) => {
         const charSpan = document.createElement('span');
         charSpan.className = 'char relative inline-block opacity-0';
         charSpan.textContent = char;

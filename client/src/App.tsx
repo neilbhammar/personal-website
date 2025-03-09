@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
-import CustomCursor from "@/components/CustomCursor";
+import NewHome from "@/pages/NewHome";
 import { useEffect } from "react";
 
 function Router() {
@@ -20,7 +20,8 @@ function Router() {
   
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={NewHome} />
+      <Route path="/old" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -29,7 +30,6 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <CustomCursor />
       <Router />
       <Toaster />
     </QueryClientProvider>
