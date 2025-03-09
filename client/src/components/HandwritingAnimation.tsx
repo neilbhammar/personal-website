@@ -1,19 +1,52 @@
 import React, { useEffect, useRef, useState } from 'react';
+import FlashlightEffect from './FlashlightEffect';
+import BusAnimation from './BusAnimation';
 
 const HandwritingAnimation: React.FC = () => {
   const [text, setText] = useState('');
   const [cursorVisible, setCursorVisible] = useState(true);
+  const [flashlightActive, setFlashlightActive] = useState(false);
+  const [busActive, setBusActive] = useState(false);
   
   // Animation state machine
-  const stateRef = useRef<'typing' | 'complete'>('typing');
+  const stateRef = useRef<'typing' | 'paused' | 'complete'>('typing');
   const textIndexRef = useRef(0);
   const typeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Full text content
-  const fullText = "Hi I'm Neil.\n\nStill a work in progress (both me and the website, I guess!).\n\nI spent the last 5.5 yrs building and scaling BusRight (www.busright.com) as employee #1. Before that was supporting and investing in founders @ DormRoomFund and Northeastern. Now I'm a little lost - figuring out what comes next.\n\nIf you want to connect, shoot me an email or connect w/me on socials:";
+  // Full text content with segments for pauses
+  const textSegments = [
+    "Hi, I'm Neil",
+    ".\n\nStill a work in progress ",
+    "(both me and this site, I guess!)",
+    ".\n\nI spent the last 5.5 yrs building and scaling ",
+    "BusRight",
+    " as employee #1. Before that was supporting and investing in founders @ ",
+    "DormRoomFund",
+    " and Northeastern. Now I'm a little ",
+    "lost",
+    " - figuring out what comes next",
+    ".\n\nIf you want to connect, shoot me an email or connect w/me on socials:"
+  ];
   
-  // Typing speeds - faster for development, would be slower in production
-  const typingSpeed = 10; // ms per character
+  // Join all segments to get the full text
+  const fullText = textSegments.join('');
+  
+  // Segment end positions for pausing
+  const pausePositions = (() => {
+    const positions = [];
+    let charCount = 0;
+    
+    for (let i = 0; i < textSegments.length - 1; i++) {
+      charCount += textSegments[i].length;
+      positions.push(charCount - 1);
+    }
+    
+    return positions;
+  })();
+  
+  // Typing speeds
+  const typingSpeed = 75; // ms per character
+  const pauseDuration = 1200; // ms for pause at segments
   
   useEffect(() => {
     // Clear any existing interval first
@@ -28,8 +61,18 @@ const HandwritingAnimation: React.FC = () => {
           setText(fullText.substring(0, textIndexRef.current + 1));
           textIndexRef.current++;
           
+          // Check if we need to pause
+          if (pausePositions.includes(textIndexRef.current - 1)) {
+            stateRef.current = 'paused';
+            typeIntervalRef.current = setTimeout(() => {
+              stateRef.current = 'typing';
+              startTyping();
+            }, pauseDuration);
+            return;
+          }
+          
           // Vary typing speed slightly for a more natural effect
-          const variance = Math.random() * 30 - 15; // -15 to +15 ms
+          const variance = Math.random() * 50 - 25; // -25 to +25 ms
           typeIntervalRef.current = setTimeout(startTyping, typingSpeed + variance);
         } else {
           stateRef.current = 'complete';
@@ -53,43 +96,92 @@ const HandwritingAnimation: React.FC = () => {
     };
   }, []);
   
-  // Replace newlines with <br> tags and make BusRight a hyperlink
-  const formattedText = text.split('\n').map((line, i, arr) => {
-    // Replace BusRight URL with hyperlink
-    if (line.includes('www.busright.com')) {
-      const parts = line.split('(www.busright.com)');
+  // Process the typed text with interactive elements
+  const processText = (text: string) => {
+    const lines = text.split('\n');
+    return lines.map((line, i, arr) => {
+      // Process interactive elements in the line
+      const formattedLine = line.split(' ').map((word, wordIndex, wordArr) => {
+        // Handle BusRight with hover effect
+        if (word === 'BusRight') {
+          return (
+            <React.Fragment key={`word-${wordIndex}`}>
+              <a 
+                href="https://www.busright.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+                onMouseEnter={() => setBusActive(true)}
+                onMouseLeave={() => setBusActive(false)}
+              >
+                {word}
+              </a>
+              {wordIndex < wordArr.length - 1 ? ' ' : ''}
+            </React.Fragment>
+          );
+        }
+        
+        // Handle DormRoomFund with hover effect
+        if (word === 'DormRoomFund') {
+          return (
+            <React.Fragment key={`word-${wordIndex}`}>
+              <a 
+                href="https://dormroomfund.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                {word}
+              </a>
+              {wordIndex < wordArr.length - 1 ? ' ' : ''}
+            </React.Fragment>
+          );
+        }
+        
+        // Handle "lost" with flashlight effect
+        if (word === 'lost') {
+          return (
+            <React.Fragment key={`word-${wordIndex}`}>
+              <span 
+                className="relative cursor-pointer"
+                onMouseEnter={() => setFlashlightActive(true)}
+                onMouseLeave={() => setFlashlightActive(false)}
+              >
+                {word}
+              </span>
+              {wordIndex < wordArr.length - 1 ? ' ' : ''}
+            </React.Fragment>
+          );
+        }
+        
+        // Regular word
+        return (
+          <React.Fragment key={`word-${wordIndex}`}>
+            {word}
+            {wordIndex < wordArr.length - 1 ? ' ' : ''}
+          </React.Fragment>
+        );
+      });
+      
       return (
-        <React.Fragment key={i}>
-          {parts[0]}
-          (<a 
-            href="https://www.busright.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-          >
-            www.busright.com
-          </a>)
-          {parts[1]}
+        <React.Fragment key={`line-${i}`}>
+          {formattedLine}
           {i < arr.length - 1 && <br />}
         </React.Fragment>
       );
-    }
-    
-    return (
-      <React.Fragment key={i}>
-        {line}
-        {i < arr.length - 1 && <br />}
-      </React.Fragment>
-    );
-  });
+    });
+  };
   
   return (
-    <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto">
-      <div className="inline-block relative">
-        <span id="typed-text">{formattedText}</span>
-        <span className={`typing-cursor ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}></span>
+    <FlashlightEffect isActive={flashlightActive}>
+      <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto">
+        <div className="inline-block relative">
+          <span id="typed-text">{processText(text)}</span>
+          <span className={`typing-cursor ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}></span>
+        </div>
       </div>
-    </div>
+      <BusAnimation isActive={busActive} />
+    </FlashlightEffect>
   );
 };
 
