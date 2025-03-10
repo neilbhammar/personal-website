@@ -229,7 +229,7 @@ const UltraMinimal = () => {
         // Apply a subtle highlight effect to the text first
         busesRef.current &&
           gsap.to(busesRef.current, {
-            backgroundColor: "rgba(255, 221, 0, 0.2)",
+            backgroundColor: "rgba(255, 165, 0, 0.2)",
             borderRadius: "3px",
             padding: "0 4px",
             duration: 0.5,
@@ -244,11 +244,23 @@ const UltraMinimal = () => {
         routeContainer.style.width = "100%";
         routeContainer.style.height = "4px";
         routeContainer.style.background =
-          "linear-gradient(90deg, #FFDD00 0%, #FFC107 100%)";
+          "linear-gradient(90deg, #4A5568 0%, #2D3748 100%)"; // Darker road color
         routeContainer.style.marginTop = "4px";
         routeContainer.style.borderRadius = "2px";
         routeContainer.style.opacity = "0";
-        routeContainer.style.boxShadow = "0 0 5px rgba(255, 221, 0, 0.3)";
+        routeContainer.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)";
+
+        // Add road markings
+        const roadMarkings = document.createElement("div");
+        roadMarkings.style.position = "absolute";
+        roadMarkings.style.top = "50%";
+        roadMarkings.style.left = "0";
+        roadMarkings.style.width = "100%";
+        roadMarkings.style.height = "1px";
+        roadMarkings.style.background = "repeating-linear-gradient(to right, white 0px, white 5px, transparent 5px, transparent 10px)";
+        roadMarkings.style.opacity = "0.7";
+        roadMarkings.style.transform = "translateY(-50%)";
+        routeContainer.appendChild(roadMarkings);
 
         // Add small stop points along the route
         const stopCount = 5;
@@ -258,12 +270,12 @@ const UltraMinimal = () => {
           stop.style.width = "6px";
           stop.style.height = "6px";
           stop.style.borderRadius = "50%";
-          stop.style.backgroundColor = "white";
+          stop.style.backgroundColor = "#E2E8F0";
           stop.style.border = "1px solid rgba(0,0,0,0.2)";
           stop.style.top = "-2px";
           stop.style.left = `${(i + 1) * (100 / (stopCount + 1))}%`;
           stop.style.transform = "scale(0)";
-          stop.style.boxShadow = "0 0 3px rgba(255, 255, 255, 0.5)";
+          stop.style.boxShadow = "0 1px 2px rgba(0,0,0,0.15)";
 
           routeContainer.appendChild(stop);
 
@@ -279,24 +291,46 @@ const UltraMinimal = () => {
         // Create a tiny school bus that moves along the route
         const miniBus = document.createElement("div");
         miniBus.style.position = "absolute";
-        miniBus.style.width = "12px";
-        miniBus.style.height = "8px";
+        miniBus.style.width = "16px";
+        miniBus.style.height = "9px";
         miniBus.style.backgroundColor = "#FFDD00";
-        miniBus.style.borderRadius = "2px";
-        miniBus.style.top = "-4px";
+        miniBus.style.borderRadius = "2px 4px 2px 2px"; // More bus-like shape
+        miniBus.style.top = "-5px";
         miniBus.style.left = "0";
         miniBus.style.transform = "translateX(-50%)";
         miniBus.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+
+        // Add wheels to the bus
+        const frontWheel = document.createElement("div");
+        frontWheel.style.position = "absolute";
+        frontWheel.style.width = "3px";
+        frontWheel.style.height = "3px";
+        frontWheel.style.borderRadius = "50%";
+        frontWheel.style.backgroundColor = "#1A202C";
+        frontWheel.style.bottom = "-1px";
+        frontWheel.style.right = "2px";
+
+        const rearWheel = document.createElement("div");
+        rearWheel.style.position = "absolute";
+        rearWheel.style.width = "3px";
+        rearWheel.style.height = "3px";
+        rearWheel.style.borderRadius = "50%";
+        rearWheel.style.backgroundColor = "#1A202C";
+        rearWheel.style.bottom = "-1px";
+        rearWheel.style.left = "2px";
 
         // Add windows to the bus for more detail
         const busWindows = document.createElement("div");
         busWindows.style.position = "absolute";
         busWindows.style.top = "2px";
         busWindows.style.left = "2px";
-        busWindows.style.right = "2px";
-        busWindows.style.height = "2px";
-        busWindows.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
+        busWindows.style.right = "3px";
+        busWindows.style.height = "3px";
+        busWindows.style.backgroundColor = "rgba(148, 212, 255, 0.8)";
+        busWindows.style.borderRadius = "1px";
 
+        miniBus.appendChild(frontWheel);
+        miniBus.appendChild(rearWheel);
         miniBus.appendChild(busWindows);
         routeContainer.appendChild(miniBus);
         busesRef.current.appendChild(routeContainer);
@@ -316,8 +350,13 @@ const UltraMinimal = () => {
             // Add a small up/down motion as the bus moves
             const progress =
               (gsap.getProperty(miniBus, "left") as number) / 100;
-            const bounce = Math.sin(progress * Math.PI * 8) * 1;
-            miniBus.style.top = `${-4 + bounce}px`;
+            const bounce = Math.sin(progress * Math.PI * 8) * 1.5;
+            miniBus.style.top = `${-5 + bounce}px`;
+
+            // Add wheel rotation animation
+            const rotation = progress * 1080; // Multiple full rotations
+            frontWheel.style.transform = `rotate(${rotation}deg)`;
+            rearWheel.style.transform = `rotate(${rotation}deg)`;
           },
           onComplete: () => {
             // Fade out the route when finished
