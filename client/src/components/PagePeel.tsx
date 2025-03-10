@@ -50,7 +50,7 @@ const galleryImages: GalleryImage[] = [
 ];
 
 export function PagePeel({
-  size = 80,
+  size = 120,
   cornerRadius = 15,
   shadowOpacity = 0.5,
   targetRoute = '/gallery'
@@ -193,6 +193,10 @@ export function PagePeel({
             height: size,
             perspective: 1500,
             zIndex: 101,
+            border: "1px dashed rgba(0,0,0,0.2)",
+            borderTop: "none",
+            borderRight: "none",
+            borderRadius: "0 0 0 10px"
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -216,7 +220,10 @@ export function PagePeel({
                 shadowBlur,
                 blur => `0 ${blur/2}px ${blur}px rgba(0,0,0,${shadowOpacity})`
               ),
-              zIndex: 101
+              zIndex: 101,
+              border: "1px solid rgba(0,0,0,0.1)",
+              borderTop: "none",
+              borderRight: "none"
             }}
           >
             <div 
@@ -229,10 +236,13 @@ export function PagePeel({
               }}
             >
               <div className="relative">
-                <span>Photo Gallery</span>
+                <span className="text-lg font-bold">Photo Gallery</span>
+                <div className="absolute -top-4 -right-10 text-xs text-gray-500 font-normal">
+                  <span>⟵ Pull</span>
+                </div>
                 {!isFullyPeeled && (
                   <motion.div
-                    className="absolute -bottom-2 left-0 h-1 bg-blue-500 rounded-full"
+                    className="absolute -bottom-2 left-0 h-2 bg-blue-500 rounded-full"
                     style={{ 
                       width: peelProgress.get() + '%',
                       opacity: useTransform(pageCurl, [0, 0.3, 1], [0, 1, 1])
