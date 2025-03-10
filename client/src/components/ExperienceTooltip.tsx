@@ -1,16 +1,13 @@
 
-import { useState, useEffect, useRef } from "react";
-import { gsap } from "gsap";
-
-interface ExperienceSlide {
-  title: string;
-  description: string;
-  image: string;
-}
+import { useState, useEffect, useRef } from 'react';
 
 interface Experience {
-  name: string;
-  slides: ExperienceSlide[];
+  title: string;
+  slides: {
+    image: string;
+    title: string;
+    description: string;
+  }[];
 }
 
 interface ExperienceTooltipProps {
@@ -20,50 +17,54 @@ interface ExperienceTooltipProps {
   onClose: () => void;
 }
 
-const ExperienceTooltip = ({ data, visible, anchorRef, onClose }: ExperienceTooltipProps) => {
+const ExperienceTooltip: React.FC<ExperienceTooltipProps> = ({ 
+  data, 
+  visible, 
+  anchorRef, 
+  onClose 
+}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const tooltipRef = useRef<HTMLDivElement>(null);
-
+  
   // Position the tooltip relative to the anchor element
   useEffect(() => {
-    if (!visible || !anchorRef.current || !tooltipRef.current) return;
-
-    const anchorRect = anchorRef.current.getBoundingClientRect();
-    const tooltipRect = tooltipRef.current.getBoundingClientRect();
-    const scrollY = window.scrollY;
-
-    // Position below the anchor
-    const top = anchorRect.bottom + scrollY + 10;
-    let left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
-
-    // Ensure the tooltip doesn't go off-screen
-    const viewportWidth = window.innerWidth;
-    if (left < 20) left = 20;
-    if (left + tooltipRect.width > viewportWidth - 20) {
-      left = viewportWidth - tooltipRect.width - 20;
+    const positionTooltip = () => {
+      if (!tooltipRef.current || !anchorRef.current) return;
+      
+      const anchorRect = anchorRef.current.getBoundingClientRect();
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      
+      // Position below the anchor element
+      const left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
+      const top = anchorRect.bottom + 10;
+      
+      tooltipRef.current.style.left = `${Math.max(20, Math.min(left, window.innerWidth - tooltipRect.width - 20))}px`;
+      tooltipRef.current.style.top = `${top}px`;
+    };
+    
+    if (visible) {
+      positionTooltip();
+      window.addEventListener('resize', positionTooltip);
+      window.addEventListener('scroll', positionTooltip);
     }
-
-    tooltipRef.current.style.top = `${top}px`;
-    tooltipRef.current.style.left = `${left}px`;
+    
+    return () => {
+      window.removeEventListener('resize', positionTooltip);
+      window.removeEventListener('scroll', positionTooltip);
+    };
   }, [visible, anchorRef, currentSlide]);
-
+  
+  // Auto-advance slides
   useEffect(() => {
-    if (!visible) setCurrentSlide(0);
-  }, [visible]);
-
-  // Navigate between slides
-  const goToNextSlide = () => {
-    if (currentSlide < data.slides.length - 1) {
-      setCurrentSlide(prev => prev + 1);
-    }
-  };
-
-  const goToPrevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(prev => prev - 1);
-    }
-  };
-
+    if (!visible) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % data.slides.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [visible, data.slides.length]);
+  
   // Handle clicks outside the tooltip
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,63 +89,39 @@ const ExperienceTooltip = ({ data, visible, anchorRef, onClose }: ExperienceTool
   return (
     <div 
       ref={tooltipRef}
-      className={`experience-tooltip ${visible ? 'visible' : ''}`}
+      className={`absolute z-50 w-72 bg-white rounded-lg shadow-lg overflow-hidden transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      style={{
+        transform: 'translate3d(0, 0, 0)'
+      }}
     >
-      <div className="tooltip-header">
-        <div className="tooltip-image-container">
-          <img 
-            src={slide.image} 
-            alt={slide.title} 
-            className="tooltip-image"
+      <div className="relative">
+        <img 
+          src={slide.image}
+          alt={slide.title}
+          className="w-full h-40 object-cover"
+        />
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70"
+        >
+          ×
+        </button>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="text-lg font-medium mb-1">{slide.title}</h3>
+        <p className="text-gray-600 text-sm">{slide.description}</p>
+      </div>
+      
+      <div className="flex justify-center pb-3">
+        {data.slides.map((_, index) => (
+          <button
+            key={index}
+            className={`mx-1 w-2 h-2 rounded-full ${index === currentSlide ? 'bg-blue-500' : 'bg-gray-300'}`}
+            onClick={() => setCurrentSlide(index)}
           />
-        </div>
-        <div className="tooltip-title-container">
-          <h3 className="tooltip-title">{slide.title}</h3>
-          <p className="tooltip-subtitle">{data.name}</p>
-        </div>
+        ))}
       </div>
-      
-      <div className="tooltip-content">
-        <p className="tooltip-description">{slide.description}</p>
-      </div>
-      
-      {data.slides.length > 1 && (
-        <>
-          <div className="tooltip-indicator">
-            {data.slides.map((_, index) => (
-              <span
-                key={index}
-                className={`tooltip-dot ${index === currentSlide ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(index)}
-              />
-            ))}
-          </div>
-          
-          <div className="tooltip-navigation">
-            <button
-              className={`tooltip-nav-button prev ${currentSlide === 0 ? 'disabled' : ''}`}
-              onClick={goToPrevSlide}
-              disabled={currentSlide === 0}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 19l-7-7 7-7" />
-              </svg>
-              Previous
-            </button>
-            
-            <button
-              className={`tooltip-nav-button next ${currentSlide === data.slides.length - 1 ? 'disabled' : ''}`}
-              onClick={goToNextSlide}
-              disabled={currentSlide === data.slides.length - 1}
-            >
-              Next
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 };
