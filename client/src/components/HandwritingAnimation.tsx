@@ -1,222 +1,160 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useSpring, animated } from '@react-spring/web';
-import FlashlightEffect from './FlashlightEffect';
-import BusAnimation from './BusAnimation';
+import { useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { cn } from '@/lib/utils';
 
-const HandwritingAnimation: React.FC = () => {
-  const [text, setText] = useState('');
-  const [cursorVisible, setCursorVisible] = useState(true);
-  const [flashlightActive, setFlashlightActive] = useState(false);
-  const [busActive, setBusActive] = useState(false);
-  
-  // Animation state machine
-  const stateRef = useRef<'typing' | 'paused' | 'complete'>('typing');
-  const textIndexRef = useRef(0);
-  const typeIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Full text content with segments for pauses
-  const textSegments = [
-    "Hi, I'm Neil",
-    ".\n\nStill a work in progress ",
-    "(both me and this site, I guess!)",
-    ".\n\nI spent the last 5.5 yrs building and scaling ",
-    "BusRight",
-    " as employee #1. Before that was supporting and investing in founders @ ",
-    "DormRoomFund",
-    " and Northeastern. Now I'm a little ",
-    "lost",
-    " - figuring out what comes next",
-    ".\n\nIf you want to connect, shoot me an email or connect w/me on socials:"
-  ];
-  
-  // Join all segments to get the full text
-  const fullText = textSegments.join('');
-  
-  // Segment end positions for pausing
-  const pausePositions = (() => {
-    const positions = [];
-    let charCount = 0;
-    
-    for (let i = 0; i < textSegments.length - 1; i++) {
-      charCount += textSegments[i].length;
-      positions.push(charCount - 1);
+interface HandwritingAnimationProps {
+  text: string;
+  className?: string;
+  color?: string;
+  strokeWidth?: number;
+  fontFamily?: string;
+  fontSize?: string;
+  delay?: number;
+  speed?: number;
+  autoPlay?: boolean;
+  onComplete?: () => void;
+}
+
+const HandwritingAnimation: React.FC<HandwritingAnimationProps> = ({
+  text,
+  className = '',
+  color = '#000000',
+  strokeWidth = 2,
+  fontFamily = 'Caveat, cursive',
+  fontSize = '2rem',
+  delay = 0,
+  speed = 1,
+  autoPlay = true,
+  onComplete,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pathsRef = useRef<SVGPathElement[]>([]);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  // Generate a simple SVG path for a character based on its shape
+  const generateCharPath = (char: string, x: number, y: number): string => {
+    // Simple implementation - in production, you'd use a more sophisticated approach
+    // This is a basic approximation to simulate handwriting paths
+    if (char === ' ') {
+      return '';
     }
     
-    return positions;
-  })();
-  
-  // Typing speeds - much more realistic now
-  const typingSpeed = 40; // ms per character
-  const pauseDuration = 1200; // ms for pause at segments
-  
-  // For cursor spring animation
-  const cursorSpring = useSpring({
-    opacity: cursorVisible ? 1 : 0,
-    config: { duration: 400 }
-  });
-  
-  useEffect(() => {
-    // Clear any existing interval first
-    if (typeIntervalRef.current) {
-      clearTimeout(typeIntervalRef.current);
+    const charWidth = 20; // Approximate width per character
+    
+    if (char.match(/[il|]/)) {
+      // Simple vertical strokes
+      return `M ${x + charWidth/2} ${y - 20} L ${x + charWidth/2} ${y}`;
+    } else if (char.match(/[_]/)) {
+      // Simple horizontal strokes
+      return `M ${x} ${y} L ${x + charWidth} ${y}`;
+    } else if (char.match(/[oO0]/)) {
+      // Circular characters
+      return `M ${x + charWidth/2} ${y - 20} 
+              C ${x + charWidth*1.2} ${y - 20}, ${x + charWidth*1.2} ${y + 5}, ${x + charWidth/2} ${y + 5} 
+              C ${x - charWidth*0.2} ${y + 5}, ${x - charWidth*0.2} ${y - 20}, ${x + charWidth/2} ${y - 20}`;
+    } else if (char.match(/[cC]/)) {
+      // C-like shapes
+      return `M ${x + charWidth} ${y - 20} 
+              C ${x - charWidth*0.2} ${y - 20}, ${x - charWidth*0.2} ${y + 5}, ${x + charWidth} ${y + 5}`;
+    } else {
+      // Default zigzag path to simulate most characters
+      return `M ${x} ${y - 10 + Math.random() * 5} 
+              L ${x + charWidth/3} ${y - 15 + Math.random() * 5} 
+              L ${x + charWidth*2/3} ${y - 5 + Math.random() * 5} 
+              L ${x + charWidth} ${y + Math.random() * 5}`;
     }
-    
-    const startTyping = () => {
-      if (stateRef.current === 'typing') {
-        // Type the text character by character
-        if (textIndexRef.current < fullText.length) {
-          setText(fullText.substring(0, textIndexRef.current + 1));
-          textIndexRef.current++;
-          
-          // Check if we need to pause
-          if (pausePositions.includes(textIndexRef.current - 1)) {
-            stateRef.current = 'paused';
-            typeIntervalRef.current = setTimeout(() => {
-              stateRef.current = 'typing';
-              startTyping();
-            }, pauseDuration);
-            return;
-          }
-          
-          // Natural typing speed variations based on characters
-          let variance = Math.random() * 30 - 15; // Basic variance
-          
-          // Slow down for punctuation
-          const currentChar = fullText[textIndexRef.current - 1];
-          if (['.', ',', '!', '?'].includes(currentChar)) {
-            variance += 100; // Longer pause after punctuation
-          } else if (currentChar === ' ') {
-            variance += 30; // Slight pause after spaces
-          }
-          
-          // Occasional "thinking" pauses (randomly)
-          if (Math.random() < 0.05) { // 5% chance of a thinking pause
-            variance += 300;
-          }
-          
-          typeIntervalRef.current = setTimeout(startTyping, typingSpeed + variance);
-        } else {
-          stateRef.current = 'complete';
-        }
-      }
-    };
-    
-    // Start typing after a delay
-    typeIntervalRef.current = setTimeout(startTyping, 800);
-    
-    // Cursor blink effect
-    const cursorInterval = setInterval(() => {
-      setCursorVisible(prev => !prev);
-    }, 500);
-    
-    return () => {
-      if (typeIntervalRef.current) {
-        clearTimeout(typeIntervalRef.current);
-      }
-      clearInterval(cursorInterval);
-    };
-  }, []);
-  
-  // Process the typed text with interactive elements
-  const processText = (text: string) => {
-    const lines = text.split('\n');
-    return lines.map((line, i, arr) => {
-      // Process interactive elements in the line
-      const formattedLine = line.split(' ').map((word, wordIndex, wordArr) => {
-        // Handle BusRight with hover effect - fancy animation
-        if (word === 'BusRight') {
-          return (
-            <React.Fragment key={`word-${wordIndex}`}>
-              <a 
-                href="https://www.busright.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary relative highlight-word"
-                onMouseEnter={() => setBusActive(true)}
-                onMouseLeave={() => setBusActive(false)}
-              >
-                {word}
-              </a>
-              {wordIndex < wordArr.length - 1 ? ' ' : ''}
-            </React.Fragment>
-          );
-        }
-        
-        // Handle DormRoomFund with hover effect
-        if (word === 'DormRoomFund') {
-          return (
-            <React.Fragment key={`word-${wordIndex}`}>
-              <a 
-                href="https://dormroomfund.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary relative highlight-word"
-              >
-                {word}
-              </a>
-              {wordIndex < wordArr.length - 1 ? ' ' : ''}
-            </React.Fragment>
-          );
-        }
-        
-        // Handle "lost" with flashlight effect
-        if (word === 'lost') {
-          return (
-            <React.Fragment key={`word-${wordIndex}`}>
-              <span 
-                className="relative cursor-pointer font-bold highlight-word"
-                onMouseEnter={() => setFlashlightActive(true)}
-                onMouseLeave={() => setFlashlightActive(false)}
-              >
-                {word}
-              </span>
-              {wordIndex < wordArr.length - 1 ? ' ' : ''}
-            </React.Fragment>
-          );
-        }
-        
-        // Regular word with occasional hover effects for fun
-        const isSpecialWord = ['figuring', 'email', 'connect', 'socials'].includes(word);
-        return (
-          <React.Fragment key={`word-${wordIndex}`}>
-            <span className={isSpecialWord ? 'highlight-word' : ''}>
-              {word}
-            </span>
-            {wordIndex < wordArr.length - 1 ? ' ' : ''}
-          </React.Fragment>
-        );
-      });
-      
-      return (
-        <React.Fragment key={`line-${i}`}>
-          {formattedLine}
-          {i < arr.length - 1 && <br />}
-        </React.Fragment>
-      );
-    });
   };
-  
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    // Clear previous content
+    containerRef.current.innerHTML = '';
+    
+    // Create SVG element
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.style.overflow = 'visible';
+    containerRef.current.appendChild(svg);
+    svgRef.current = svg;
+    
+    // Container for paths
+    const pathGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    svg.appendChild(pathGroup);
+    
+    // Create paths for each character
+    const paths: SVGPathElement[] = [];
+    let currentX = 10;
+    const baseY = 30;
+    
+    Array.from(text).forEach((char, index) => {
+      const pathData = generateCharPath(char, currentX, baseY);
+      
+      if (pathData) {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathData);
+        path.setAttribute('stroke', color);
+        path.setAttribute('stroke-width', strokeWidth.toString());
+        path.setAttribute('fill', 'none');
+        path.setAttribute('data-char', char);
+        path.style.strokeLinecap = 'round';
+        path.style.strokeLinejoin = 'round';
+        
+        pathGroup.appendChild(path);
+        paths.push(path);
+      }
+      
+      // Move to the next character position
+      currentX += char === ' ' ? 10 : 20;
+    });
+    
+    pathsRef.current = paths;
+    
+    // Adjust SVG viewBox to fit the content
+    svg.setAttribute('viewBox', `0 0 ${currentX + 20} ${baseY + 20}`);
+    
+    // Create drawing animation
+    const tl = gsap.timeline({
+      paused: !autoPlay,
+      delay,
+      onComplete: () => {
+        onComplete?.();
+      }
+    });
+    
+    // Set all paths to initially hidden state
+    gsap.set(paths, { strokeDasharray: '100%', strokeDashoffset: '100%' });
+    
+    // Animate each path with staggered timing
+    tl.to(paths, {
+      strokeDashoffset: '0%',
+      duration: 1 / speed,
+      stagger: 0.1 / speed,
+      ease: 'power1.inOut',
+    });
+    
+    tlRef.current = tl;
+    
+    // Cleanup
+    return () => {
+      tl.kill();
+    };
+  }, [text, color, strokeWidth, delay, speed, autoPlay, onComplete]);
+
   return (
-    <FlashlightEffect isActive={flashlightActive}>
-      <div className="handwriting-area font-handwriting text-xl md:text-2xl text-muted-foreground mb-12 text-left max-w-2xl mx-auto leading-relaxed">
-        <div className="inline-block relative">
-          <span id="typed-text">{processText(text)}</span>
-          <animated.span 
-            className="typing-cursor" 
-            style={{
-              display: 'inline-block',
-              width: '3px',
-              height: '1.2em',
-              backgroundColor: 'currentColor',
-              marginLeft: '2px',
-              verticalAlign: 'middle',
-              opacity: cursorSpring.opacity
-            }}
-          />
-        </div>
-      </div>
-      <BusAnimation isActive={busActive} />
-    </FlashlightEffect>
+    <div 
+      ref={containerRef} 
+      className={cn('handwriting-animation', className)}
+      style={{ 
+        fontFamily, 
+        fontSize,
+        lineHeight: 1.2,
+        position: 'relative',
+        height: fontSize,
+      }}
+    />
   );
 };
 

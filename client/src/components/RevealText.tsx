@@ -57,7 +57,7 @@ const RevealText = ({
 
       if (type === 'char') {
         // Split by characters
-        [...line].forEach((char) => {
+        Array.from(line).forEach((char) => {
           const span = document.createElement('span');
           span.textContent = char;
           span.classList.add('reveal-char', 'inline-block', 'opacity-0');
