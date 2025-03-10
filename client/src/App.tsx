@@ -1,3 +1,4 @@
+
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -8,9 +9,6 @@ import NewHome from "@/pages/NewHome";
 import MinimalHome from "@/pages/MinimalHome";
 import UltraMinimal from "@/pages/UltraMinimal";
 import { useEffect } from "react";
-// Added import for FeatureFlagProvider (assuming it exists elsewhere)
-import { FeatureFlagProvider } from './context/FeatureFlagContext'; // Adjust path as needed
-
 
 function Router() {
   // Implement smooth scrolling
@@ -37,10 +35,8 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <FeatureFlagProvider>
-        <Router />
-        <Toaster />
-      </FeatureFlagProvider>
+      <Router />
+      <Toaster />
     </QueryClientProvider>
   );
 }
