@@ -411,7 +411,6 @@ body {
   .highlight-word:hover::after {
     width: 100%;
   }
-}
 
 @layer components {
   .social-icon {
