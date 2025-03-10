@@ -274,11 +274,79 @@ body {
     width: 0;
     height: 2px;
     background-color: #000;
-    transition: width 5s linear; /* 5-second progress indicator */
+    transition: width 2s linear; /* 2-second progress indicator */
     opacity: 0.3;
   }
   
   .interactive-text:hover::after {
     width: 100%;
+  }
+  
+  /* Enhanced social icons */
+  .social-icon {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+  
+  .social-icon:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  }
+  
+  .social-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    opacity: 0;
+  }
+  
+  .social-icon:hover::before {
+    opacity: 0.7;
+    animation: shine 1.5s ease;
+  }
+  
+  @keyframes shine {
+    0% {
+      transform: scale(0) rotate(45deg);
+      opacity: 0;
+    }
+    80% {
+      transform: scale(1.5) rotate(45deg);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(2) rotate(45deg);
+      opacity: 0;
+    }
+  }
+  
+  /* Copy toast */
+  .copy-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .copy-toast.visible {
+    opacity: 1;
   }
 }
