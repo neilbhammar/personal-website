@@ -402,6 +402,7 @@ const UltraMinimal = () => {
             bananagrams
           </span>{" "}
           champ (at least in my house), and amateur pickleball aficionado.
+        </p>
         <p>
           I spent the last 5.5 years building and scaling a company (
           <a
