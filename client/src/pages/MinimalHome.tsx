@@ -65,12 +65,10 @@ const MinimalHome = () => {
             </h1>
             
             <p className="text-xl md:text-2xl font-light text-gray-600 leading-relaxed max-w-2xl mb-8">
-              I'm a startup & tech enthusiast, <WordInteraction word="bananagrams" interactionType="tiles" className="relative">
-                <span 
-                  className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gray-200"
-                  onClick={() => setTilesActive(true)}
-                ></span>
-              </WordInteraction> champ (at least in my house), and amateur pickleball aficionado.
+              I'm a startup & tech enthusiast, <span 
+                 className="relative cursor-pointer text-[#30b4bc] underline"
+                 onClick={() => setTilesActive(true)}
+              >bananagrams</span> champ (at least in my house), and amateur pickleball aficionado.
             </p>
             
             <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mb-8">
@@ -109,12 +107,10 @@ const MinimalHome = () => {
                 </p>
                 
                 <p>
-                  I'm not sure what's next for me - I'm honestly a little <WordInteraction word="lost" interactionType="flashlight" className="relative">
-                    <span 
-                      className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gray-200" 
-                      onClick={() => setFlashlightActive(!flashlightActive)}
-                    ></span>
-                  </WordInteraction>, but that's part of the process. I'm a tinkerer by nature, so I might find myself posting fun projects here.
+                  I'm not sure what's next for me - I'm honestly a little <span 
+                    className="relative cursor-pointer text-[#30b4bc] underline"
+                    onClick={() => setFlashlightActive(!flashlightActive)}
+                  >lost</span>, but that's part of the process. I'm a tinkerer by nature, so I might find myself posting fun projects here.
                 </p>
               </div>
             </div>

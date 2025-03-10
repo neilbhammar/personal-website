@@ -224,19 +224,22 @@ const WordInteraction: React.FC<WordInteractionProps> = ({
     : { cursor: 'pointer' };
 
   return (
-    <span className={`relative inline-block ${className}`}>
-      <span
-        ref={containerRef}
-        className={`interactive-word ${isActive ? 'active' : ''}`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
-        style={interactiveStyle}
-      >
-        {word}
+    <>
+      <span className={`relative inline-block ${className}`}>
+        <span
+          ref={containerRef}
+          className={`interactive-word ${isActive ? 'active' : ''}`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onMouseMove={handleMouseMove}
+          style={interactiveStyle}
+        >
+          {word}
+        </span>
+        {children}
       </span>
       
-      {/* Flashlight effect */}
+      {/* Flashlight effect - moved outside span to avoid nesting issues */}
       {interactionType === 'flashlight' && isActive && (
         <div 
           className="fixed inset-0 z-50 bg-black bg-opacity-90 pointer-events-none"
@@ -247,15 +250,13 @@ const WordInteraction: React.FC<WordInteractionProps> = ({
         />
       )}
       
-      {/* Container for tiles effect */}
+      {/* Container for tiles effect - moved outside span to avoid nesting issues */}
       <div 
         ref={tilesContainerRef} 
         className="tiles-container fixed inset-0 z-50 pointer-events-none" 
         style={{ display: 'none' }}
       />
-      
-      {children}
-    </span>
+    </>
   );
 };
 
