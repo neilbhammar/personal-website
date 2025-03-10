@@ -267,20 +267,23 @@ body {
   .flashlight-effect.active {
     opacity: 1;
   }
+}
 
-  /* Bus animation */
-  .bus-animation-container {
-    position: fixed;
-    bottom: 10px;
-    left: -150px; /* Start off-screen */
-    z-index: 50;
-  }
-
-  /* Bus animation styles */
+/* Bus animation */
 .bus-animation-container {
+  position: fixed;
+  bottom: 10px;
+  left: -150px; /* Start off-screen */
+  z-index: 50;
   pointer-events: none;
   position: relative;
   overflow: hidden;
+  transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  transform: translateX(-150px);
+}
+
+.bus-animation-container.active {
+  transform: translateX(calc(100vw + 150px));
 }
 
 .bus-wrapper {
@@ -377,40 +380,31 @@ body {
   100% { opacity: 0.5; }
 }
 
-    transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    pointer-events: none;
-    transform: translateX(-150px);
-  }
+/* Word highlight effect */
+.highlight-word {
+  position: relative;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
 
-  .bus-animation-container.active {
-    transform: translateX(calc(100vw + 150px));
-  }
+.highlight-word:hover {
+  color: hsl(var(--primary));
+}
 
-  /* Word highlight effect */
-  .highlight-word {
-    position: relative;
-    cursor: pointer;
-    transition: color 0.3s ease;
-  }
+.highlight-word::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: hsl(var(--primary));
+  transition: width 0.3s ease;
+}
 
-  .highlight-word:hover {
-    color: hsl(var(--primary));
-  }
-
-  .highlight-word::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: hsl(var(--primary));
-    transition: width 0.3s ease;
-  }
-
-  .highlight-word:hover::after {
-    width: 100%;
-  }
+.highlight-word:hover::after {
+  width: 100%;
+}
 
 @layer components {
   .social-icon {
@@ -467,6 +461,10 @@ body {
     opacity: 0.3;
   }
 
+  .interactive-text:hover::after {
+    width: 100%;
+  }
+
   /* Custom school buses highlight */
   .school-bus-highlight {
     background-color: rgba(255, 221, 0, 0.2);
@@ -519,10 +517,6 @@ body {
 
   .tooltip-dot.active {
     background-color: #000;
-  }
-
-  .interactive-text:hover::after {
-    width: 100%;
   }
 
   /* Enhanced social icons */
@@ -592,8 +586,9 @@ body {
   .copy-toast.visible {
     opacity: 1;
   }
+}
 
-  .bananagrams-link,
+.bananagrams-link,
 .lost-link,
 .busright-link,
 .fun-link,
@@ -708,5 +703,4 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 50;
-}
 }
