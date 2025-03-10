@@ -7,6 +7,7 @@ import { experiences } from '../data/experiences';
 const UltraMinimal = () => {
   const [flashlightActive, setFlashlightActive] = useState(false);
   const [bananagramsActive, setBananagramsActive] = useState(false);
+  const [bananagramsTriggered, setBananagramsTriggered] = useState(false);
   const [busesActive, setBusesActive] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showToast, setShowToast] = useState(false);
@@ -93,23 +94,26 @@ const UltraMinimal = () => {
 
   // Bananagrams tile effect
   const handleBananagramsHoverStart = () => {
+    if (bananagramsTriggered) return; // Prevent re-triggering
+
     if (bananagramsHoverTimerRef.current) return;
 
     bananagramsHoverTimerRef.current = setTimeout(() => {
       setBananagramsActive(true);
+      setBananagramsTriggered(true); // Set the flag after triggering
       bananagramsHoverTimerRef.current = null;
 
       // Apply the tile effect animation
       if (bananagramsRef.current) {
         // Save original text content to reset later
         const originalText = bananagramsRef.current.textContent || 'bananagrams';
-        
+
         // Create spans for each letter of the original text
         const letters = originalText.split('');
         bananagramsRef.current.textContent = ''; // Clear the element
-        
+
         const letterElements: HTMLSpanElement[] = [];
-        
+
         // Create initial letter spans
         letters.forEach(letter => {
           const letterSpan = document.createElement('span');
@@ -124,7 +128,7 @@ const UltraMinimal = () => {
           // Replace letters sequentially
           setTimeout(() => {
             if (!letterElements[index]) return; // Safety check
-            
+
             // Create tile element
             const tile = document.createElement('span');
             tile.textContent = letter;
@@ -150,7 +154,7 @@ const UltraMinimal = () => {
                 // Replace the original letter with the tile
                 if (letterElements[index] && letterElements[index].parentNode) {
                   letterElements[index].parentNode.replaceChild(tile, letterElements[index]);
-                
+
                   // Animate the tile flipping in
                   gsap.to(tile, {
                     rotateY: 0,

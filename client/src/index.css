@@ -266,6 +266,16 @@ body {
     border-bottom-style: solid;
   }
   
+  .interactive-text-triggered {
+    border-bottom-color: #ccc;
+    cursor: default;
+  }
+  
+  .interactive-text-triggered:hover {
+    border-bottom-color: #ccc;
+    border-bottom-style: dotted;
+  }
+  
   .interactive-text::after {
     content: '';
     position: absolute;
