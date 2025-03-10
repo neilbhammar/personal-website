@@ -1,131 +1,127 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Experience } from '../data/experiences';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+
+interface Experience {
+  title: string;
+  slides: {
+    image: string;
+    title: string;
+    description: string;
+  }[];
+}
 
 interface ExperienceTooltipProps {
   data: Experience;
   visible: boolean;
   anchorRef: React.RefObject<HTMLElement>;
   onClose: () => void;
-  position?: 'top' | 'bottom';
 }
 
 const ExperienceTooltip: React.FC<ExperienceTooltipProps> = ({ 
   data, 
   visible, 
   anchorRef, 
-  onClose,
-  position = 'top'
+  onClose 
 }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const stories = Array.isArray(data.stories) ? data.stories : [{ title: data.title, description: data.description }];
   
-  // Position tooltip relative to anchor element
+  // Position the tooltip relative to the anchor element
   useEffect(() => {
-    if (!visible || !anchorRef.current || !tooltipRef.current) return;
+    const positionTooltip = () => {
+      if (!tooltipRef.current || !anchorRef.current) return;
+      
+      const anchorRect = anchorRef.current.getBoundingClientRect();
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      
+      // Position below the anchor element
+      const left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
+      const top = anchorRect.bottom + 10;
+      
+      tooltipRef.current.style.left = `${Math.max(20, Math.min(left, window.innerWidth - tooltipRect.width - 20))}px`;
+      tooltipRef.current.style.top = `${top}px`;
+    };
     
-    const anchorRect = anchorRef.current.getBoundingClientRect();
-    const tooltipRect = tooltipRef.current.getBoundingClientRect();
-    
-    let top, left;
-    
-    if (position === 'top') {
-      // Position above the word with a small gap
-      top = anchorRect.top - tooltipRect.height - 15;
-      // Center horizontally
-      left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
-    } else {
-      // Position below the word with a small gap
-      top = anchorRect.bottom + 5;
-      // Center horizontally
-      left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
+    if (visible) {
+      positionTooltip();
+      window.addEventListener('resize', positionTooltip);
+      window.addEventListener('scroll', positionTooltip);
     }
     
-    // Make sure tooltip stays within viewport
-    const rightEdge = left + tooltipRect.width;
-    const viewportWidth = window.innerWidth;
-    
-    if (rightEdge > viewportWidth - 10) {
-      left = viewportWidth - tooltipRect.width - 10;
-    }
-    
-    if (left < 10) {
-      left = 10;
-    }
-    
-    // Apply position
-    tooltipRef.current.style.top = `${top}px`;
-    tooltipRef.current.style.left = `${left}px`;
-    
-    // Add a small arrow pointing to the word
-    const tooltipCenter = left + (tooltipRect.width / 2);
-    const anchorCenter = anchorRect.left + (anchorRect.width / 2);
-    const arrowOffset = anchorCenter - tooltipCenter;
-    
-    const arrowElement = document.createElement('div');
-    arrowElement.className = `tooltip-arrow tooltip-arrow-${position}`;
-    arrowElement.style.transform = `translateX(${arrowOffset}px)`;
-    
-    // Remove any previous arrows
-    const oldArrow = tooltipRef.current.querySelector('.tooltip-arrow');
-    if (oldArrow) oldArrow.remove();
-    
-    tooltipRef.current.appendChild(arrowElement);
-    
-  }, [visible, anchorRef, position, currentIndex]);
+    return () => {
+      window.removeEventListener('resize', positionTooltip);
+      window.removeEventListener('scroll', positionTooltip);
+    };
+  }, [visible, anchorRef, currentSlide]);
   
-  const handlePrev = () => {
-    setCurrentIndex(prev => (prev > 0 ? prev - 1 : stories.length - 1));
-  };
+  // Auto-advance slides
+  useEffect(() => {
+    if (!visible) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % data.slides.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [visible, data.slides.length]);
   
-  const handleNext = () => {
-    setCurrentIndex(prev => (prev < stories.length - 1 ? prev + 1 : 0));
-  };
+  // Handle clicks outside the tooltip
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    
+    if (visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [visible, onClose]);
   
   if (!visible) return null;
   
-  const currentStory = stories[currentIndex];
+  const slide = data.slides[currentSlide];
   
   return (
     <div 
       ref={tooltipRef}
-      className={`experience-tooltip ${visible ? 'visible' : ''}`}
-      onClick={e => e.stopPropagation()}
+      className={`absolute z-50 w-72 bg-white rounded-lg shadow-lg overflow-hidden transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      style={{
+        transform: 'translate3d(0, 0, 0)'
+      }}
     >
-      <div className="modern-tooltip-content">
-        <div className="modern-tooltip-image-container">
-          {currentStory.image && (
-            <img 
-              src={currentStory.image} 
-              alt={currentStory.title} 
-              className="modern-tooltip-image"
-            />
-          )}
-        </div>
-        <div className="modern-tooltip-text-container">
-          <h3 className="modern-tooltip-title">{currentStory.title}</h3>
-          <p className="modern-tooltip-description">{currentStory.description}</p>
-        </div>
+      <div className="relative">
+        <img 
+          src={slide.image}
+          alt={slide.title}
+          className="w-full h-40 object-cover"
+        />
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70"
+        >
+          ×
+        </button>
       </div>
       
-      {stories.length > 1 && (
-        <div className="modern-tooltip-navigation">
-          <div className="modern-tooltip-dots">
-            {stories.map((_, index) => (
-              <span 
-                key={index} 
-                className={`modern-tooltip-dot ${index === currentIndex ? 'active' : ''}`}
-                onClick={() => setCurrentIndex(index)}
-              />
-            ))}
-          </div>
-          <button className="modern-tooltip-nav-button next" onClick={handleNext}>
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      )}
+      <div className="p-4">
+        <h3 className="text-lg font-medium mb-1">{slide.title}</h3>
+        <p className="text-gray-600 text-sm">{slide.description}</p>
+      </div>
+      
+      <div className="flex justify-center pb-3">
+        {data.slides.map((_, index) => (
+          <button
+            key={index}
+            className={`mx-1 w-2 h-2 rounded-full ${index === currentSlide ? 'bg-blue-500' : 'bg-gray-300'}`}
+            onClick={() => setCurrentSlide(index)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
