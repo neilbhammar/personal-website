@@ -4,17 +4,29 @@ import copy from 'clipboard-copy';
 
 const UltraMinimal = () => {
   const [flashlightActive, setFlashlightActive] = useState(false);
-  const [tilesActive, setTilesActive] = useState(false);
+  const [bananagramsActive, setBananagramsActive] = useState(false);
+  const [busesActive, setBusesActive] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  
   const contentRef = useRef<HTMLDivElement>(null);
-  const tilesContainerRef = useRef<HTMLDivElement>(null);
   const flashlightRef = useRef<HTMLDivElement>(null);
+  const bananagramsRef = useRef<HTMLSpanElement>(null);
+  const busesRef = useRef<HTMLSpanElement>(null);
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const busesHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Set initial mouse position when flashlight is activated
+  const initializeFlashlightPosition = (e: React.MouseEvent) => {
+    setMousePosition({
+      x: e.clientX,
+      y: e.clientY + window.scrollY
+    });
+  };
   
   // Update mouse position for flashlight effect
   useEffect(() => {
@@ -31,17 +43,18 @@ const UltraMinimal = () => {
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, [flashlightActive]);
 
-  // Auto-disable effects after 10 seconds
+  // Auto-disable effects after 8 seconds
   useEffect(() => {
-    if (flashlightActive || tilesActive) {
+    if (flashlightActive || bananagramsActive || busesActive) {
       if (effectTimeoutRef.current) {
         clearTimeout(effectTimeoutRef.current);
       }
       
       effectTimeoutRef.current = setTimeout(() => {
         setFlashlightActive(false);
-        setTilesActive(false);
-      }, 10000); // 10 seconds
+        setBananagramsActive(false);
+        setBusesActive(false);
+      }, 8000);
     }
     
     return () => {
@@ -49,7 +62,7 @@ const UltraMinimal = () => {
         clearTimeout(effectTimeoutRef.current);
       }
     };
-  }, [flashlightActive, tilesActive]);
+  }, [flashlightActive, bananagramsActive, busesActive]);
   
   // Handle copy to clipboard with toast
   const handleCopyEmail = (email: string) => {
@@ -67,13 +80,47 @@ const UltraMinimal = () => {
     });
   };
   
-  // Handle hover on bananagrams
+  // Bananagrams tile effect
   const handleBananagramsHoverStart = () => {
     if (bananagramsHoverTimerRef.current) return;
     
     bananagramsHoverTimerRef.current = setTimeout(() => {
-      setTilesActive(true);
+      setBananagramsActive(true);
       bananagramsHoverTimerRef.current = null;
+      
+      // Apply the tile effect animation
+      if (bananagramsRef.current) {
+        const letters = bananagramsRef.current.textContent?.split('') || [];
+        bananagramsRef.current.innerHTML = '';
+        
+        letters.forEach((letter, index) => {
+          const tile = document.createElement('span');
+          tile.className = 'bananagram-tile';
+          tile.textContent = letter;
+          tile.style.display = 'inline-block';
+          tile.style.backgroundColor = '#f8f0d8';
+          tile.style.border = '1px solid #e6d6b5';
+          tile.style.borderRadius = '3px';
+          tile.style.padding = '2px 3px';
+          tile.style.margin = '0 1px';
+          tile.style.fontFamily = 'monospace';
+          tile.style.fontSize = '0.9em';
+          tile.style.fontWeight = 'bold';
+          tile.style.color = '#000';
+          tile.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+          tile.style.transform = 'scale(0)';
+          
+          bananagramsRef.current?.appendChild(tile);
+          
+          // Animate each tile popping in
+          gsap.to(tile, {
+            scale: 1,
+            duration: 0.3,
+            delay: index * 0.05,
+            ease: 'back.out(1.7)',
+          });
+        });
+      }
     }, 2000); // 2 second delay
   };
   
@@ -84,9 +131,22 @@ const UltraMinimal = () => {
     }
   };
   
-  // Handle hover on lost
-  const handleLostHoverStart = () => {
+  // Clean up bananagrams effect
+  useEffect(() => {
+    if (!bananagramsActive && bananagramsRef.current) {
+      // Return to normal text when effect is turned off
+      if (bananagramsRef.current.textContent !== 'bananagrams') {
+        bananagramsRef.current.textContent = 'bananagrams';
+      }
+    }
+  }, [bananagramsActive]);
+  
+  // Handle hover on "lost"
+  const handleLostHoverStart = (e: React.MouseEvent) => {
     if (lostHoverTimerRef.current) return;
+    
+    // Pre-set the mouse position so the flashlight starts in the right place
+    initializeFlashlightPosition(e);
     
     lostHoverTimerRef.current = setTimeout(() => {
       setFlashlightActive(true);
@@ -100,6 +160,103 @@ const UltraMinimal = () => {
       lostHoverTimerRef.current = null;
     }
   };
+
+  // School buses effect
+  const handleBusesHoverStart = () => {
+    if (busesHoverTimerRef.current) return;
+    
+    busesHoverTimerRef.current = setTimeout(() => {
+      setBusesActive(true);
+      busesHoverTimerRef.current = null;
+      
+      // Apply the school bus animation
+      if (busesRef.current) {
+        // Create bus animation elements
+        const busCount = 3; // Multiple buses
+        
+        for (let i = 0; i < busCount; i++) {
+          const busContainer = document.createElement('div');
+          busContainer.className = 'bus-container';
+          busContainer.style.position = 'fixed';
+          busContainer.style.left = '-150px';
+          busContainer.style.bottom = `${60 + (i * 40)}px`;
+          busContainer.style.zIndex = '100';
+          busContainer.style.transform = 'scale(0.5)';
+          busContainer.style.transformOrigin = 'center';
+          
+          // Create the bus
+          const bus = document.createElement('div');
+          bus.className = 'bus';
+          bus.style.width = '100px';
+          bus.style.height = '40px';
+          bus.style.backgroundColor = '#FFDD00';
+          bus.style.borderRadius = '8px';
+          bus.style.position = 'relative';
+          bus.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+          
+          // Create the windows
+          const windowCount = 3;
+          for (let j = 0; j < windowCount; j++) {
+            const busWindow = document.createElement('div');
+            busWindow.style.width = '15px';
+            busWindow.style.height = '15px';
+            busWindow.style.backgroundColor = '#87CEEB';
+            busWindow.style.position = 'absolute';
+            busWindow.style.top = '5px';
+            busWindow.style.left = `${25 + (j * 20)}px`;
+            busWindow.style.borderRadius = '3px';
+            bus.appendChild(busWindow);
+          }
+          
+          // Create the wheels
+          for (let j = 0; j < 2; j++) {
+            const wheel = document.createElement('div');
+            wheel.style.width = '15px';
+            wheel.style.height = '15px';
+            wheel.style.backgroundColor = '#333';
+            wheel.style.borderRadius = '50%';
+            wheel.style.position = 'absolute';
+            wheel.style.bottom = '-8px';
+            wheel.style.left = j === 0 ? '15px' : '70px';
+            bus.appendChild(wheel);
+          }
+          
+          busContainer.appendChild(bus);
+          document.body.appendChild(busContainer);
+          
+          // Animate the bus moving across the screen
+          gsap.to(busContainer, {
+            x: window.innerWidth + 150,
+            duration: 6 - (i * 0.5),
+            delay: i * 0.5,
+            ease: 'power1.inOut',
+            onComplete: () => {
+              document.body.removeChild(busContainer);
+              if (i === busCount - 1) {
+                setBusesActive(false);
+              }
+            }
+          });
+          
+          // Slightly bounce the bus
+          gsap.to(bus, {
+            y: -3,
+            duration: 0.5,
+            repeat: -1,
+            yoyo: true,
+            ease: 'power1.inOut'
+          });
+        }
+      }
+    }, 2000); // 2 second delay
+  };
+  
+  const handleBusesHoverEnd = () => {
+    if (busesHoverTimerRef.current) {
+      clearTimeout(busesHoverTimerRef.current);
+      busesHoverTimerRef.current = null;
+    }
+  };
   
   // Clean up all timers on unmount
   useEffect(() => {
@@ -110,6 +267,9 @@ const UltraMinimal = () => {
       if (lostHoverTimerRef.current) {
         clearTimeout(lostHoverTimerRef.current);
       }
+      if (busesHoverTimerRef.current) {
+        clearTimeout(busesHoverTimerRef.current);
+      }
       if (effectTimeoutRef.current) {
         clearTimeout(effectTimeoutRef.current);
       }
@@ -118,93 +278,6 @@ const UltraMinimal = () => {
       }
     };
   }, []);
-  
-  // Extract letters from all text paragraphs on the page
-  const createTilesEffect = () => {
-    if (!tilesContainerRef.current || !contentRef.current) return;
-    
-    // Clear previous tiles
-    tilesContainerRef.current.innerHTML = '';
-    
-    // Get all text from the visible paragraphs
-    const paragraphs = contentRef.current.querySelectorAll('p');
-    let allLetters: HTMLElement[] = [];
-    
-    // For each paragraph in the content
-    paragraphs.forEach(paragraph => {
-      // Get the text content and position of the paragraph
-      const text = paragraph.innerText;
-      const rect = paragraph.getBoundingClientRect();
-      
-      // Split the text into individual characters
-      const characters = text.split('');
-      
-      characters.forEach((char, index) => {
-        // Skip spaces and special characters
-        if (!/[a-zA-Z0-9]/.test(char)) return;
-        
-        // Create tile element for this character
-        const tile = document.createElement('div');
-        tile.className = 'tile';
-        tile.textContent = char;
-        tile.style.position = 'fixed';
-        tile.style.fontFamily = 'monospace';
-        tile.style.fontSize = '14px';
-        tile.style.opacity = '1'; // Start visible in place
-        tile.style.pointerEvents = 'none';
-        
-        // Calculate position based on paragraph position and character index
-        // This is an estimation as we don't have exact character positions
-        const approxLeft = rect.left + (index % 40) * 8; // Rough estimation based on char width
-        const approxTop = rect.top + Math.floor(index / 40) * 20; // Rough estimation based on line height
-        
-        // Position at original text location
-        gsap.set(tile, {
-          x: approxLeft,
-          y: approxTop,
-          opacity: 1
-        });
-        
-        allLetters.push(tile);
-        tilesContainerRef.current?.appendChild(tile);
-      });
-    });
-    
-    // Now animate all letters falling down
-    allLetters.forEach((tile) => {
-      // Randomize the fall timing slightly
-      const delay = Math.random() * 0.5;
-      
-      // Get current position
-      const startX = parseFloat(tile.style.transform.split('translateX(')[1]?.split('px')[0] || '0');
-      const startY = parseFloat(tile.style.transform.split('translateY(')[1]?.split('px')[0] || '0');
-      
-      // Animate the fall
-      gsap.to(tile, {
-        duration: 1.5 + (Math.random() * 1),
-        x: startX + (-30 + Math.random() * 60), // Random horizontal movement
-        y: window.innerHeight + 50, // Below bottom of screen
-        rotation: -40 + Math.random() * 80, // Random rotation
-        delay,
-        ease: 'power1.in'
-      });
-    });
-    
-    // Set timer to clean up after animation completes
-    setTimeout(() => {
-      if (tilesContainerRef.current) {
-        tilesContainerRef.current.innerHTML = '';
-      }
-      setTilesActive(false);
-    }, 5000);
-  };
-  
-  // Trigger the tiles effect when activated
-  useEffect(() => {
-    if (tilesActive) {
-      createTilesEffect();
-    }
-  }, [tilesActive]);
   
   return (
     <main className="py-10 px-8 md:py-16 md:px-16 relative">
@@ -216,6 +289,7 @@ const UltraMinimal = () => {
         
         <p>
           I'm a startup & tech enthusiast, <span 
+            ref={bananagramsRef}
             className="interactive-text"
             onMouseEnter={handleBananagramsHoverStart}
             onMouseLeave={handleBananagramsHoverEnd}
@@ -227,11 +301,16 @@ const UltraMinimal = () => {
         </p>
         
         <p>
-          I spent the last 5.5 years building and scaling a company (BusRight) that was creating the software that powers our nation's largest mass transit system: school buses. I joined as employee #1 before we had any customers or much of a product and recently wrapped up that chapter as our Head of Operations & Customer Experience following our Series B. I had a ton of fun.
+          I spent the last 5.5 years building and scaling a company (<a href="https://www.busright.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">BusRight</a>) that was creating the software that powers our nation's largest mass transit system: <span 
+            ref={busesRef}
+            className="interactive-text"
+            onMouseEnter={handleBusesHoverStart}
+            onMouseLeave={handleBusesHoverEnd}
+          >school buses</span>. I joined as employee #1 before we had any customers or much of a product and recently wrapped up that chapter as our Head of Operations & Customer Experience following our Series B. I had a ton of fun.
         </p>
         
         <p>
-          Before that, I invested in and supported founders at DormRoomFund and Northeastern University.
+          Before that, I invested in and supported founders at <a href="#" className="text-blue-600 hover:underline">Dorm Room Fund</a> (a $12.5M pre-seed fund) and Northeastern University.
         </p>
         
         <p>
@@ -260,7 +339,7 @@ const UltraMinimal = () => {
             </svg>
           </button>
           
-          {/* X Logo (formerly Twitter) */}
+          {/* X Logo (formerly Twitter) - Corrected */}
           <a 
             href="https://x.com"
             target="_blank"
@@ -268,14 +347,13 @@ const UltraMinimal = () => {
             className="social-icon w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"
             aria-label="X (Twitter)"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 4l11.5 11.5M4 20l16-16"/>
-              <path d="M20 4v16"/>
-              <path d="M4 12h8"/>
+            {/* Proper X logo */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
             </svg>
           </a>
           
-          {/* LinkedIn instead of GitHub */}
+          {/* LinkedIn */}
           <a 
             href="https://linkedin.com"
             target="_blank"
@@ -318,25 +396,6 @@ const UltraMinimal = () => {
           </button>
         </div>
       )}
-      
-      {/* Container for tiles effect */}
-      <div 
-        ref={tilesContainerRef}
-        className="fixed inset-0 pointer-events-none z-[999]"
-      >
-        {tilesActive && (
-          <button 
-            className="absolute top-4 right-4 text-black opacity-30 hover:opacity-100 transition-opacity pointer-events-auto"
-            onClick={() => setTilesActive(false)}
-            aria-label="Close tiles effect"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        )}
-      </div>
       
       {/* Toast message */}
       <div className={`copy-toast ${showToast ? 'visible' : ''}`}>

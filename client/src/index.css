@@ -278,6 +278,24 @@ body {
     opacity: 0.3;
   }
   
+  /* Custom school buses highlight */
+  .school-bus-highlight {
+    background-color: rgba(255, 221, 0, 0.2);
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Bananagram tiles styling */
+  .bananagram-tile {
+    display: inline-block;
+    transform-origin: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .bananagram-tile:hover {
+    transform: scale(1.2) rotate(5deg);
+    z-index: 10;
+  }
+  
   .interactive-text:hover::after {
     width: 100%;
   }
