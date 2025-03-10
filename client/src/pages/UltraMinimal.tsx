@@ -3,6 +3,9 @@ import { gsap } from 'gsap';
 import copy from 'clipboard-copy';
 import ExperienceTooltip from '../components/ExperienceTooltip';
 import { experiences } from '../data/experiences';
+// Import Feature Flag Context
+import { useFeatureFlags } from '../context/FeatureFlagContext';
+
 
 const UltraMinimal = () => {
   const [flashlightActive, setFlashlightActive] = useState(false);
@@ -16,6 +19,8 @@ const UltraMinimal = () => {
   // Experience tooltip states
   const [activeExperience, setActiveExperience] = useState<string | null>(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [anchorRef, setAnchorRef] = useState<React.RefObject<HTMLAnchorElement> | null>(null);
+
 
   const contentRef = useRef<HTMLDivElement>(null);
   const flashlightRef = useRef<HTMLDivElement>(null);
@@ -211,111 +216,99 @@ const UltraMinimal = () => {
     }
   };
 
-  // School buses effect - much more subtle and polished
+  // Advanced school buses animation effect
   const handleBusesHoverStart = () => {
+    const { flags } = useFeatureFlags();
+    if (!flags.animations) return; // Skip animation if disabled
     if (busesHoverTimerRef.current) return;
 
     busesHoverTimerRef.current = setTimeout(() => {
       setBusesActive(true);
       busesHoverTimerRef.current = null;
 
+      // Create advanced bus animation
       if (busesRef.current) {
-        // Apply a subtle highlight effect to the text first
-        busesRef.current && gsap.to(busesRef.current, {
-          backgroundColor: 'rgba(255, 221, 0, 0.2)',
-          borderRadius: '3px',
-          padding: '0 4px',
-          duration: 0.5
-        });
+        // First clear any existing content and save original text
+        const originalText = busesRef.current.textContent || 'school buses';
+        busesRef.current.innerHTML = '';
 
-        // Create a small map/route visualization next to the text
-        const routeContainer = document.createElement('div');
-        routeContainer.className = 'route-container';
-        routeContainer.style.position = 'absolute';
-        routeContainer.style.top = '100%';
-        routeContainer.style.left = '0';
-        routeContainer.style.width = '100%';
-        routeContainer.style.height = '2px';
-        routeContainer.style.background = '#FFDD00';
-        routeContainer.style.marginTop = '2px';
-        routeContainer.style.borderRadius = '1px';
-        routeContainer.style.opacity = '0';
+        // Create vehicle animation container
+        const animationContainer = document.createElement('div');
+        animationContainer.className = 'bus-animation-container';
+        busesRef.current.appendChild(animationContainer);
 
-        // Add small stop points along the route
-        const stopCount = 5;
-        for (let i = 0; i < stopCount; i++) {
-          const stop = document.createElement('div');
-          stop.style.position = 'absolute';
-          stop.style.width = '4px';
-          stop.style.height = '4px';
-          stop.style.borderRadius = '50%';
-          stop.style.backgroundColor = 'white';
-          stop.style.border = '1px solid rgba(0,0,0,0.2)';
-          stop.style.top = '-2px';
-          stop.style.left = `${(i+1) * (100 / (stopCount+1))}%`;
-          stop.style.transform = 'scale(0)';
+        // Create road
+        const road = document.createElement('div');
+        road.className = 'bus-animation-road';
+        animationContainer.appendChild(road);
 
-          routeContainer.appendChild(stop);
+        // Create school bus
+        const bus = document.createElement('div');
+        bus.className = 'bus-animation-vehicle';
+        bus.innerHTML = `
+          <div class="bus-body">
+            <div class="bus-window-front"></div>
+            ${Array(4).fill(0).map(() => '<div class="bus-window"></div>').join('')}
+            <div class="bus-door"></div>
+            <div class="bus-lights">
+              <div class="bus-light-front"></div>
+              <div class="bus-light-back"></div>
+            </div>
+            <div class="bus-wheels">
+              <div class="bus-wheel bus-wheel-front"></div>
+              <div class="bus-wheel bus-wheel-back"></div>
+            </div>
+            <div class="bus-sign">SCHOOL BUS</div>
+          </div>
+        `;
+        road.appendChild(bus);
 
-          // Animate each stop appearing
-          gsap.to(stop, {
-            scale: 1,
-            delay: 0.3 + (i * 0.1),
-            duration: 0.2,
-            ease: 'back.out'
-          });
-        }
+        // Animate the bus
+        gsap.fromTo(bus, 
+          { x: -100, rotation: -2 },
+          { 
+            x: '120%', 
+            duration: 3, 
+            ease: "power1.inOut",
+            onComplete: () => {
+              // Show original text with highlight
+              busesRef.current.innerHTML = originalText;
+              busesRef.current.classList.add('school-bus-highlight');
 
-        // Create a tiny bus that moves along the route
-        const miniBus = document.createElement('div');
-        miniBus.style.position = 'absolute';
-        miniBus.style.width = '8px';
-        miniBus.style.height = '6px';
-        miniBus.style.backgroundColor = '#FFDD00';
-        miniBus.style.borderRadius = '2px';
-        miniBus.style.top = '-3px';
-        miniBus.style.left = '0';
-        miniBus.style.transform = 'translateX(-50%)';
-        miniBus.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+              // Add small bus icon
+              const busIcon = document.createElement('span');
+              busIcon.className = 'bus-icon';
+              busIcon.innerHTML = '🚌';
+              busesRef.current.appendChild(busIcon);
 
-        routeContainer.appendChild(miniBus);
-        busesRef.current.appendChild(routeContainer);
-
-        // Animate the route appearing
-        gsap.to(routeContainer, {
-          opacity: 1,
-          duration: 0.3
-        });
-
-        // Animate the bus moving along the route
-        gsap.to(miniBus, {
-          left: '100%',
-          duration: 3,
-          ease: 'power1.inOut',
-          onComplete: () => {
-            // Fade out the route when finished
-            gsap.to(routeContainer, {
-              opacity: 0,
-              duration: 0.3,
-              onComplete: () => {
-                // Reset the text styling
-                busesRef.current && gsap.to(busesRef.current, {
-                  backgroundColor: 'transparent',
-                  padding: '0',
-                  duration: 0.5,
-                  onComplete: () => {
-                    if (busesRef.current && busesRef.current.contains(routeContainer)) {
-                      busesRef.current.removeChild(routeContainer);
-                    }
-                    setBusesActive(false);
-                  }
-                });
-              }
-            });
+              // Animate icon
+              gsap.fromTo(busIcon, 
+                { scale: 0, rotation: -30 },
+                { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(1.7)" }
+              );
+            }
           }
+        );
+
+        // Animate wheels
+        const wheels = bus.querySelectorAll('.bus-wheel');
+        gsap.to(wheels, {
+          rotation: 360,
+          duration: 0.8,
+          repeat: 5,
+          ease: "none"
+        });
+
+        // Add bouncing effect
+        gsap.to(bus, {
+          y: '-=5',
+          duration: 0.3,
+          repeat: 20,
+          yoyo: true,
+          ease: "sine.inOut"
         });
       }
-    }, 1000); // 1 second delay
+    }, 500);
   };
 
   const handleBusesHoverEnd = () => {
@@ -323,6 +316,56 @@ const UltraMinimal = () => {
       clearTimeout(busesHoverTimerRef.current);
       busesHoverTimerRef.current = null;
     }
+
+    if (busesActive) {
+      // Remove animation after a delay
+      effectTimeoutRef.current = setTimeout(() => {
+        if (busesRef.current) {
+          busesRef.current.classList.remove('school-bus-highlight');
+          // Remove any bus icons
+          const busIcon = busesRef.current.querySelector('.bus-icon');
+          if (busIcon) {
+            gsap.to(busIcon, {
+              scale: 0,
+              opacity: 0,
+              duration: 0.3,
+              onComplete: () => {
+                if (busIcon.parentNode) {
+                  busIcon.parentNode.removeChild(busIcon);
+                }
+              }
+            });
+          }
+        }
+        setBusesActive(false);
+      }, 3000);
+    }
+  };
+
+  // Experience tooltip handler with feature flag support
+  const handleExperienceHover = (experienceId: string, anchorRef: React.RefObject<HTMLAnchorElement>) => {
+    const { flags } = useFeatureFlags();
+    if (!flags.tooltips) return; // Skip tooltip if disabled
+
+    if (experienceHoverTimerRef.current) {
+      clearTimeout(experienceHoverTimerRef.current);
+    }
+
+    experienceHoverTimerRef.current = setTimeout(() => {
+      setActiveExperience(experienceId);
+      setAnchorRef(anchorRef);
+      setTooltipVisible(true);
+      experienceHoverTimerRef.current = null;
+    }, 300);
+  };
+
+  const handleExperienceLeave = () => {
+    if (experienceHoverTimerRef.current) {
+      clearTimeout(experienceHoverTimerRef.current);
+      experienceHoverTimerRef.current = null;
+    }
+    setTooltipVisible(false);
+    setTimeout(() => setActiveExperience(null), 300);
   };
 
   // Handle tooltip click-outside close
@@ -368,6 +411,7 @@ const UltraMinimal = () => {
   }, []);
 
   return (
+    <FeatureFlagProvider> {/* Wrap with FeatureFlagProvider */}
     <main className="py-10 px-8 md:py-16 md:px-16 relative">
       <div
         ref={contentRef}
@@ -395,20 +439,8 @@ const UltraMinimal = () => {
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-blue-600 hover:underline"
-            onMouseEnter={() => {
-              if (experienceHoverTimerRef.current) return;
-              experienceHoverTimerRef.current = setTimeout(() => {
-                setActiveExperience('busright');
-                setTooltipVisible(true);
-                experienceHoverTimerRef.current = null;
-              }, 1000);
-            }}
-            onMouseLeave={() => {
-              if (experienceHoverTimerRef.current) {
-                clearTimeout(experienceHoverTimerRef.current);
-                experienceHoverTimerRef.current = null;
-              }
-            }}
+            onMouseEnter={() => handleExperienceHover('busright', busrightRef)}
+            onMouseLeave={handleExperienceLeave}
           >BusRight</a>) that was creating the software that powers our nation's largest mass transit system: <span 
             ref={busesRef}
             className="interactive-text"
@@ -424,36 +456,12 @@ const UltraMinimal = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
-            onMouseEnter={() => {
-              if (experienceHoverTimerRef.current) return;
-              experienceHoverTimerRef.current = setTimeout(() => {
-                setActiveExperience('dormRoomFund');
-                setTooltipVisible(true);
-                experienceHoverTimerRef.current = null;
-              }, 1000);
-            }}
-            onMouseLeave={() => {
-              if (experienceHoverTimerRef.current) {
-                clearTimeout(experienceHoverTimerRef.current);
-                experienceHoverTimerRef.current = null;
-              }
-            }}
+            onMouseEnter={() => handleExperienceHover('dormRoomFund', dormRoomFundRef)}
+            onMouseLeave={handleExperienceLeave}
           >Dorm Room Fund</a> and <span
             ref={northeasternRef}
-            onMouseEnter={() => {
-              if (experienceHoverTimerRef.current) return;
-              experienceHoverTimerRef.current = setTimeout(() => {
-                setActiveExperience('northeastern');
-                setTooltipVisible(true);
-                experienceHoverTimerRef.current = null;
-              }, 1000);
-            }}
-            onMouseLeave={() => {
-              if (experienceHoverTimerRef.current) {
-                clearTimeout(experienceHoverTimerRef.current);
-                experienceHoverTimerRef.current = null;
-              }
-            }}
+            onMouseEnter={() => handleExperienceHover('northeastern', northeasternRef)}
+            onMouseLeave={handleExperienceLeave}
           >Northeastern University</span>.
         </p>
 
@@ -547,17 +555,12 @@ const UltraMinimal = () => {
       </div>
 
       {/* Experience tooltips */}
-      {activeExperience && (
+      {tooltipVisible && activeExperience && anchorRef && (
         <ExperienceTooltip
-          data={experiences[activeExperience]}
+          data={experiences.find((exp) => exp.id === activeExperience) || experiences[0]}
           visible={tooltipVisible}
-          anchorRef={
-            activeExperience === 'busright' 
-              ? busrightRef 
-              : activeExperience === 'dormRoomFund'
-                ? dormRoomFundRef
-                : northeasternRef
-          }
+          anchorRef={anchorRef}
+          position="top"
           onClose={() => {
             setTooltipVisible(false);
             setTimeout(() => setActiveExperience(null), 300);
@@ -565,6 +568,7 @@ const UltraMinimal = () => {
         />
       )}
     </main>
+    </FeatureFlagProvider>
   );
 };
 

@@ -197,6 +197,153 @@ body {
     bottom: 10px;
     left: -150px; /* Start off-screen */
     z-index: 50;
+
+/* Enhanced school bus animation */
+.bus-animation-container {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  margin: 5px 0;
+}
+
+.bus-animation-road {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: #555;
+  border-radius: 2px;
+}
+
+.bus-animation-vehicle {
+  position: absolute;
+  bottom: 5px;
+  width: 80px;
+  height: 35px;
+  transform-origin: center bottom;
+}
+
+.bus-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #FFD800;
+  border-radius: 6px 8px 3px 3px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.bus-window-front {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 15px;
+  height: 10px;
+  background-color: #B3E5FC;
+  border-radius: 2px;
+}
+
+.bus-window {
+  position: absolute;
+  top: 5px;
+  width: 10px;
+  height: 8px;
+  background-color: #B3E5FC;
+  border-radius: 1px;
+}
+
+.bus-window:nth-child(2) { left: 25px; }
+.bus-window:nth-child(3) { left: 38px; }
+.bus-window:nth-child(4) { left: 51px; }
+.bus-window:nth-child(5) { left: 64px; }
+
+.bus-door {
+  position: absolute;
+  top: 14px;
+  right: 15px;
+  width: 8px;
+  height: 15px;
+  background-color: #333;
+  border-radius: 1px;
+}
+
+.bus-lights {
+  position: absolute;
+  bottom: 5px;
+  width: 100%;
+}
+
+.bus-light-front {
+  position: absolute;
+  left: 2px;
+  width: 6px;
+  height: 3px;
+  background-color: #FFF9C4;
+  border-radius: 1px;
+  box-shadow: 0 0 5px rgba(255, 249, 196, 0.8);
+}
+
+.bus-light-back {
+  position: absolute;
+  right: 2px;
+  width: 6px;
+  height: 3px;
+  background-color: #EF5350;
+  border-radius: 1px;
+}
+
+.bus-wheels {
+  position: absolute;
+  bottom: -3px;
+  width: 100%;
+}
+
+.bus-wheel {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #333;
+  border-radius: 50%;
+  border: 2px solid #222;
+  transform-origin: center center;
+}
+
+.bus-wheel-front {
+  left: 15px;
+}
+
+.bus-wheel-back {
+  right: 15px;
+}
+
+.bus-sign {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  font-size: 4px;
+  padding: 1px 2px;
+  border-radius: 1px;
+  white-space: nowrap;
+}
+
+.bus-icon {
+  display: inline-block;
+  margin-left: 5px;
+  transform-origin: center;
+}
+
+.school-bus-highlight {
+  background-color: rgba(255, 221, 0, 0.3);
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: background-color 0.5s ease;
+  position: relative;
+}
+
     transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
     pointer-events: none;
     transform: translateX(-150px);
@@ -311,14 +458,14 @@ body {
     position: absolute;
     z-index: 1000;
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     overflow: hidden;
     opacity: 0;
     transform: translateY(10px);
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    max-width: 320px;
+    max-width: 400px;
     width: 100%;
   }
   
@@ -328,65 +475,96 @@ body {
     pointer-events: auto;
   }
   
-  .tooltip-header {
+  .modern-tooltip-content {
     display: flex;
-    padding: 12px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    flex-direction: row;
+    padding: 0;
   }
   
-  .tooltip-image-container {
-    width: 100px;
-    height: 100px;
+  .modern-tooltip-image-container {
+    width: 200px;
     overflow: hidden;
-    border-radius: 4px;
     flex-shrink: 0;
   }
   
-  .tooltip-image {
+  .modern-tooltip-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
   
-  .tooltip-title-container {
-    padding-left: 12px;
+  .modern-tooltip-text-container {
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
   
-  .tooltip-title {
-    font-weight: 600;
-    margin-bottom: 4px;
+  .modern-tooltip-title {
+    font-weight: 700;
+    margin-bottom: 16px;
+    font-size: 24px;
+    line-height: 1.2;
+  }
+  
+  .modern-tooltip-description {
     font-size: 16px;
-  }
-  
-  .tooltip-subtitle {
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.7);
-    margin-bottom: 4px;
-  }
-  
-  .tooltip-content {
-    padding: 12px;
-  }
-  
-  .tooltip-description {
-    font-size: 14px;
     line-height: 1.5;
-    margin-bottom: 8px;
   }
   
-  .tooltip-navigation {
+  .modern-tooltip-navigation {
     display: flex;
     justify-content: space-between;
-    padding: 8px 12px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgba(0, 0, 0, 0.02);
   }
   
-  .tooltip-nav-button {
+  .modern-tooltip-dots {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .modern-tooltip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .modern-tooltip-dot.active {
+    background-color: #000;
+  }
+  
+  .modern-tooltip-nav-button {
     background: none;
     border: none;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+  
+  .tooltip-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+  }
+  
+  .tooltip-arrow-top {
+    bottom: -10px;
+    border-top: 10px solid white;
+  }
+  
+  .tooltip-arrow-bottom {
+    top: -10px;
+    border-bottom: 10px solid white;
+  }
     cursor: pointer;
     color: #666;
     transition: color 0.2s ease;

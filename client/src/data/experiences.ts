@@ -76,3 +76,48 @@ export const experiences: Record<string, Experience> = {
     ]
   }
 };
+import { Experience } from '../types';
+
+export const experiences: Experience[] = [
+  {
+    id: 'dormroomfund',
+    title: 'Dorm Room Fund',
+    subtitle: 'Student-run venture fund backing student entrepreneurs',
+    description: 'I helped build the next generation of entrepreneurs.',
+    location: 'Boston, MA',
+    date: '2020-2022',
+    link: 'https://www.dormroomfund.com',
+    stories: [
+      {
+        title: 'That time a founder sold their company for $20M',
+        description: 'We invested early and saw this incredible journey from dorm room to acquisition in just 18 months.',
+        image: '/images/drf.jpg'
+      },
+      {
+        title: 'Building a student founder community',
+        description: 'We created a network that supported over 300 student founders across the country with mentorship and resources.',
+        image: '/images/drf2.jpg'
+      }
+    ]
+  },
+  {
+    id: 'northeastern',
+    title: 'Northeastern',
+    subtitle: 'Computer Science & Business Administration',
+    description: 'I studied CS and business while working on co-ops.',
+    location: 'Boston, MA',
+    date: '2018-2022',
+    stories: [
+      {
+        title: 'That one final project that took 3 all-nighters',
+        description: 'The distributed systems project seemed impossible until we had that breakthrough moment at 4am.',
+        image: '/images/neu.jpg'
+      },
+      {
+        title: 'Building the Husky startup challenge',
+        description: 'Helped 50+ student teams launch their first startups through an accelerator program I co-created.',
+        image: '/images/neu2.jpg'
+      }
+    ]
+  }
+];
