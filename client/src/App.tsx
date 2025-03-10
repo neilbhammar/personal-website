@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import UltraMinimal from "@/pages/UltraMinimal";
+import Gallery from "@/pages/Gallery";
 import { useEffect } from "react";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={UltraMinimal} />
+      <Route path="/gallery" component={Gallery} />
       <Route component={NotFound} />
     </Switch>
   );
