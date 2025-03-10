@@ -197,6 +197,26 @@ body {
     bottom: 10px;
     left: -150px; /* Start off-screen */
     z-index: 50;
+
+/* Bus animation styles */
+.bus-animation-container {
+  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.bus-wheel {
+  transition: transform 0.05s linear;
+}
+
+.bus-wheel-spoke {
+  transform-origin: center;
+}
+
+.cloud {
+  transition: transform 0.3s ease;
+}
+
     transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
     pointer-events: none;
     transform: translateX(-150px);
