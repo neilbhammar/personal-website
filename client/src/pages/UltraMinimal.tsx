@@ -419,8 +419,8 @@ const UltraMinimal = () => {
         </p>
 
         <p>
-          This site is still a work in progress (me too, site, me too...), but
-          thanks for visitng.
+          This site is still a work in progress, but I appreciate you popping
+          by!
         </p>
 
         <p>
@@ -459,8 +459,9 @@ const UltraMinimal = () => {
             school buses
           </span>
           . I joined as employee #1, before we had any customers or much of a
-          product and had a ton of fun along the way. I recently wrapped up that
-          chapter after a 4 year run leading Ops & CX (through our Series B).
+          product, and had a ton of fun along the way. I recently wrapped up
+          that chapter after a 4 year run leading Ops & CX (through our Series
+          B).
         </p>
 
         <p>
