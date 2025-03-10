@@ -20,9 +20,14 @@ const UltraMinimal = () => {
   const flashlightRef = useRef<HTMLDivElement>(null);
   const bananagramsRef = useRef<HTMLSpanElement>(null);
   const busesRef = useRef<HTMLSpanElement>(null);
+  const busrightRef = useRef<HTMLAnchorElement>(null);
+  const dormRoomFundRef = useRef<HTMLAnchorElement>(null);
+  const northeasternRef = useRef<HTMLAnchorElement>(null);
+  
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const busesHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const experienceHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
@@ -306,6 +311,24 @@ const UltraMinimal = () => {
     }
   };
   
+  // Handle tooltip click-outside close
+  useEffect(() => {
+    if (!tooltipVisible) return;
+    
+    const handleClickOutside = (e: MouseEvent) => {
+      // Close tooltip if clicking outside
+      if (tooltipVisible && 
+          !e.target.closest('.experience-tooltip') && 
+          !e.target.closest('a[ref]')) {
+        setTooltipVisible(false);
+        setTimeout(() => setActiveExperience(null), 300);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [tooltipVisible]);
+  
   // Clean up all timers on unmount
   useEffect(() => {
     return () => {
@@ -317,6 +340,9 @@ const UltraMinimal = () => {
       }
       if (busesHoverTimerRef.current) {
         clearTimeout(busesHoverTimerRef.current);
+      }
+      if (experienceHoverTimerRef.current) {
+        clearTimeout(experienceHoverTimerRef.current);
       }
       if (effectTimeoutRef.current) {
         clearTimeout(effectTimeoutRef.current);
@@ -349,7 +375,27 @@ const UltraMinimal = () => {
         </p>
         
         <p>
-          I spent the last 5.5 years building and scaling a company (<a href="https://www.busright.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">BusRight</a>) that was creating the software that powers our nation's largest mass transit system: <span 
+          I spent the last 5.5 years building and scaling a company (<a 
+            ref={busrightRef}
+            href="https://www.busright.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-blue-600 hover:underline"
+            onMouseEnter={() => {
+              if (experienceHoverTimerRef.current) return;
+              experienceHoverTimerRef.current = setTimeout(() => {
+                setActiveExperience('busright');
+                setTooltipVisible(true);
+                experienceHoverTimerRef.current = null;
+              }, 1000);
+            }}
+            onMouseLeave={() => {
+              if (experienceHoverTimerRef.current) {
+                clearTimeout(experienceHoverTimerRef.current);
+                experienceHoverTimerRef.current = null;
+              }
+            }}
+          >BusRight</a>) that was creating the software that powers our nation's largest mass transit system: <span 
             ref={busesRef}
             className="interactive-text"
             onMouseEnter={handleBusesHoverStart}
@@ -358,7 +404,43 @@ const UltraMinimal = () => {
         </p>
         
         <p>
-          Before that, I invested in and supported founders at <a href="#" className="text-blue-600 hover:underline">Dorm Room Fund</a> (a $12.5M pre-seed fund) and Northeastern University.
+          Before that, I invested in and supported founders at <a 
+            ref={dormRoomFundRef}
+            href="#" 
+            className="text-blue-600 hover:underline"
+            onMouseEnter={() => {
+              if (experienceHoverTimerRef.current) return;
+              experienceHoverTimerRef.current = setTimeout(() => {
+                setActiveExperience('dormRoomFund');
+                setTooltipVisible(true);
+                experienceHoverTimerRef.current = null;
+              }, 1000);
+            }}
+            onMouseLeave={() => {
+              if (experienceHoverTimerRef.current) {
+                clearTimeout(experienceHoverTimerRef.current);
+                experienceHoverTimerRef.current = null;
+              }
+            }}
+          >Dorm Room Fund</a> (a $12.5M pre-seed fund) and <a
+            ref={northeasternRef}
+            href="#"
+            className="text-blue-600 hover:underline"
+            onMouseEnter={() => {
+              if (experienceHoverTimerRef.current) return;
+              experienceHoverTimerRef.current = setTimeout(() => {
+                setActiveExperience('northeastern');
+                setTooltipVisible(true);
+                experienceHoverTimerRef.current = null;
+              }, 1000);
+            }}
+            onMouseLeave={() => {
+              if (experienceHoverTimerRef.current) {
+                clearTimeout(experienceHoverTimerRef.current);
+                experienceHoverTimerRef.current = null;
+              }
+            }}
+          >Northeastern University</a>.
         </p>
         
         <p>
@@ -449,6 +531,25 @@ const UltraMinimal = () => {
       <div className={`copy-toast ${showToast ? 'visible' : ''}`}>
         {toastMessage}
       </div>
+      
+      {/* Experience tooltips */}
+      {activeExperience && (
+        <ExperienceTooltip
+          data={experiences[activeExperience]}
+          visible={tooltipVisible}
+          anchorRef={
+            activeExperience === 'busright' 
+              ? busrightRef 
+              : activeExperience === 'dormRoomFund'
+                ? dormRoomFundRef
+                : northeasternRef
+          }
+          onClose={() => {
+            setTooltipVisible(false);
+            setTimeout(() => setActiveExperience(null), 300);
+          }}
+        />
+      )}
     </main>
   );
 };
