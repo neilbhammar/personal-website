@@ -15,7 +15,6 @@ const UltraMinimal = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-
   const contentRef = useRef<HTMLDivElement>(null);
   const flashlightRef = useRef<HTMLDivElement>(null);
   const bananagramsRef = useRef<HTMLSpanElement>(null);
@@ -357,7 +356,6 @@ const UltraMinimal = () => {
     }
   };
 
-
   // Clean up all timers on unmount
   useEffect(() => {
     return () => {
@@ -404,13 +402,6 @@ const UltraMinimal = () => {
             bananagrams
           </span>{" "}
           champ (at least in my house), and amateur pickleball aficionado.
-        </p>
-
-        <p>
-          This site is still a work in progress, but I appreciate you popping
-          by!
-        </p>
-
         <p>
           I spent the last 5.5 years building and scaling a company (
           <a
@@ -449,25 +440,12 @@ const UltraMinimal = () => {
           >
             Dorm Room Fund
           </a>{" "}
-          (a $12.5m pre-seed fund) and{" "}
-          <a
-            ref={northeasternRef}
-            href="https://www.northeastern.edu"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Northeastern University
-          </a>
-          .
+          (a $12.5m pre-seed fund) and Northeastern University.
         </p>
 
         <p>
           I'm not sure what's next for me — I'm honestly a little{" "}
-          <span
-            className="interactive-text"
-            ref={funRef}
-          >
+          <span className="interactive-text" ref={funRef}>
             lost
           </span>
           , but I think that's part of the process. I'm a tinkerer by nature, so
