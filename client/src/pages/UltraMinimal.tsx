@@ -101,22 +101,21 @@ const UltraMinimal = () => {
 
       // Apply the tile effect animation
       if (bananagramsRef.current) {
-        // Create wrapper for animated tiles
-        const wrapper = document.createElement('div');
-        wrapper.style.display = 'inline-flex';
-        wrapper.style.justifyContent = 'center';
-        bananagramsRef.current.appendChild(wrapper);
-
-        // Create spans for each letter initially showing the original text
-        const letters = 'bananagrams'.split('');
+        // Save original text content to reset later
+        const originalText = bananagramsRef.current.textContent || 'bananagrams';
+        
+        // Create spans for each letter of the original text
+        const letters = originalText.split('');
+        bananagramsRef.current.textContent = ''; // Clear the element
+        
         const letterElements: HTMLSpanElement[] = [];
-
+        
         // Create initial letter spans
         letters.forEach(letter => {
           const letterSpan = document.createElement('span');
           letterSpan.textContent = letter;
           letterSpan.style.display = 'inline-block';
-          wrapper.appendChild(letterSpan);
+          bananagramsRef.current!.appendChild(letterSpan);
           letterElements.push(letterSpan);
         });
 
@@ -124,6 +123,8 @@ const UltraMinimal = () => {
         letters.forEach((letter, index) => {
           // Replace letters sequentially
           setTimeout(() => {
+            if (!letterElements[index]) return; // Safety check
+            
             // Create tile element
             const tile = document.createElement('span');
             tile.textContent = letter;
@@ -141,15 +142,23 @@ const UltraMinimal = () => {
             tile.style.transformOrigin = 'center';
             tile.style.transform = 'rotateY(90deg)';
 
-            // Replace the original letter with the tile
-            const originalLetter = letterElements[index];
-            originalLetter.parentNode?.replaceChild(tile, originalLetter);
-
-            // Animate the tile flipping in
-            gsap.to(tile, {
-              rotateY: 0,
-              duration: 0.4,
-              ease: 'back.out(1.2)',
+            // First make the letter disappear
+            gsap.to(letterElements[index], {
+              opacity: 0,
+              duration: 0.2,
+              onComplete: () => {
+                // Replace the original letter with the tile
+                if (letterElements[index] && letterElements[index].parentNode) {
+                  letterElements[index].parentNode.replaceChild(tile, letterElements[index]);
+                
+                  // Animate the tile flipping in
+                  gsap.to(tile, {
+                    rotateY: 0,
+                    duration: 0.4,
+                    ease: 'back.out(1.2)',
+                  });
+                }
+              }
             });
           }, index * 150); // Stagger the replacement of each letter
         });
@@ -169,6 +178,10 @@ const UltraMinimal = () => {
     if (!bananagramsActive && bananagramsRef.current) {
       // Return to normal text when effect is turned off
       if (bananagramsRef.current.textContent !== 'bananagrams') {
+        // Clear existing content and reset to original text
+        while (bananagramsRef.current.firstChild) {
+          bananagramsRef.current.removeChild(bananagramsRef.current.firstChild);
+        }
         bananagramsRef.current.textContent = 'bananagrams';
       }
     }
