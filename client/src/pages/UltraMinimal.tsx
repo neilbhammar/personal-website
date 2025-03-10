@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import copy from "clipboard-copy";
-import ExperienceTooltip from "../components/ExperienceTooltip";
+// ExperienceTooltip import removed
 import { experiences } from "../data/experiences";
 import useIsMobile from "../hooks/useIsMobile";
 
@@ -15,9 +15,6 @@ const UltraMinimal = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // Experience tooltip states
-  const [activeExperience, setActiveExperience] = useState<string | null>(null);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const flashlightRef = useRef<HTMLDivElement>(null);
@@ -360,60 +357,6 @@ const UltraMinimal = () => {
     }
   };
 
-  //Handle new tooltip for "had a ton of fun along the way"
-  const handleFunHoverStart = () => {
-    if (isMobile || funHoverTimerRef.current) return;
-    funHoverTimerRef.current = setTimeout(() => {
-      setActiveExperience("fun");
-      setTooltipVisible(true);
-      funHoverTimerRef.current = null;
-    }, 1000);
-  };
-
-  const handleFunHoverEnd = () => {
-    if (funHoverTimerRef.current) {
-      clearTimeout(funHoverTimerRef.current);
-      funHoverTimerRef.current = null;
-    }
-  };
-
-  //Handle new tooltip for "invested in and supported founders"
-  const handleFoundersHoverStart = () => {
-    if (isMobile || foundersHoverTimerRef.current) return;
-    foundersHoverTimerRef.current = setTimeout(() => {
-      setActiveExperience("founders");
-      setTooltipVisible(true);
-      foundersHoverTimerRef.current = null;
-    }, 1000);
-  };
-
-  const handleFoundersHoverEnd = () => {
-    if (foundersHoverTimerRef.current) {
-      clearTimeout(foundersHoverTimerRef.current);
-      foundersHoverTimerRef.current = null;
-    }
-  };
-
-
-  // Handle tooltip click-outside close
-  useEffect(() => {
-    if (!tooltipVisible) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      // Close tooltip if clicking outside
-      if (
-        tooltipVisible &&
-        !e.target.closest(".experience-tooltip") &&
-        !e.target.closest("a[ref]")
-      ) {
-        setTooltipVisible(false);
-        setTimeout(() => setActiveExperience(null), 300);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [tooltipVisible]);
 
   // Clean up all timers on unmount
   useEffect(() => {
@@ -476,20 +419,6 @@ const UltraMinimal = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
-            onMouseEnter={() => {
-              if (isMobile || experienceHoverTimerRef.current) return;
-              experienceHoverTimerRef.current = setTimeout(() => {
-                setActiveExperience("busright");
-                setTooltipVisible(true);
-                experienceHoverTimerRef.current = null;
-              }, 1000);
-            }}
-            onMouseLeave={() => {
-              if (experienceHoverTimerRef.current) {
-                clearTimeout(experienceHoverTimerRef.current);
-                experienceHoverTimerRef.current = null;
-              }
-            }}
           >
             BusRight
           </a>
@@ -517,20 +446,6 @@ const UltraMinimal = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
-            onMouseEnter={() => {
-              if (isMobile || experienceHoverTimerRef.current) return;
-              experienceHoverTimerRef.current = setTimeout(() => {
-                setActiveExperience("dormRoomFund");
-                setTooltipVisible(true);
-                experienceHoverTimerRef.current = null;
-              }, 1000);
-            }}
-            onMouseLeave={() => {
-              if (experienceHoverTimerRef.current) {
-                clearTimeout(experienceHoverTimerRef.current);
-                experienceHoverTimerRef.current = null;
-              }
-            }}
           >
             Dorm Room Fund
           </a>{" "}
@@ -541,20 +456,6 @@ const UltraMinimal = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
-            onMouseEnter={() => {
-              if (isMobile || experienceHoverTimerRef.current) return;
-              experienceHoverTimerRef.current = setTimeout(() => {
-                setActiveExperience("northeastern");
-                setTooltipVisible(true);
-                experienceHoverTimerRef.current = null;
-              }, 1000);
-            }}
-            onMouseLeave={() => {
-              if (experienceHoverTimerRef.current) {
-                clearTimeout(experienceHoverTimerRef.current);
-                experienceHoverTimerRef.current = null;
-              }
-            }}
           >
             Northeastern University
           </a>
@@ -566,8 +467,6 @@ const UltraMinimal = () => {
           <span
             className="interactive-text"
             ref={funRef}
-            onMouseEnter={handleFunHoverStart}
-            onMouseLeave={handleFunHoverEnd}
           >
             lost
           </span>
@@ -681,29 +580,6 @@ const UltraMinimal = () => {
       <div className={`copy-toast ${showToast ? "visible" : ""}`}>
         {toastMessage}
       </div>
-
-      {/* Experience tooltips */}
-      {activeExperience && (
-        <ExperienceTooltip
-          data={experiences[activeExperience]}
-          visible={tooltipVisible}
-          anchorRef={
-            activeExperience === "busright"
-              ? busrightRef
-              : activeExperience === "dormRoomFund"
-                ? dormRoomFundRef
-                : activeExperience === "northeastern"
-                  ? northeasternRef
-                  : activeExperience === "fun"
-                    ? funRef
-                    : foundersRef
-          }
-          onClose={() => {
-            setTooltipVisible(false);
-            setTimeout(() => setActiveExperience(null), 300);
-          }}
-        />
-      )}
     </main>
   );
 };
