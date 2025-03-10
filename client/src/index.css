@@ -206,11 +206,17 @@ body {
 }
 
 .bus-wheel {
-  transition: transform 0.05s linear;
+  animation: spin 1s linear infinite;
+  transform-origin: center;
 }
 
-.bus-wheel-spoke {
-  transform-origin: center;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.passenger {
+  transition: transform 0.3s ease;
 }
 
 .cloud {
