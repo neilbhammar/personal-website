@@ -3,7 +3,6 @@ import { gsap } from 'gsap';
 import copy from 'clipboard-copy';
 import ExperienceTooltip from '../components/ExperienceTooltip';
 import { experiences } from '../data/experiences';
-import BusAnimation from '../components/BusAnimation'; // Import BusAnimation component
 
 const UltraMinimal = () => {
   const [flashlightActive, setFlashlightActive] = useState(false);
@@ -212,13 +211,110 @@ const UltraMinimal = () => {
     }
   };
 
-  // School buses effect - now using BusAnimation component
+  // School buses effect - much more subtle and polished
   const handleBusesHoverStart = () => {
     if (busesHoverTimerRef.current) return;
 
     busesHoverTimerRef.current = setTimeout(() => {
       setBusesActive(true);
       busesHoverTimerRef.current = null;
+
+      if (busesRef.current) {
+        // Apply a subtle highlight effect to the text first
+        busesRef.current && gsap.to(busesRef.current, {
+          backgroundColor: 'rgba(255, 221, 0, 0.2)',
+          borderRadius: '3px',
+          padding: '0 4px',
+          duration: 0.5
+        });
+
+        // Create a small map/route visualization next to the text
+        const routeContainer = document.createElement('div');
+        routeContainer.className = 'route-container';
+        routeContainer.style.position = 'absolute';
+        routeContainer.style.top = '100%';
+        routeContainer.style.left = '0';
+        routeContainer.style.width = '100%';
+        routeContainer.style.height = '2px';
+        routeContainer.style.background = '#FFDD00';
+        routeContainer.style.marginTop = '2px';
+        routeContainer.style.borderRadius = '1px';
+        routeContainer.style.opacity = '0';
+
+        // Add small stop points along the route
+        const stopCount = 5;
+        for (let i = 0; i < stopCount; i++) {
+          const stop = document.createElement('div');
+          stop.style.position = 'absolute';
+          stop.style.width = '4px';
+          stop.style.height = '4px';
+          stop.style.borderRadius = '50%';
+          stop.style.backgroundColor = 'white';
+          stop.style.border = '1px solid rgba(0,0,0,0.2)';
+          stop.style.top = '-2px';
+          stop.style.left = `${(i+1) * (100 / (stopCount+1))}%`;
+          stop.style.transform = 'scale(0)';
+
+          routeContainer.appendChild(stop);
+
+          // Animate each stop appearing
+          gsap.to(stop, {
+            scale: 1,
+            delay: 0.3 + (i * 0.1),
+            duration: 0.2,
+            ease: 'back.out'
+          });
+        }
+
+        // Create a tiny bus that moves along the route
+        const miniBus = document.createElement('div');
+        miniBus.style.position = 'absolute';
+        miniBus.style.width = '8px';
+        miniBus.style.height = '6px';
+        miniBus.style.backgroundColor = '#FFDD00';
+        miniBus.style.borderRadius = '2px';
+        miniBus.style.top = '-3px';
+        miniBus.style.left = '0';
+        miniBus.style.transform = 'translateX(-50%)';
+        miniBus.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+
+        routeContainer.appendChild(miniBus);
+        busesRef.current.appendChild(routeContainer);
+
+        // Animate the route appearing
+        gsap.to(routeContainer, {
+          opacity: 1,
+          duration: 0.3
+        });
+
+        // Animate the bus moving along the route
+        gsap.to(miniBus, {
+          left: '100%',
+          duration: 3,
+          ease: 'power1.inOut',
+          onComplete: () => {
+            // Fade out the route when finished
+            gsap.to(routeContainer, {
+              opacity: 0,
+              duration: 0.3,
+              onComplete: () => {
+                // Reset the text styling
+                busesRef.current && gsap.to(busesRef.current, {
+                  backgroundColor: 'transparent',
+                  padding: '0',
+                  duration: 0.5,
+                  onComplete: () => {
+                    if (busesRef.current && busesRef.current.contains(routeContainer)) {
+                      busesRef.current.removeChild(routeContainer);
+                    }
+                    setBusesActive(false);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     }, 1000); // 1 second delay
   };
 
@@ -468,8 +564,6 @@ const UltraMinimal = () => {
           }}
         />
       )}
-      {/* Render BusAnimation component if busesActive */}
-      {busesActive && <BusAnimation ref={busesRef} />}
     </main>
   );
 };

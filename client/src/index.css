@@ -396,13 +396,6 @@ body {
     transition: background-color 0.3s ease;
   }
   
-  /* Bus animation wrapper */
-  .bus-animation-wrapper {
-    pointer-events: none;
-    overflow: visible;
-    z-index: 100;
-  }
-  
   /* Bananagram tiles styling */
   .bananagram-tile {
     display: inline-block;
