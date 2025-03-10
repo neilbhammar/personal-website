@@ -211,7 +211,7 @@ const UltraMinimal = () => {
     }
   };
 
-  // School buses effect - much more subtle and polished
+  // Enhanced school buses effect with improved animation
   const handleBusesHoverStart = () => {
     if (busesHoverTimerRef.current) return;
 
@@ -235,25 +235,27 @@ const UltraMinimal = () => {
         routeContainer.style.top = '100%';
         routeContainer.style.left = '0';
         routeContainer.style.width = '100%';
-        routeContainer.style.height = '2px';
-        routeContainer.style.background = '#FFDD00';
-        routeContainer.style.marginTop = '2px';
-        routeContainer.style.borderRadius = '1px';
+        routeContainer.style.height = '4px';
+        routeContainer.style.background = 'linear-gradient(90deg, #FFDD00 0%, #FFC107 100%)';
+        routeContainer.style.marginTop = '4px';
+        routeContainer.style.borderRadius = '2px';
         routeContainer.style.opacity = '0';
+        routeContainer.style.boxShadow = '0 0 5px rgba(255, 221, 0, 0.3)';
 
         // Add small stop points along the route
         const stopCount = 5;
         for (let i = 0; i < stopCount; i++) {
           const stop = document.createElement('div');
           stop.style.position = 'absolute';
-          stop.style.width = '4px';
-          stop.style.height = '4px';
+          stop.style.width = '6px';
+          stop.style.height = '6px';
           stop.style.borderRadius = '50%';
           stop.style.backgroundColor = 'white';
           stop.style.border = '1px solid rgba(0,0,0,0.2)';
           stop.style.top = '-2px';
           stop.style.left = `${(i+1) * (100 / (stopCount+1))}%`;
           stop.style.transform = 'scale(0)';
+          stop.style.boxShadow = '0 0 3px rgba(255, 255, 255, 0.5)';
 
           routeContainer.appendChild(stop);
 
@@ -266,18 +268,28 @@ const UltraMinimal = () => {
           });
         }
 
-        // Create a tiny bus that moves along the route
+        // Create a tiny school bus that moves along the route
         const miniBus = document.createElement('div');
         miniBus.style.position = 'absolute';
-        miniBus.style.width = '8px';
-        miniBus.style.height = '6px';
+        miniBus.style.width = '12px';
+        miniBus.style.height = '8px';
         miniBus.style.backgroundColor = '#FFDD00';
         miniBus.style.borderRadius = '2px';
-        miniBus.style.top = '-3px';
+        miniBus.style.top = '-4px';
         miniBus.style.left = '0';
         miniBus.style.transform = 'translateX(-50%)';
-        miniBus.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-
+        miniBus.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        
+        // Add windows to the bus for more detail
+        const busWindows = document.createElement('div');
+        busWindows.style.position = 'absolute';
+        busWindows.style.top = '2px';
+        busWindows.style.left = '2px';
+        busWindows.style.right = '2px';
+        busWindows.style.height = '2px';
+        busWindows.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        
+        miniBus.appendChild(busWindows);
         routeContainer.appendChild(miniBus);
         busesRef.current.appendChild(routeContainer);
 
@@ -287,11 +299,17 @@ const UltraMinimal = () => {
           duration: 0.3
         });
 
-        // Animate the bus moving along the route
+        // Animate the bus moving along the route with a small bounce effect
         gsap.to(miniBus, {
           left: '100%',
           duration: 3,
           ease: 'power1.inOut',
+          onUpdate: () => {
+            // Add a small up/down motion as the bus moves
+            const progress = gsap.getProperty(miniBus, 'left') as number / 100;
+            const bounce = Math.sin(progress * Math.PI * 8) * 1;
+            miniBus.style.top = `${-4 + bounce}px`;
+          },
           onComplete: () => {
             // Fade out the route when finished
             gsap.to(routeContainer, {
