@@ -205,22 +205,59 @@ body {
   overflow: hidden;
 }
 
-.bus-wheel {
-  animation: spin 1s linear infinite;
+.bus-wrapper {
+  will-change: transform;
+}
+
+.wheel-spokes {
+  transition: transform 50ms linear;
   transform-origin: center;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.passenger {
+  animation: bounce 0.8s ease-in-out infinite alternate;
 }
 
-.passenger {
-  transition: transform 0.3s ease;
+.driver {
+  animation: drive 1.2s ease-in-out infinite alternate;
+}
+
+.stop-sign {
+  transition: transform 0.5s ease;
 }
 
 .cloud {
-  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.celestial-body {
+  transition: fill 1s ease;
+}
+
+.twinkling-star {
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+.sky-background {
+  transition: fill 1s ease;
+}
+
+@keyframes bounce {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(0, -1px); }
+}
+
+@keyframes drive {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(0, -1px) rotate(2deg); }
+  75% { transform: translate(0, 1px) rotate(-2deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
 }
 
     transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
