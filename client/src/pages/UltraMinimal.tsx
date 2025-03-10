@@ -26,11 +26,15 @@ const UltraMinimal = () => {
   const busrightRef = useRef<HTMLAnchorElement>(null);
   const dormRoomFundRef = useRef<HTMLAnchorElement>(null);
   const northeasternRef = useRef<HTMLAnchorElement>(null);
+  const funRef = useRef<HTMLSpanElement>(null); //Added ref for new tooltip
+  const foundersRef = useRef<HTMLSpanElement>(null); //Added ref for new tooltip
 
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const busesHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const experienceHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const funHoverTimerRef = useRef<NodeJS.Timeout | null>(null); //Added timer for new tooltip
+  const foundersHoverTimerRef = useRef<NodeJS.Timeout | null>(null); //Added timer for new tooltip
   const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -356,6 +360,41 @@ const UltraMinimal = () => {
     }
   };
 
+  //Handle new tooltip for "had a ton of fun along the way"
+  const handleFunHoverStart = () => {
+    if (isMobile || funHoverTimerRef.current) return;
+    funHoverTimerRef.current = setTimeout(() => {
+      setActiveExperience("fun");
+      setTooltipVisible(true);
+      funHoverTimerRef.current = null;
+    }, 1000);
+  };
+
+  const handleFunHoverEnd = () => {
+    if (funHoverTimerRef.current) {
+      clearTimeout(funHoverTimerRef.current);
+      funHoverTimerRef.current = null;
+    }
+  };
+
+  //Handle new tooltip for "invested in and supported founders"
+  const handleFoundersHoverStart = () => {
+    if (isMobile || foundersHoverTimerRef.current) return;
+    foundersHoverTimerRef.current = setTimeout(() => {
+      setActiveExperience("founders");
+      setTooltipVisible(true);
+      foundersHoverTimerRef.current = null;
+    }, 1000);
+  };
+
+  const handleFoundersHoverEnd = () => {
+    if (foundersHoverTimerRef.current) {
+      clearTimeout(foundersHoverTimerRef.current);
+      foundersHoverTimerRef.current = null;
+    }
+  };
+
+
   // Handle tooltip click-outside close
   useEffect(() => {
     if (!tooltipVisible) return;
@@ -396,6 +435,12 @@ const UltraMinimal = () => {
       }
       if (toastTimeoutRef.current) {
         clearTimeout(toastTimeoutRef.current);
+      }
+      if (funHoverTimerRef.current) {
+        clearTimeout(funHoverTimerRef.current);
+      }
+      if (foundersHoverTimerRef.current) {
+        clearTimeout(foundersHoverTimerRef.current);
       }
     };
   }, []);
@@ -490,8 +535,12 @@ const UltraMinimal = () => {
             Dorm Room Fund
           </a>{" "}
           (a $12.5m pre-seed fund) and{" "}
-          <span
+          <a
             ref={northeasternRef}
+            href="https://www.northeastern.edu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
             onMouseEnter={() => {
               if (isMobile || experienceHoverTimerRef.current) return;
               experienceHoverTimerRef.current = setTimeout(() => {
@@ -508,7 +557,7 @@ const UltraMinimal = () => {
             }}
           >
             Northeastern University
-          </span>
+          </a>
           .
         </p>
 
@@ -516,8 +565,9 @@ const UltraMinimal = () => {
           I'm not sure what's next for me — I'm honestly a little{" "}
           <span
             className="interactive-text"
-            onMouseEnter={handleLostHoverStart}
-            onMouseLeave={handleLostHoverEnd}
+            ref={funRef}
+            onMouseEnter={handleFunHoverStart}
+            onMouseLeave={handleFunHoverEnd}
           >
             lost
           </span>
@@ -642,7 +692,11 @@ const UltraMinimal = () => {
               ? busrightRef
               : activeExperience === "dormRoomFund"
                 ? dormRoomFundRef
-                : northeasternRef
+                : activeExperience === "northeastern"
+                  ? northeasternRef
+                  : activeExperience === "fun"
+                    ? funRef
+                    : foundersRef
           }
           onClose={() => {
             setTooltipVisible(false);
