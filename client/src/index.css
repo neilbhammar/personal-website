@@ -242,6 +242,45 @@ body {
   transition: fill 1s ease;
 }
 
+/* Bus animation container */
+.bus-animation-container {
+  position: relative;
+  width: 300px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Wheel animations */
+.front-wheel, .rear-wheel {
+  animation: wheel-spin 1s linear infinite;
+  animation-play-state: paused;
+}
+
+.bus-animation-container:hover .front-wheel,
+.bus-animation-container:hover .rear-wheel {
+  animation-play-state: running;
+}
+
+@keyframes wheel-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Bus suspension animation */
+@keyframes suspension {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Reflections on windows animation */
+@keyframes window-reflection {
+  0% { opacity: 0.3; transform: translateX(-10px); }
+  50% { opacity: 0.7; transform: translateX(0px); }
+  100% { opacity: 0.3; transform: translateX(10px); }
+}
+
 @keyframes bounce {
   0% { transform: translate(0, 0); }
   100% { transform: translate(0, -1px); }

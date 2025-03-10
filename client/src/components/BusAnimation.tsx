@@ -1,6 +1,5 @@
-
-import React, { useState, useRef, useEffect } from 'react';
-import { useSpring, animated } from 'react-spring';
+import React, { useState, useEffect, useRef } from 'react';
+import { animated, useSpring } from 'react-spring';
 
 interface BusAnimationProps {
   isActive: boolean;
@@ -9,548 +8,333 @@ interface BusAnimationProps {
 const BusAnimation: React.FC<BusAnimationProps> = ({ isActive }) => {
   const [active, setActive] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [exhaustPuffs, setExhaustPuffs] = useState<{ id: number, x: number, y: number, opacity: number, size: number }[]>([]);
   const animationRef = useRef<number>(0);
-  const cityRef = useRef<SVGSVGElement>(null);
-  const busRef = useRef<SVGGElement>(null);
-  
-  // Advanced bus movement animation with better physics
+
+  // 3D-like animation with depth and perspective
   const busAnimation = useSpring({
-    x: active ? 350 : -200,
+    transform: active 
+      ? 'perspective(1000px) translateX(350px) translateY(0px) rotateY(-5deg)' 
+      : 'perspective(1000px) translateX(-200px) translateY(20px) rotateY(15deg)',
     config: { 
-      tension: 120,
-      friction: 14,
-      mass: 2
+      tension: 100,
+      friction: 20,
+      mass: 1.5
     },
     reset: true,
   });
-  
-  // Bouncing suspension effect
-  const bounceAnimation = useSpring({
-    y: active ? -3 : 0,
+
+  // Dynamic road movement animation
+  const roadAnimation = useSpring({
+    from: { backgroundPosition: '0px 0px' },
+    to: { backgroundPosition: active ? '-1000px 0px' : '0px 0px' },
     config: { 
-      tension: 300,
-      friction: 10,
+      duration: active ? 5000 : 0,
     },
-    loop: active ? { reverse: true } : false,
+    reset: true,
   });
 
-  // Wheel rotation animation
-  const [wheelRotation, setWheelRotation] = useState(0);
-  
-  // Cloud movement animation
-  const [clouds, setClouds] = useState<{ id: number, x: number, y: number, size: number }[]>([
-    { id: 1, x: 50, y: 20, size: 30 },
-    { id: 2, x: 150, y: 30, size: 40 },
-    { id: 3, x: 250, y: 15, size: 25 },
-  ]);
-
-  // Star twinkle animation for night mode
-  const [stars, setStars] = useState<{ id: number, x: number, y: number, opacity: number, size: number }[]>([]);
-  
-  // Generate stars
-  useEffect(() => {
-    const newStars = [];
-    for (let i = 0; i < 20; i++) {
-      newStars.push({
-        id: i,
-        x: Math.random() * 300,
-        y: Math.random() * 60,
-        opacity: Math.random() * 0.5 + 0.3,
-        size: Math.random() * 1.5 + 0.5
-      });
-    }
-    setStars(newStars);
-  }, []);
-
-  // Exhaust animation
-  const [exhaustPuffs, setExhaustPuffs] = useState<{ id: number, x: number, y: number, scale: number, opacity: number }[]>([]);
-  const puffIdRef = useRef(0);
+  // Buildings parallax effect
+  const buildingsAnimation = useSpring({
+    from: { backgroundPosition: '0px 0px' },
+    to: { backgroundPosition: active ? '-500px 0px' : '0px 0px' },
+    config: { 
+      duration: active ? 5000 : 0,
+    },
+    reset: true,
+  });
 
   // Animate exhaust puffs
   useEffect(() => {
-    let puffInterval: NodeJS.Timeout | null = null;
-    
-    if (active) {
-      puffInterval = setInterval(() => {
-        const newPuff = {
-          id: puffIdRef.current++,
-          x: 0,
-          y: 0,
-          scale: 1,
-          opacity: 0.7
-        };
-        
-        setExhaustPuffs(prev => [...prev, newPuff]);
-        
-        // Remove old puffs to prevent memory issues
-        if (exhaustPuffs.length > 10) {
-          setExhaustPuffs(prev => prev.slice(1));
-        }
-      }, 200);
+    if (!active) {
+      setExhaustPuffs([]);
+      return;
     }
-    
+
+    const createPuff = () => {
+      const newPuff = {
+        id: Date.now(),
+        x: 20,
+        y: 60,
+        opacity: 0.8,
+        size: Math.random() * 5 + 5
+      };
+
+      setExhaustPuffs(prev => [...prev, newPuff]);
+
+      // Remove old puffs
+      setTimeout(() => {
+        setExhaustPuffs(prev => prev.filter(puff => puff.id !== newPuff.id));
+      }, 2000);
+    };
+
+    const puffInterval = setInterval(createPuff, 300);
+
     return () => {
-      if (puffInterval) clearInterval(puffInterval);
+      clearInterval(puffInterval);
     };
-  }, [active, exhaustPuffs.length]);
+  }, [active]);
 
-  // City parallax effect
+  // Handle wheels and animations
   useEffect(() => {
-    const moveClouds = () => {
+    const updatePuffs = () => {
+      setExhaustPuffs(prev => 
+        prev.map(puff => ({
+          ...puff,
+          x: puff.x - 2,
+          y: puff.y - 0.5,
+          opacity: puff.opacity - 0.01,
+          size: puff.size + 0.2
+        }))
+      );
+
       if (active) {
-        setClouds(prev => 
-          prev.map(cloud => ({
-            ...cloud,
-            x: cloud.x - (0.5 * cloud.size / 20),
-            // Wrap around when cloud goes off screen
-            ...(cloud.x < -50 ? { x: 350 } : {})
-          }))
-        );
+        animationRef.current = requestAnimationFrame(updatePuffs);
       }
     };
 
-    // Animate wheel rotation
-    const animateWheels = () => {
-      if (active) {
-        setWheelRotation(prev => (prev + 10) % 360);
-      }
-    };
-
-    // Twinkle stars
-    const animateStars = () => {
-      if (active) {
-        setStars(prev => 
-          prev.map(star => ({
-            ...star,
-            opacity: star.opacity + (Math.random() * 0.1 - 0.05),
-            ...(star.opacity > 0.9 ? { opacity: 0.3 } : {}),
-            ...(star.opacity < 0.2 ? { opacity: 0.6 } : {})
-          }))
-        );
-      }
-    };
-
-    // Update exhaust puffs
-    const animatePuffs = () => {
-      if (active) {
-        setExhaustPuffs(prev => 
-          prev.map(puff => ({
-            ...puff,
-            x: puff.x - 8,
-            y: puff.y - 3,
-            scale: puff.scale + 0.08,
-            opacity: puff.opacity - 0.04
-          })).filter(puff => puff.opacity > 0)
-        );
-      }
-    };
-
-    const animate = () => {
-      moveClouds();
-      animateWheels();
-      animateStars();
-      animatePuffs();
-      
-      if (active) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
-    
     if (active) {
-      animationRef.current = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(updatePuffs);
     } else {
       cancelAnimationFrame(animationRef.current);
     }
-    
+
     return () => {
       cancelAnimationFrame(animationRef.current);
     };
   }, [active]);
-  
+
   useEffect(() => {
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     if (isActive) {
       setActive(true);
-      
+
       // Reset animation after it completes
       timeoutRef.current = setTimeout(() => {
         setActive(false);
       }, 5000);
     }
-    
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
   }, [isActive]);
-  
-  // Day/night cycle
-  const isNightMode = active;
-  
+
   return (
-    <div className="bus-animation-container" style={{ overflow: 'hidden', position: 'relative', width: '300px', height: '150px' }}>
-      <animated.div 
-        style={{ 
-          transform: busAnimation.x.to(x => `translateX(${x}px)`).to(x => 
-            bounceAnimation.y.to(y => `translate(${x}px, ${y}px)`)
-          ),
-          position: 'relative',
-          zIndex: 10
-        }}
-        className="bus-wrapper"
-      >
-        <svg width="200" height="150" viewBox="0 0 200 150" ref={cityRef}>
-          {/* Background with day/night transition */}
-          <rect 
-            x="0" 
-            y="0" 
-            width="300" 
-            height="150" 
-            fill={isNightMode ? '#0F172A' : '#87CEEB'}
-            className="sky-background"
-            style={{ transition: 'fill 1s ease' }}
+    <div className="bus-animation-container">
+      {/* Sky background */}
+      <animated.div className="sky" style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '60%',
+        background: 'linear-gradient(to bottom, #87CEEB, #C6E4F8)',
+        zIndex: 1
+      }} />
+
+      {/* Buildings background with parallax */}
+      <animated.div className="buildings" style={{
+        ...buildingsAnimation,
+        position: 'absolute',
+        bottom: '40%',
+        left: 0,
+        width: '200%',
+        height: '40%',
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1000 200\'%3E%3Cpath d=\'M0,200 L0,120 L40,120 L40,80 L60,80 L60,100 L80,100 L80,60 L100,60 L100,130 L120,130 L120,100 L140,100 L140,140 L160,140 L160,90 L180,90 L180,120 L200,120 L200,70 L220,70 L220,100 L240,100 L240,150 L260,150 L260,100 L280,100 L280,120 L300,120 L300,80 L320,80 L320,140 L340,140 L340,110 L360,110 L360,130 L380,130 L380,90 L400,90 L400,110 L420,110 L420,140 L440,140 L440,100 L460,100 L460,120 L480,120 L480,80 L500,80 L500,140 L520,140 L520,110 L540,110 L540,130 L560,130 L560,90 L580,90 L580,110 L600,110 L600,140 L620,140 L620,100 L640,100 L640,120 L660,120 L660,80 L680,80 L680,140 L700,140 L700,110 L720,110 L720,130 L740,130 L740,90 L760,90 L760,110 L780,110 L780,140 L800,140 L800,100 L820,100 L820,120 L840,120 L840,80 L860,80 L860,140 L880,140 L880,110 L900,110 L900,130 L920,130 L920,90 L940,90 L940,110 L960,110 L960,140 L980,140 L980,100 L1000,100 L1000,200 Z\' fill=\'%23718096\'/%3E%3C/svg%3E")',
+        backgroundRepeat: 'repeat-x',
+        backgroundSize: 'contain',
+        zIndex: 2
+      }} />
+
+      {/* Road with moving animation */}
+      <animated.div className="road" style={{
+        ...roadAnimation,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '200%',
+        height: '40%',
+        background: '#2D3748',
+        zIndex: 3
+      }}>
+        {/* Road markings */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: 0,
+          width: '100%',
+          height: '5px',
+          background: 'repeating-linear-gradient(to right, white 0px, white 50px, transparent 50px, transparent 100px)',
+          zIndex: 4
+        }} />
+      </animated.div>
+
+      {/* The modern, stylized bus */}
+      <animated.div style={{
+        ...busAnimation,
+        position: 'absolute',
+        bottom: '25%',
+        left: 0,
+        zIndex: 10
+      }}>
+        {/* Exhaust puffs */}
+        {exhaustPuffs.map(puff => (
+          <div 
+            key={puff.id}
+            style={{
+              position: 'absolute',
+              bottom: `${puff.y}px`,
+              left: `${puff.x}px`,
+              width: `${puff.size}px`,
+              height: `${puff.size}px`,
+              borderRadius: '50%',
+              background: 'rgba(200, 200, 200, 0.6)',
+              opacity: puff.opacity,
+              zIndex: 7
+            }}
           />
-          
-          {/* Stars (only visible at night) */}
-          {isNightMode && stars.map(star => (
-            <circle 
-              key={star.id}
-              cx={star.x} 
-              cy={star.y} 
-              r={star.size}
-              fill="#FFFFFF"
-              opacity={star.opacity}
-              className="twinkling-star"
+        ))}
+
+        {/* School bus SVG - modern and stylish design */}
+        <svg width="200" height="120" viewBox="0 0 200 120">
+          {/* Bus body - with modern styling and gradient */}
+          <g className="bus-body">
+            {/* Main chassis with rounded corners */}
+            <path 
+              d="M25,80 L25,40 C25,35 30,30 35,30 L145,30 C150,30 155,35 155,40 L155,80 L165,80 L180,65 L180,80 Z" 
+              fill="url(#modernBusGradient)" 
+              stroke="#F9A826" 
+              strokeWidth="2"
             />
-          ))}
-          
-          {/* Sun/Moon */}
-          <circle 
-            cx="250" 
-            cy="30" 
-            r="15" 
-            fill={isNightMode ? '#F9FAFB' : '#FBBF24'}
-            filter={isNightMode ? 'url(#moonGlow)' : 'url(#sunGlow)'}
-            className="celestial-body"
-            style={{ transition: 'fill 1s ease' }}
-          />
-          
-          {/* Moon details (craters) */}
-          {isNightMode && (
-            <>
-              <circle cx="245" cy="25" r="3" fill="#E5E7EB" opacity="0.6" />
-              <circle cx="255" cy="35" r="4" fill="#E5E7EB" opacity="0.5" />
-              <circle cx="240" cy="33" r="2" fill="#E5E7EB" opacity="0.7" />
-            </>
-          )}
-          
-          {/* Clouds */}
-          {clouds.map(cloud => (
-            <g key={cloud.id} transform={`translate(${cloud.x}, ${cloud.y})`} className="cloud">
-              <path 
-                d={`M0,0 
-                  a${cloud.size/3},${cloud.size/3} 0 1,1 ${cloud.size/2},0 
-                  a${cloud.size/4},${cloud.size/4} 0 1,1 ${cloud.size/2},0 
-                  a${cloud.size/3},${cloud.size/3} 0 1,1 ${cloud.size/2},0 
-                  a${cloud.size/4},${cloud.size/4} 0 1,1 ${cloud.size/-2},0 
-                  a${cloud.size/3},${cloud.size/3} 0 1,1 ${cloud.size/-2},0 
-                  z`} 
-                fill={isNightMode ? "#475569" : "#FFFFFF"} 
-                opacity={isNightMode ? "0.7" : "0.9"}
-                style={{ transition: 'fill 1s ease, opacity 1s ease' }}
+
+            {/* Bus roof with subtle curve */}
+            <path 
+              d="M35,30 C40,25 140,25 145,30" 
+              fill="none" 
+              stroke="#F9A826" 
+              strokeWidth="2"
+            />
+
+            {/* Windows with modern gradient */}
+            <path 
+              d="M40,40 L40,60 L55,60 L55,40 Z" 
+              fill="url(#windowGradient)"
+            />
+            <path 
+              d="M65,40 L65,60 L80,60 L80,40 Z" 
+              fill="url(#windowGradient)"
+            />
+            <path 
+              d="M90,40 L90,60 L105,60 L105,40 Z" 
+              fill="url(#windowGradient)"
+            />
+            <path 
+              d="M115,40 L115,60 L130,60 L130,40 Z" 
+              fill="url(#windowGradient)"
+            />
+
+            {/* Driver's window - larger */}
+            <path 
+              d="M140,40 L140,60 L155,60 L155,40 Z" 
+              fill="url(#windowGradient)"
+            />
+
+            {/* Windshield with modern look */}
+            <path 
+              d="M155,60 L165,60 L175,50 L175,60 Z" 
+              fill="url(#windowGradient)"
+            />
+
+            {/* Door */}
+            <path 
+              d="M30,50 L30,80 L45,80 L45,50 Z" 
+              fill="#4A5568"
+              stroke="#F9A826"
+              strokeWidth="1"
+            />
+
+            {/* Stop sign (animated) */}
+            <g className="stop-sign" style={{ 
+              transform: active ? 'rotate(0deg)' : 'rotate(90deg)',
+              transformOrigin: '25px 55px',
+              transition: 'transform 0.5s ease'
+            }}>
+              <polygon 
+                points="15,50 20,45 25,45 30,50 30,55 25,60 20,60 15,55" 
+                fill="#E53E3E" 
+                stroke="#fff" 
+                strokeWidth="1"
               />
+              <text x="22.5" y="55" fontSize="6" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">STOP</text>
             </g>
-          ))}
-          
-          {/* City skyline silhouette */}
-          <path 
-            d="M0,120 L10,120 L10,100 L20,100 L20,110 L30,110 L30,85 L35,85 L35,95 L45,95 L45,80 
-               L50,80 L50,70 L55,70 L55,80 L65,80 L65,95 L75,95 L75,85 L85,85 L85,100 L95,100 
-               L95,75 L100,75 L100,65 L105,65 L105,75 L110,75 L110,90 L120,90 L120,100 L130,100 
-               L130,80 L140,80 L140,110 L150,110 L150,95 L155,95 L155,105 L165,105 L165,90 
-               L175,90 L175,100 L185,100 L185,110 L195,110 L195,95 L200,95 L200,120 L300,120 L300,150 L0,150 Z" 
-            fill={isNightMode ? "#1E293B" : "#334155"}
-            style={{ transition: 'fill 1s ease' }}
-          />
-          
-          {/* Building windows (lit up at night) */}
-          {isNightMode && (
-            <>
-              <rect x="15" y="105" width="3" height="3" fill="#FBBF24" opacity="0.8" />
-              <rect x="32" y="90" width="2" height="3" fill="#FBBF24" opacity="0.7" />
-              <rect x="48" y="85" width="3" height="3" fill="#FBBF24" opacity="0.8" />
-              <rect x="70" y="90" width="2" height="3" fill="#FBBF24" opacity="0.9" />
-              <rect x="98" y="80" width="3" height="3" fill="#FBBF24" opacity="0.7" />
-              <rect x="116" y="95" width="2" height="3" fill="#FBBF24" opacity="0.8" />
-              <rect x="135" y="85" width="3" height="3" fill="#FBBF24" opacity="0.9" />
-              <rect x="152" y="100" width="2" height="3" fill="#FBBF24" opacity="0.7" />
-              <rect x="169" y="95" width="3" height="3" fill="#FBBF24" opacity="0.8" />
-              <rect x="190" y="105" width="2" height="3" fill="#FBBF24" opacity="0.9" />
-            </>
-          )}
-          
-          {/* Road */}
-          <rect x="0" y="120" width="300" height="30" fill="#1F2937" />
-          <rect x="0" y="134" width="300" height="2" fill="#FFFFFF" strokeDasharray="10 10" />
-          
-          {/* Streetlights */}
-          <g className="streetlight" transform="translate(40, 120)">
-            <rect x="0" y="0" width="2" height="12" fill="#64748B" />
-            <circle cx="1" cy="0" r="3" fill={isNightMode ? "#FBBF24" : "#94A3B8"} opacity={isNightMode ? "0.9" : "0.5"} />
+
+            {/* Headlights with glow effect */}
+            <circle 
+              cx="175" 
+              cy="70" 
+              r="5" 
+              fill="#F6E05E" 
+              filter={active ? "url(#headlightGlow)" : ""}
+            />
+
+            {/* Wheels with modern hub caps */}
+            <g className="wheel front-wheel">
+              <circle cx="145" cy="90" r="10" fill="#1A202C" />
+              <circle cx="145" cy="90" r="7" fill="#4A5568" />
+              <circle cx="145" cy="90" r="3" fill="#A0AEC0" />
+              <circle cx="145" cy="90" r="1" fill="#1A202C" />
+            </g>
+
+            <g className="wheel rear-wheel">
+              <circle cx="45" cy="90" r="10" fill="#1A202C" />
+              <circle cx="45" cy="90" r="7" fill="#4A5568" />
+              <circle cx="45" cy="90" r="3" fill="#A0AEC0" />
+              <circle cx="45" cy="90" r="1" fill="#1A202C" />
+            </g>
+
+            {/* Bumpers */}
+            <rect x="25" y="80" width="155" height="5" rx="2" fill="#4A5568" />
+            <rect x="175" y="80" width="5" height="5" rx="1" fill="#4A5568" />
+
+            {/* School bus text */}
+            <g transform="translate(85, 25)">
+              <rect x="0" y="0" width="50" height="10" rx="5" fill="#1A202C" />
+              <text x="25" y="7.5" fontSize="6" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">SCHOOL BUS</text>
+            </g>
+
+            {/* Warning lights */}
+            <circle cx="35" cy="30" r="3" fill={active ? "#F56565" : "#A0AEC0"} />
+            <circle cx="145" cy="30" r="3" fill={active ? "#F56565" : "#A0AEC0"} />
+
+            {/* License plate */}
+            <rect x="155" y="70" width="15" height="8" rx="1" fill="#E2E8F0" />
+            <text x="162.5" y="76" fontSize="5" fill="#2D3748" textAnchor="middle">SCH001</text>
           </g>
-          <g className="streetlight" transform="translate(120, 120)">
-            <rect x="0" y="0" width="2" height="12" fill="#64748B" />
-            <circle cx="1" cy="0" r="3" fill={isNightMode ? "#FBBF24" : "#94A3B8"} opacity={isNightMode ? "0.9" : "0.5"} />
-          </g>
-          <g className="streetlight" transform="translate(200, 120)">
-            <rect x="0" y="0" width="2" height="12" fill="#64748B" />
-            <circle cx="1" cy="0" r="3" fill={isNightMode ? "#FBBF24" : "#94A3B8"} opacity={isNightMode ? "0.9" : "0.5"} />
-          </g>
-          
+
+          {/* Gradients and filters */}
           <defs>
-            <linearGradient id="busBodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#F59E0B" />
-              <stop offset="100%" stopColor="#F97316" />
-            </linearGradient>
-            
-            <linearGradient id="busTopGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="modernBusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#FBBF24" />
               <stop offset="100%" stopColor="#F59E0B" />
             </linearGradient>
-            
+
             <linearGradient id="windowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.9" />
+              <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity="1" />
             </linearGradient>
-            
-            <radialGradient id="wheelGradient" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
-              <stop offset="0%" stopColor="#4B5563" />
-              <stop offset="100%" stopColor="#1F2937" />
-            </radialGradient>
-            
-            <linearGradient id="headlightGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FBBF24" />
-              <stop offset="100%" stopColor="#FFFFFF" />
-            </linearGradient>
-            
-            <linearGradient id="tailLightGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#DC2626" />
-              <stop offset="100%" stopColor="#EF4444" />
-            </linearGradient>
-            
-            <filter id="sunGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-            
-            <filter id="moonGlow" x="-30%" y="-30%" width="160%" height="160%">
+
+            <filter id="headlightGlow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="2" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
-            
-            <filter id="headlightBeam" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-            
-            <filter id="busShadow" x="-10%" y="-10%" width="120%" height="130%">
-              <feDropShadow dx="0" dy="5" stdDeviation="4" floodOpacity="0.4" />
-            </filter>
           </defs>
-          
-          {/* The bus */}
-          <g 
-            ref={busRef} 
-            filter="url(#busShadow)" 
-            className="school-bus" 
-            transform="translate(-180, 100) scale(0.9)"
-          >
-            {/* Bus chassis */}
-            <rect x="20" y="15" width="160" height="50" rx="6" fill="url(#busBodyGradient)" />
-            <rect x="20" y="5" width="120" height="10" rx="3" fill="url(#busTopGradient)" />
-            <path d="M20 15 L20 5 Q20 5 30 5 L30 15 Z" fill="url(#busTopGradient)" />
-            <path d="M140 15 L140 5 Q140 5 150 5 L150 15 Z" fill="url(#busTopGradient)" />
-            
-            {/* Hood section */}
-            <rect x="180" y="35" width="15" height="30" rx="3" fill="url(#busBodyGradient)" />
-            <path d="M160 35 L180 35 L180 65 L160 65 Z" fill="url(#busBodyGradient)" />
-            
-            {/* Front windshield */}
-            <path d="M150 15 L150 5 L160 15 Z" fill="url(#windowGradient)" />
-            <path d="M150 15 L150 50 L160 65 L160 35 L157 15 Z" fill="url(#windowGradient)" opacity="0.9" />
-            
-            {/* Windows */}
-            <rect x="35" y="15" width="10" height="20" rx="2" fill="url(#windowGradient)" opacity="0.9" />
-            <rect x="55" y="15" width="10" height="20" rx="2" fill="url(#windowGradient)" opacity="0.9" />
-            <rect x="75" y="15" width="10" height="20" rx="2" fill="url(#windowGradient)" opacity="0.9" />
-            <rect x="95" y="15" width="10" height="20" rx="2" fill="url(#windowGradient)" opacity="0.9" />
-            <rect x="115" y="15" width="10" height="20" rx="2" fill="url(#windowGradient)" opacity="0.9" />
-            <rect x="135" y="15" width="10" height="20" rx="2" fill="url(#windowGradient)" opacity="0.9" />
-            
-            {/* Headlights */}
-            <circle cx="190" cy="45" r="5" fill="#FFFFFF" />
-            <circle cx="190" cy="55" r="5" fill="#FFFFFF" />
-            
-            {/* Headlight beams (only visible at night) */}
-            {isNightMode && (
-              <>
-                <path 
-                  d="M191,44 L240,30 L240,55 L191,49 Z" 
-                  fill="url(#headlightGradient)" 
-                  opacity="0.4" 
-                  filter="url(#headlightBeam)"
-                />
-                <path 
-                  d="M191,56 L240,60 L240,85 L191,61 Z" 
-                  fill="url(#headlightGradient)" 
-                  opacity="0.4" 
-                  filter="url(#headlightBeam)"
-                />
-              </>
-            )}
-            
-            {/* Door */}
-            <rect x="45" y="35" width="15" height="30" rx="2" fill="#1F2937" />
-            <rect x="55" y="45" width="2" height="10" rx="1" fill="#F59E0B" />
-            
-            {/* Taillights */}
-            <rect x="20" y="45" width="5" height="10" rx="1" fill={active ? "url(#tailLightGradient)" : "#6B7280"} />
-            
-            {/* Undercarriage */}
-            <rect x="20" y="65" width="175" height="8" rx="2" fill="#1F2937" />
-            
-            {/* "SCHOOL BUS" text */}
-            <g transform="translate(70, 2)">
-              <rect x="0" y="0" width="60" height="15" rx="3" fill="#1E293B" />
-              <text x="30" y="10" fontSize="8" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">SCHOOL BUS</text>
-            </g>
-            
-            {/* Bus stop sign (folds out when the bus stops) */}
-            <g 
-              className="stop-sign" 
-              style={{ 
-                transformOrigin: '20px 30px',
-                transform: active ? 'rotate(0deg)' : 'rotate(90deg)',
-                transition: 'transform 0.5s ease'
-              }}
-            >
-              <rect x="10" y="25" width="10" height="10" fill="#DC2626" />
-              <text x="15" y="33" fontSize="6" fontWeight="bold" fill="#FFFFFF" textAnchor="middle">STOP</text>
-            </g>
-            
-            {/* Front bumper */}
-            <rect x="180" y="65" width="15" height="5" rx="2" fill="#64748B" />
-            
-            {/* Warning lights on top */}
-            <circle cx="30" cy="5" r="3" fill={active ? "#F87171" : "#6B7280"} />
-            <circle cx="140" cy="5" r="3" fill={active ? "#F87171" : "#6B7280"} />
-            
-            {/* Wheels */}
-            <g className="front-wheel" transform="translate(40, 75)">
-              <circle cx="0" cy="0" r="12" fill="#1F2937" />
-              <circle cx="0" cy="0" r="8" fill="url(#wheelGradient)" />
-              <circle cx="0" cy="0" r="3" fill="#1F2937" />
-              <g 
-                className="wheel-spokes" 
-                style={{ transform: `rotate(${wheelRotation}deg)` }}
-              >
-                <line x1="0" y1="-8" x2="0" y2="-3" stroke="#1F2937" strokeWidth="2" />
-                <line x1="0" y1="3" x2="0" y2="8" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-8" y1="0" x2="-3" y2="0" stroke="#1F2937" strokeWidth="2" />
-                <line x1="3" y1="0" x2="8" y2="0" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-5.5" y1="-5.5" x2="-2.5" y2="-2.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="2.5" y1="2.5" x2="5.5" y2="5.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-5.5" y1="5.5" x2="-2.5" y2="2.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="2.5" y1="-2.5" x2="5.5" y2="-5.5" stroke="#1F2937" strokeWidth="2" />
-              </g>
-            </g>
-            
-            <g className="rear-wheel" transform="translate(120, 75)">
-              <circle cx="0" cy="0" r="12" fill="#1F2937" />
-              <circle cx="0" cy="0" r="8" fill="url(#wheelGradient)" />
-              <circle cx="0" cy="0" r="3" fill="#1F2937" />
-              <g 
-                className="wheel-spokes" 
-                style={{ transform: `rotate(${wheelRotation}deg)` }}
-              >
-                <line x1="0" y1="-8" x2="0" y2="-3" stroke="#1F2937" strokeWidth="2" />
-                <line x1="0" y1="3" x2="0" y2="8" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-8" y1="0" x2="-3" y2="0" stroke="#1F2937" strokeWidth="2" />
-                <line x1="3" y1="0" x2="8" y2="0" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-5.5" y1="-5.5" x2="-2.5" y2="-2.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="2.5" y1="2.5" x2="5.5" y2="5.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-5.5" y1="5.5" x2="-2.5" y2="2.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="2.5" y1="-2.5" x2="5.5" y2="-5.5" stroke="#1F2937" strokeWidth="2" />
-              </g>
-            </g>
-            
-            <g className="back-wheel" transform="translate(170, 75)">
-              <circle cx="0" cy="0" r="12" fill="#1F2937" />
-              <circle cx="0" cy="0" r="8" fill="url(#wheelGradient)" />
-              <circle cx="0" cy="0" r="3" fill="#1F2937" />
-              <g 
-                className="wheel-spokes" 
-                style={{ transform: `rotate(${wheelRotation}deg)` }}
-              >
-                <line x1="0" y1="-8" x2="0" y2="-3" stroke="#1F2937" strokeWidth="2" />
-                <line x1="0" y1="3" x2="0" y2="8" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-8" y1="0" x2="-3" y2="0" stroke="#1F2937" strokeWidth="2" />
-                <line x1="3" y1="0" x2="8" y2="0" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-5.5" y1="-5.5" x2="-2.5" y2="-2.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="2.5" y1="2.5" x2="5.5" y2="5.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="-5.5" y1="5.5" x2="-2.5" y2="2.5" stroke="#1F2937" strokeWidth="2" />
-                <line x1="2.5" y1="-2.5" x2="5.5" y2="-5.5" stroke="#1F2937" strokeWidth="2" />
-              </g>
-            </g>
-            
-            {/* Animated passengers */}
-            {active && (
-              <>
-                <g className="passenger" transform="translate(40, 25)">
-                  <circle cx="0" cy="0" r="3" fill="#4B5563" />
-                  <rect x="-2" y="3" width="4" height="3" rx="1" fill="#4B5563" />
-                  <circle cx="-1" cy="0" r="0.8" fill="#F9FAFB" />
-                  <circle cx="1" cy="0" r="0.8" fill="#F9FAFB" />
-                </g>
-                <g className="passenger" transform="translate(60, 25)">
-                  <circle cx="0" cy="0" r="3" fill="#4B5563" />
-                  <rect x="-2" y="3" width="4" height="3" rx="1" fill="#4B5563" />
-                  <circle cx="-1" cy="0" r="0.8" fill="#F9FAFB" />
-                  <circle cx="1" cy="0" r="0.8" fill="#F9FAFB" />
-                </g>
-                <g className="passenger" transform="translate(80, 25)">
-                  <circle cx="0" cy="0" r="3" fill="#4B5563" />
-                  <rect x="-2" y="3" width="4" height="3" rx="1" fill="#4B5563" />
-                  <circle cx="-1" cy="0" r="0.8" fill="#F9FAFB" />
-                  <circle cx="1" cy="0" r="0.8" fill="#F9FAFB" />
-                </g>
-                <g className="passenger driver" transform="translate(140, 25)">
-                  <circle cx="0" cy="0" r="4" fill="#1F2937" />
-                  <rect x="-2.5" y="4" width="5" height="4" rx="1" fill="#1F2937" />
-                  <circle cx="-1.5" cy="-0.5" r="1" fill="#F9FAFB" />
-                  <circle cx="1.5" cy="-0.5" r="1" fill="#F9FAFB" />
-                </g>
-              </>
-            )}
-          </g>
-          
-          {/* Exhaust puffs */}
-          {exhaustPuffs.map(puff => (
-            <g key={puff.id} transform={`translate(${20 + puff.x}, ${90 + puff.y})`}>
-              <circle 
-                cx="0" 
-                cy="0" 
-                r={5 * puff.scale} 
-                fill="#94A3B8" 
-                opacity={puff.opacity} 
-              />
-            </g>
-          ))}
         </svg>
       </animated.div>
     </div>
