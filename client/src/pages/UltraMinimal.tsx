@@ -488,7 +488,7 @@ const UltraMinimal = () => {
           >
             Dorm Room Fund
           </a>{" "}
-          and{" "}
+          (a $12.5m pre-seed fund) and{" "}
           <span
             ref={northeasternRef}
             onMouseEnter={() => {
@@ -554,7 +554,7 @@ const UltraMinimal = () => {
 
           {/* X Logo (formerly Twitter) - Corrected */}
           <a
-            href="https://x.com"
+            href="https://x.com/neilbhammar"
             target="_blank"
             rel="noopener noreferrer"
             className="social-icon w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"
@@ -568,7 +568,7 @@ const UltraMinimal = () => {
 
           {/* LinkedIn */}
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/in/neilbhammar/"
             target="_blank"
             rel="noopener noreferrer"
             className="social-icon w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"
