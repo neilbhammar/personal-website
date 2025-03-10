@@ -618,4 +618,22 @@ body {
   transition: width 0.2s ease;
   border-bottom: 1px dashed;
 }
+
+  .interactive-text {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .interactive-text::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: width 0.3s ease;
+    border-bottom: 1px dotted rgba(0, 0, 0, 0.5);
+  }
 }
