@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import copy from 'clipboard-copy';
+import ExperienceTooltip from '../components/ExperienceTooltip';
+import { experiences } from '../data/experiences';
 
 const UltraMinimal = () => {
   const [flashlightActive, setFlashlightActive] = useState(false);
@@ -9,6 +11,10 @@ const UltraMinimal = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  
+  // Experience tooltip states
+  const [activeExperience, setActiveExperience] = useState<string | null>(null);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const flashlightRef = useRef<HTMLDivElement>(null);
