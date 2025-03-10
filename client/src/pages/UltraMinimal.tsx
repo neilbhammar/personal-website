@@ -3,8 +3,10 @@ import { gsap } from "gsap";
 import copy from "clipboard-copy";
 import ExperienceTooltip from "../components/ExperienceTooltip";
 import { experiences } from "../data/experiences";
+import useIsMobile from "../hooks/useIsMobile";
 
 const UltraMinimal = () => {
+  const isMobile = useIsMobile();
   const [flashlightActive, setFlashlightActive] = useState(false);
   const [bananagramsActive, setBananagramsActive] = useState(false);
   const [bananagramsTriggered, setBananagramsTriggered] = useState(false);
@@ -94,7 +96,7 @@ const UltraMinimal = () => {
 
   // Bananagrams tile effect
   const handleBananagramsHoverStart = () => {
-    if (bananagramsTriggered) return; // Prevent re-triggering
+    if (isMobile || bananagramsTriggered) return; // Prevent on mobile or re-triggering
 
     if (bananagramsHoverTimerRef.current) return;
 
@@ -197,7 +199,7 @@ const UltraMinimal = () => {
 
   // Handle hover on "lost"
   const handleLostHoverStart = (e: React.MouseEvent) => {
-    if (lostHoverTimerRef.current) return;
+    if (isMobile || lostHoverTimerRef.current) return;
 
     // Pre-set the mouse position so the flashlight starts in the right place
     initializeFlashlightPosition(e);
@@ -217,7 +219,7 @@ const UltraMinimal = () => {
 
   // Enhanced school buses effect with improved animation
   const handleBusesHoverStart = () => {
-    if (busesHoverTimerRef.current) return;
+    if (isMobile || busesHoverTimerRef.current) return;
 
     busesHoverTimerRef.current = setTimeout(() => {
       setBusesActive(true);
@@ -430,7 +432,7 @@ const UltraMinimal = () => {
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
             onMouseEnter={() => {
-              if (experienceHoverTimerRef.current) return;
+              if (isMobile || experienceHoverTimerRef.current) return;
               experienceHoverTimerRef.current = setTimeout(() => {
                 setActiveExperience("busright");
                 setTooltipVisible(true);
@@ -470,7 +472,7 @@ const UltraMinimal = () => {
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
             onMouseEnter={() => {
-              if (experienceHoverTimerRef.current) return;
+              if (isMobile || experienceHoverTimerRef.current) return;
               experienceHoverTimerRef.current = setTimeout(() => {
                 setActiveExperience("dormRoomFund");
                 setTooltipVisible(true);
@@ -490,7 +492,7 @@ const UltraMinimal = () => {
           <span
             ref={northeasternRef}
             onMouseEnter={() => {
-              if (experienceHoverTimerRef.current) return;
+              if (isMobile || experienceHoverTimerRef.current) return;
               experienceHoverTimerRef.current = setTimeout(() => {
                 setActiveExperience("northeastern");
                 setTooltipVisible(true);

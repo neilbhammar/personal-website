@@ -1,3 +1,81 @@
+
+/* Glossy button styles */
+.social-icon {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(209, 213, 219, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.social-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: all 0.4s ease;
+  opacity: 0;
+}
+
+.social-icon:hover::before {
+  left: -10%;
+  opacity: 1;
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  border-color: rgba(209, 213, 219, 0.5);
+}
+
+.social-icon:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhance for light/dark mode */
+@media (prefers-color-scheme: dark) {
+  .social-icon {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+    border-color: rgba(75, 85, 99, 0.5);
+  }
+}
+
+/* Media queries for mobile devices */
+@media (max-width: 767px) {
+  .interactive-text {
+    /* Remove any special styling for interactive text on mobile */
+    cursor: default;
+    font-style: normal;
+    text-decoration: none;
+    position: relative;
+  }
+  
+  /* Simplify buttons on mobile */
+  .social-icon {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
