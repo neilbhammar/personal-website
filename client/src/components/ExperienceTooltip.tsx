@@ -1,14 +1,13 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
-export interface Experience {
+interface Experience {
   title: string;
-  company?: string;
-  period?: string;
-  description: string;
-  image?: string;
-  items?: { title: string; description: string; image?: string }[];
+  slides: {
+    image: string;
+    title: string;
+    description: string;
+  }[];
 }
 
 interface ExperienceTooltipProps {
@@ -16,152 +15,112 @@ interface ExperienceTooltipProps {
   visible: boolean;
   anchorRef: React.RefObject<HTMLElement>;
   onClose: () => void;
-  position?: 'top' | 'bottom' | 'left' | 'right';
 }
 
-const ExperienceTooltip: React.FC<ExperienceTooltipProps> = ({
-  data,
-  visible,
-  anchorRef,
-  onClose,
-  position = 'top',
+const ExperienceTooltip: React.FC<ExperienceTooltipProps> = ({ 
+  data, 
+  visible, 
+  anchorRef, 
+  onClose 
 }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [currentItem, setCurrentItem] = useState(0);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
   
-  const items = data.items || [{ title: data.title, description: data.description, image: data.image }];
-  
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentItem((prev) => (prev + 1) % items.length);
-  };
-  
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentItem((prev) => (prev - 1 + items.length) % items.length);
-  };
-
+  // Position the tooltip relative to the anchor element
   useEffect(() => {
-    if (visible && anchorRef.current && tooltipRef.current) {
+    const positionTooltip = () => {
+      if (!tooltipRef.current || !anchorRef.current) return;
+      
       const anchorRect = anchorRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       
-      let top = 0;
-      let left = 0;
+      // Position below the anchor element
+      const left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
+      const top = anchorRect.bottom + 10;
       
-      // Position based on specified option
-      switch (position) {
-        case 'top':
-          top = anchorRect.top - tooltipRect.height - 10;
-          left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
-          break;
-        case 'bottom':
-          top = anchorRect.bottom + 10;
-          left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
-          break;
-        case 'left':
-          top = anchorRect.top + (anchorRect.height / 2) - (tooltipRect.height / 2);
-          left = anchorRect.left - tooltipRect.width - 10;
-          break;
-        case 'right':
-          top = anchorRect.top + (anchorRect.height / 2) - (tooltipRect.height / 2);
-          left = anchorRect.right + 10;
-          break;
-      }
-      
-      // Keep tooltip within viewport
-      const rightEdge = left + tooltipRect.width;
-      const bottomEdge = top + tooltipRect.height;
-      
-      if (rightEdge > window.innerWidth) {
-        left = window.innerWidth - tooltipRect.width - 10;
-      }
-      
-      if (left < 10) {
-        left = 10;
-      }
-      
-      if (bottomEdge > window.innerHeight) {
-        top = window.innerHeight - tooltipRect.height - 10;
-      }
-      
-      if (top < 10) {
-        top = 10;
-      }
-      
-      setTooltipPosition({ top, left });
+      tooltipRef.current.style.left = `${Math.max(20, Math.min(left, window.innerWidth - tooltipRect.width - 20))}px`;
+      tooltipRef.current.style.top = `${top}px`;
+    };
+    
+    if (visible) {
+      positionTooltip();
+      window.addEventListener('resize', positionTooltip);
+      window.addEventListener('scroll', positionTooltip);
     }
-  }, [visible, anchorRef, position, currentItem]);
-
+    
+    return () => {
+      window.removeEventListener('resize', positionTooltip);
+      window.removeEventListener('scroll', positionTooltip);
+    };
+  }, [visible, anchorRef, currentSlide]);
+  
+  // Auto-advance slides
+  useEffect(() => {
+    if (!visible) return;
+    
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % data.slides.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [visible, data.slides.length]);
+  
+  // Handle clicks outside the tooltip
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    
+    if (visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [visible, onClose]);
+  
   if (!visible) return null;
-
-  const currentContent = items[currentItem];
-
+  
+  const slide = data.slides[currentSlide];
+  
   return (
     <div 
       ref={tooltipRef}
-      className={`experience-tooltip ${visible ? 'visible' : ''}`}
-      style={{ 
-        position: 'fixed', 
-        top: `${tooltipPosition.top}px`, 
-        left: `${tooltipPosition.left}px`,
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-        borderRadius: '12px',
-        overflow: 'hidden',
+      className={`absolute z-50 w-72 bg-white rounded-lg shadow-lg overflow-hidden transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      style={{
+        transform: 'translate3d(0, 0, 0)'
       }}
-      onClick={(e) => e.stopPropagation()}
     >
-      <div className="tooltip-content-container">
-        <div className="tooltip-image-text-container">
-          {currentContent.image && (
-            <div className="tooltip-image-container">
-              <img 
-                src={currentContent.image} 
-                alt={currentContent.title} 
-                className="tooltip-image"
-              />
-            </div>
-          )}
-          <div className="tooltip-text-container">
-            <h3 className="tooltip-title">{currentContent.title}</h3>
-            {data.company && <p className="tooltip-company">{data.company}</p>}
-            {data.period && <p className="tooltip-period">{data.period}</p>}
-            <p className="tooltip-description">{currentContent.description}</p>
-          </div>
-        </div>
-        
-        {items.length > 1 && (
-          <>
-            <div className="tooltip-indicator">
-              {items.map((_, idx) => (
-                <span 
-                  key={idx} 
-                  className={`tooltip-dot ${idx === currentItem ? 'active' : ''}`}
-                />
-              ))}
-            </div>
-            
-            <div className="tooltip-navigation">
-              <button 
-                className="tooltip-nav-button prev" 
-                onClick={handlePrev}
-                aria-label="Previous"
-              >
-                <ChevronLeft size={16} />
-                <span>Previous</span>
-              </button>
-              <button 
-                className="tooltip-nav-button next" 
-                onClick={handleNext}
-                aria-label="Next"  
-              >
-                <span>Next</span>
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </>
-        )}
+      <div className="relative">
+        <img 
+          src={slide.image}
+          alt={slide.title}
+          className="w-full h-40 object-cover"
+        />
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70"
+        >
+          ×
+        </button>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="text-lg font-medium mb-1">{slide.title}</h3>
+        <p className="text-gray-600 text-sm">{slide.description}</p>
+      </div>
+      
+      <div className="flex justify-center pb-3">
+        {data.slides.map((_, index) => (
+          <button
+            key={index}
+            className={`mx-1 w-2 h-2 rounded-full ${index === currentSlide ? 'bg-blue-500' : 'bg-gray-300'}`}
+            onClick={() => setCurrentSlide(index)}
+          />
+        ))}
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -14,13 +13,13 @@ function Router() {
   // Implement smooth scrolling
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
-
+    
     // Clean up
     return () => {
       document.documentElement.style.scrollBehavior = '';
     };
   }, []);
-
+  
   return (
     <Switch>
       <Route path="/" component={UltraMinimal} />
