@@ -24,7 +24,6 @@ const UltraMinimal = () => {
   const northeasternRef = useRef<HTMLAnchorElement>(null);
   const funRef = useRef<HTMLSpanElement>(null); //Added ref for new tooltip
   const foundersRef = useRef<HTMLSpanElement>(null); //Added ref for new tooltip
-  const lostRef = useRef<HTMLSpanElement>(null);
 
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -447,12 +446,7 @@ const UltraMinimal = () => {
 
         <p>
           I'm not sure what's next for me — I'm honestly a little{" "}
-          <span
-            ref={lostRef}
-            onMouseEnter={handleLostHoverStart}
-            onMouseLeave={handleLostHoverEnd}
-            className="hover:text-gray-400 cursor-default transition-colors duration-300"
-          >
+          <span className="interactive-text" ref={funRef}>
             lost
           </span>
           , but I think that's part of the process. I'm a tinkerer by nature, so

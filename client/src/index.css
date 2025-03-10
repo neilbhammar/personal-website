@@ -267,23 +267,20 @@ body {
   .flashlight-effect.active {
     opacity: 1;
   }
-}
 
-/* Bus animation */
+  /* Bus animation */
+  .bus-animation-container {
+    position: fixed;
+    bottom: 10px;
+    left: -150px; /* Start off-screen */
+    z-index: 50;
+  }
+
+  /* Bus animation styles */
 .bus-animation-container {
-  position: fixed;
-  bottom: 10px;
-  left: -150px; /* Start off-screen */
-  z-index: 50;
   pointer-events: none;
   position: relative;
   overflow: hidden;
-  transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
-  transform: translateX(-150px);
-}
-
-.bus-animation-container.active {
-  transform: translateX(calc(100vw + 150px));
 }
 
 .bus-wrapper {
@@ -380,31 +377,40 @@ body {
   100% { opacity: 0.5; }
 }
 
-/* Word highlight effect */
-.highlight-word {
-  position: relative;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
+    transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    pointer-events: none;
+    transform: translateX(-150px);
+  }
 
-.highlight-word:hover {
-  color: hsl(var(--primary));
-}
+  .bus-animation-container.active {
+    transform: translateX(calc(100vw + 150px));
+  }
 
-.highlight-word::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: hsl(var(--primary));
-  transition: width 0.3s ease;
-}
+  /* Word highlight effect */
+  .highlight-word {
+    position: relative;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
 
-.highlight-word:hover::after {
-  width: 100%;
-}
+  .highlight-word:hover {
+    color: hsl(var(--primary));
+  }
+
+  .highlight-word::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: hsl(var(--primary));
+    transition: width 0.3s ease;
+  }
+
+  .highlight-word:hover::after {
+    width: 100%;
+  }
 
 @layer components {
   .social-icon {
@@ -461,10 +467,6 @@ body {
     opacity: 0.3;
   }
 
-  .interactive-text:hover::after {
-    width: 100%;
-  }
-
   /* Custom school buses highlight */
   .school-bus-highlight {
     background-color: rgba(255, 221, 0, 0.2);
@@ -517,6 +519,10 @@ body {
 
   .tooltip-dot.active {
     background-color: #000;
+  }
+
+  .interactive-text:hover::after {
+    width: 100%;
   }
 
   /* Enhanced social icons */
@@ -586,9 +592,8 @@ body {
   .copy-toast.visible {
     opacity: 1;
   }
-}
 
-.bananagrams-link,
+  .bananagrams-link,
 .lost-link,
 .busright-link,
 .fun-link,
@@ -613,94 +618,4 @@ body {
   transition: width 0.2s ease;
   border-bottom: 1px dashed;
 }
-
-/* Page Peel Effect Styles */
-.page-peel-corner {
-  cursor: grab;
-  will-change: transform;
-}
-
-.page-peel-corner:active {
-  cursor: grabbing;
-}
-
-/* Gallery page styles */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.gallery-item {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.gallery-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.gallery-item:hover img {
-  transform: scale(1.05);
-}
-
-.gallery-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 15px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-  color: white;
-  transform: translateY(0);
-  transition: transform 0.3s ease;
-}
-
-/* Aspect ratio utility for gallery items */
-.aspect-w-3 {
-  position: relative;
-  padding-bottom: calc(var(--tw-aspect-h) / var(--tw-aspect-w) * 100%);
-  --tw-aspect-w: 3;
-}
-
-.aspect-h-2 {
-  --tw-aspect-h: 2;
-}
-
-.aspect-w-3 > img,
-.aspect-w-3 > video {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* For the gallery lightbox backdrop */
-.lightbox-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
 }
