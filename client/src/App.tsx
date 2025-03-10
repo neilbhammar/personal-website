@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import NewHome from "@/pages/NewHome";
+import MinimalHome from "@/pages/MinimalHome";
 import { useEffect } from "react";
 
 function Router() {
@@ -20,7 +21,8 @@ function Router() {
   
   return (
     <Switch>
-      <Route path="/" component={NewHome} />
+      <Route path="/" component={MinimalHome} />
+      <Route path="/fancy" component={NewHome} />
       <Route path="/old" component={Home} />
       <Route component={NotFound} />
     </Switch>
