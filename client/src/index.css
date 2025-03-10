@@ -250,17 +250,35 @@ body {
     stroke: #000;
   }
   
-  /* Interactive text effects */
+  /* Interactive text effects for hover-based interactions */
   .interactive-text {
     position: relative;
-    cursor: pointer;
     text-decoration: none;
     color: inherit;
-    border-bottom: 1px solid #ddd;
-    transition: all 0.2s ease;
+    border-bottom: 1px dotted #ddd;
+    padding-bottom: 1px;
+    transition: all 0.3s ease;
+    cursor: crosshair;
   }
   
   .interactive-text:hover {
     border-bottom-color: #000;
+    border-bottom-style: solid;
+  }
+  
+  .interactive-text::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #000;
+    transition: width 5s linear; /* 5-second progress indicator */
+    opacity: 0.3;
+  }
+  
+  .interactive-text:hover::after {
+    width: 100%;
   }
 }

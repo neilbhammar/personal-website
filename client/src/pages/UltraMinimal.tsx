@@ -7,6 +7,10 @@ const UltraMinimal = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const contentRef = useRef<HTMLDivElement>(null);
   const tilesContainerRef = useRef<HTMLDivElement>(null);
+  const flashlightRef = useRef<HTMLDivElement>(null);
+  const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Update mouse position for flashlight effect
   useEffect(() => {
@@ -22,17 +26,91 @@ const UltraMinimal = () => {
     document.addEventListener('mousemove', handleMouseMove);
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, [flashlightActive]);
+
+  // Auto-disable effects after 10 seconds
+  useEffect(() => {
+    if (flashlightActive || tilesActive) {
+      if (effectTimeoutRef.current) {
+        clearTimeout(effectTimeoutRef.current);
+      }
+      
+      effectTimeoutRef.current = setTimeout(() => {
+        setFlashlightActive(false);
+        setTilesActive(false);
+      }, 10000); // 10 seconds
+    }
+    
+    return () => {
+      if (effectTimeoutRef.current) {
+        clearTimeout(effectTimeoutRef.current);
+      }
+    };
+  }, [flashlightActive, tilesActive]);
   
-  // Create tiles animation
+  // Handle hover on bananagrams
+  const handleBananagramsHoverStart = () => {
+    if (bananagramsHoverTimerRef.current) return;
+    
+    bananagramsHoverTimerRef.current = setTimeout(() => {
+      setTilesActive(true);
+      bananagramsHoverTimerRef.current = null;
+    }, 5000); // 5 second delay
+  };
+  
+  const handleBananagramsHoverEnd = () => {
+    if (bananagramsHoverTimerRef.current) {
+      clearTimeout(bananagramsHoverTimerRef.current);
+      bananagramsHoverTimerRef.current = null;
+    }
+  };
+  
+  // Handle hover on lost
+  const handleLostHoverStart = () => {
+    if (lostHoverTimerRef.current) return;
+    
+    lostHoverTimerRef.current = setTimeout(() => {
+      setFlashlightActive(true);
+      lostHoverTimerRef.current = null;
+    }, 5000); // 5 second delay
+  };
+  
+  const handleLostHoverEnd = () => {
+    if (lostHoverTimerRef.current) {
+      clearTimeout(lostHoverTimerRef.current);
+      lostHoverTimerRef.current = null;
+    }
+  };
+  
+  // Clean up all timers on unmount
+  useEffect(() => {
+    return () => {
+      if (bananagramsHoverTimerRef.current) {
+        clearTimeout(bananagramsHoverTimerRef.current);
+      }
+      if (lostHoverTimerRef.current) {
+        clearTimeout(lostHoverTimerRef.current);
+      }
+      if (effectTimeoutRef.current) {
+        clearTimeout(effectTimeoutRef.current);
+      }
+    };
+  }, []);
+  
+  // Create tiles animation with ALL letters on page
   const createTilesEffect = () => {
-    if (!tilesContainerRef.current) return;
+    if (!tilesContainerRef.current || !contentRef.current) return;
     
     // Clear previous tiles
     tilesContainerRef.current.innerHTML = '';
     
-    // Create tiles for each letter
-    const word = "bananagrams";
-    const chars = word.split('');
+    // Get all text from the page
+    const textContent = contentRef.current.innerText;
+    // Filter out spaces and special characters
+    const chars = textContent.split('').filter(char => /[a-zA-Z0-9]/.test(char));
+    
+    // Calculate viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     
     chars.forEach((char, index) => {
       // Create tile element
@@ -41,18 +119,16 @@ const UltraMinimal = () => {
       tile.textContent = char;
       tile.style.position = 'fixed';
       tile.style.fontFamily = 'monospace';
-      tile.style.fontSize = '16px';
+      tile.style.fontSize = '14px';
       tile.style.opacity = '0';
       tile.style.pointerEvents = 'none';
       
       // Add to container
       tilesContainerRef.current?.appendChild(tile);
       
-      // Calculate position based on mouse or viewport center
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const startX = viewportWidth * 0.5 + (Math.random() * 100 - 50);
-      const startY = viewportHeight * 0.3;
+      // Random initial position across the viewport
+      const startX = Math.random() * viewportWidth;
+      const startY = Math.random() * (viewportHeight * 0.5);
       
       // Set initial position
       gsap.set(tile, {
@@ -68,20 +144,17 @@ const UltraMinimal = () => {
         y: viewportHeight + 50,
         rotation: -20 + Math.random() * 40,
         opacity: 1,
-        delay: index * 0.06,
-        ease: 'power1.in',
-        onComplete: () => {
-          if (index === chars.length - 1) {
-            setTimeout(() => {
-              if (tilesContainerRef.current) {
-                tilesContainerRef.current.innerHTML = '';
-              }
-              setTilesActive(false);
-            }, 500);
-          }
-        }
+        delay: Math.random() * 0.5, // Randomize start time
+        ease: 'power1.in'
       });
     });
+    
+    // Set timer to clean up after animation completes
+    setTimeout(() => {
+      if (tilesContainerRef.current) {
+        tilesContainerRef.current.innerHTML = '';
+      }
+    }, 5000);
   };
   
   // Trigger the tiles effect when activated
@@ -92,7 +165,7 @@ const UltraMinimal = () => {
   }, [tilesActive]);
   
   return (
-    <main className="py-10 px-8 md:py-16 md:px-16">
+    <main className="py-10 px-8 md:py-16 md:px-16 relative">
       <div
         ref={contentRef}
         className="max-w-2xl mx-auto space-y-8"
@@ -102,7 +175,8 @@ const UltraMinimal = () => {
         <p>
           I'm a startup & tech enthusiast, <span 
             className="interactive-text"
-            onClick={() => setTilesActive(true)}
+            onMouseEnter={handleBananagramsHoverStart}
+            onMouseLeave={handleBananagramsHoverEnd}
           >bananagrams</span> champ (at least in my house), and amateur pickleball aficionado.
         </p>
         
@@ -121,7 +195,8 @@ const UltraMinimal = () => {
         <p>
           I'm not sure what's next for me — I'm honestly a little <span 
             className="interactive-text"
-            onClick={() => setFlashlightActive(!flashlightActive)}
+            onMouseEnter={handleLostHoverStart}
+            onMouseLeave={handleLostHoverEnd}
           >lost</span>, but that's part of the process. I'm a tinkerer by nature, so I might find myself posting fun projects here.
         </p>
         
@@ -168,23 +243,54 @@ const UltraMinimal = () => {
         </div>
       </div>
       
-      {/* Flashlight effect overlay */}
+      {/* Flashlight effect overlay with blur */}
       {flashlightActive && (
         <div 
+          ref={flashlightRef}
           className="fixed top-0 left-0 w-full h-screen pointer-events-none z-[999] transition-opacity duration-300"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.92)',
-            maskImage: `radial-gradient(circle 100px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`,
-            WebkitMaskImage: `radial-gradient(circle 100px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            maskImage: `radial-gradient(circle 120px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`,
+            WebkitMaskImage: `radial-gradient(circle 120px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`
           }}
-        />
+        >
+          {/* Close button */}
+          <button 
+            className="absolute top-4 right-4 text-white opacity-30 hover:opacity-100 transition-opacity pointer-events-auto"
+            onClick={() => setFlashlightActive(false)}
+            aria-label="Close flashlight effect"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
       )}
       
       {/* Container for tiles effect */}
       <div 
         ref={tilesContainerRef}
         className="fixed inset-0 pointer-events-none z-[999]"
-      />
+      >
+        {tilesActive && (
+          <button 
+            className="absolute top-4 right-4 text-black opacity-30 hover:opacity-100 transition-opacity pointer-events-auto"
+            onClick={() => setTilesActive(false)}
+            aria-label="Close tiles effect"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        )}
+      </div>
+      
+      {/* Hover indicators */}
+      {/* We can remove this hover indicator since the CSS animation now shows progress */}
     </main>
   );
 };
