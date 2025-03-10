@@ -420,7 +420,9 @@ const UltraMinimal = () => {
         <p>
           Before that, I invested in and supported founders at <a 
             ref={dormRoomFundRef}
-            href="#" 
+            href="https://www.dormroomfund.com" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
             onMouseEnter={() => {
               if (experienceHoverTimerRef.current) return;
@@ -436,10 +438,8 @@ const UltraMinimal = () => {
                 experienceHoverTimerRef.current = null;
               }
             }}
-          >Dorm Room Fund</a> and <a
+          >Dorm Room Fund</a> and <span
             ref={northeasternRef}
-            href="#"
-            className="text-blue-600 hover:underline"
             onMouseEnter={() => {
               if (experienceHoverTimerRef.current) return;
               experienceHoverTimerRef.current = setTimeout(() => {
@@ -454,7 +454,7 @@ const UltraMinimal = () => {
                 experienceHoverTimerRef.current = null;
               }
             }}
-          >Northeastern University</a>.
+          >Northeastern University</span>.
         </p>
 
         <p>

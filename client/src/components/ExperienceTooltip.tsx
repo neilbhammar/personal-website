@@ -1,9 +1,8 @@
+
 import { useState, useEffect, useRef } from 'react';
 
 interface Experience {
   title: string;
-  location?: string;
-  year?: string;
   slides: {
     image: string;
     title: string;
@@ -18,121 +17,113 @@ interface ExperienceTooltipProps {
   onClose: () => void;
 }
 
-export default function ExperienceTooltip({ data, visible, anchorRef, onClose }: ExperienceTooltipProps) {
+const ExperienceTooltip: React.FC<ExperienceTooltipProps> = ({ 
+  data, 
+  visible, 
+  anchorRef, 
+  onClose 
+}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const tooltipRef = useRef<HTMLDivElement>(null);
   
-  // Handle position of the tooltip relative to the anchor element
+  // Position the tooltip relative to the anchor element
   useEffect(() => {
-    if (!visible || !tooltipRef.current || !anchorRef.current) return;
+    const positionTooltip = () => {
+      if (!tooltipRef.current || !anchorRef.current) return;
+      
+      const anchorRect = anchorRef.current.getBoundingClientRect();
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      
+      // Position below the anchor element
+      const left = anchorRect.left + (anchorRect.width / 2) - (tooltipRect.width / 2);
+      const top = anchorRect.bottom + 10;
+      
+      tooltipRef.current.style.left = `${Math.max(20, Math.min(left, window.innerWidth - tooltipRect.width - 20))}px`;
+      tooltipRef.current.style.top = `${top}px`;
+    };
     
-    const anchorRect = anchorRef.current.getBoundingClientRect();
-    const tooltipEl = tooltipRef.current;
-    
-    // Position the tooltip centered below the anchor
-    tooltipEl.style.left = `${anchorRect.left + (anchorRect.width / 2) - (tooltipEl.offsetWidth / 2)}px`;
-    tooltipEl.style.top = `${anchorRect.bottom + window.scrollY + 8}px`;
-    
-    // Ensure the tooltip doesn't go off-screen
-    const tooltipRect = tooltipEl.getBoundingClientRect();
-    
-    // Adjust horizontal positioning if needed
-    if (tooltipRect.left < 16) {
-      tooltipEl.style.left = '16px';
-    } else if (tooltipRect.right > window.innerWidth - 16) {
-      tooltipEl.style.left = `${window.innerWidth - tooltipEl.offsetWidth - 16}px`;
+    if (visible) {
+      positionTooltip();
+      window.addEventListener('resize', positionTooltip);
+      window.addEventListener('scroll', positionTooltip);
     }
-  }, [visible, anchorRef]);
+    
+    return () => {
+      window.removeEventListener('resize', positionTooltip);
+      window.removeEventListener('scroll', positionTooltip);
+    };
+  }, [visible, anchorRef, currentSlide]);
   
-  // Close tooltip when clicking outside
+  // Auto-advance slides
   useEffect(() => {
     if (!visible) return;
     
-    const handleClickOutside = (e: MouseEvent) => {
-      if (tooltipRef.current && !tooltipRef.current.contains(e.target as Node)) {
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % data.slides.length);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [visible, data.slides.length]);
+  
+  // Handle clicks outside the tooltip
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
     
-    document.addEventListener('mousedown', handleClickOutside);
+    if (visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [visible, onClose]);
   
-  // Navigate between slides
-  const goToNextSlide = () => {
-    setCurrentSlide(prev => (prev + 1) % data.slides.length);
-  };
+  if (!visible) return null;
   
-  const goToPrevSlide = () => {
-    setCurrentSlide(prev => (prev - 1 + data.slides.length) % data.slides.length);
-  };
-  
-  if (!data || !visible) return null;
+  const slide = data.slides[currentSlide];
   
   return (
     <div 
       ref={tooltipRef}
-      className={`experience-tooltip ${visible ? 'visible' : ''}`}
+      className={`absolute z-50 w-72 bg-white rounded-lg shadow-lg overflow-hidden transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      style={{
+        transform: 'translate3d(0, 0, 0)'
+      }}
     >
-      <div className="tooltip-header">
-        <div className="tooltip-image-container">
-          <img 
-            src={data.slides[currentSlide].image} 
-            alt={data.slides[currentSlide].title}
-            className="tooltip-image"
+      <div className="relative">
+        <img 
+          src={slide.image}
+          alt={slide.title}
+          className="w-full h-40 object-cover"
+        />
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70"
+        >
+          ×
+        </button>
+      </div>
+      
+      <div className="p-4">
+        <h3 className="text-lg font-medium mb-1">{slide.title}</h3>
+        <p className="text-gray-600 text-sm">{slide.description}</p>
+      </div>
+      
+      <div className="flex justify-center pb-3">
+        {data.slides.map((_, index) => (
+          <button
+            key={index}
+            className={`mx-1 w-2 h-2 rounded-full ${index === currentSlide ? 'bg-blue-500' : 'bg-gray-300'}`}
+            onClick={() => setCurrentSlide(index)}
           />
-        </div>
-        <div className="tooltip-title-container">
-          <h4 className="tooltip-title">{data.title}</h4>
-          {data.location && <p className="tooltip-subtitle">{data.location}</p>}
-          {data.year && <p className="tooltip-subtitle">{data.year}</p>}
-        </div>
+        ))}
       </div>
-      
-      <div className="tooltip-content">
-        <h5 className="tooltip-title">{data.slides[currentSlide].title}</h5>
-        <p className="tooltip-description">{data.slides[currentSlide].description}</p>
-      </div>
-      
-      {data.slides.length > 1 && (
-        <>
-          <div className="tooltip-indicator">
-            {data.slides.map((_, index) => (
-              <div 
-                key={index} 
-                className={`tooltip-dot ${index === currentSlide ? 'active' : ''}`}
-                onClick={() => setCurrentSlide(index)}
-              />
-            ))}
-          </div>
-          
-          <div className="tooltip-navigation">
-            <button 
-              className="tooltip-nav-button prev"
-              onClick={goToPrevSlide}
-              aria-label="Previous slide"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-              Previous
-            </button>
-            
-            <button 
-              className="tooltip-nav-button next"
-              onClick={goToNextSlide}
-              aria-label="Next slide"
-            >
-              Next
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
-}
+};
+
+export default ExperienceTooltip;

@@ -1,21 +1,20 @@
+
+type Slide = {
+  image: string;
+  title: string;
+  description: string;
+};
+
 export interface Experience {
   id: string;
   title: string;
-  location?: string;
-  year?: string;
-  slides: {
-    image: string;
-    title: string;
-    description: string;
-  }[];
+  slides: Slide[];
 }
 
 export const experiences: Record<string, Experience> = {
   busright: {
     id: 'busright',
     title: 'BusRight',
-    location: 'Boston, MA',
-    year: '2018-2023',
     slides: [
       {
         image: '/images/experiences/placeholder1.jpg',
@@ -37,8 +36,6 @@ export const experiences: Record<string, Experience> = {
   dormRoomFund: {
     id: 'dormRoomFund',
     title: 'Dorm Room Fund',
-    location: 'Boston, MA',
-    year: '2016-2018',
     slides: [
       {
         image: '/images/experiences/placeholder2.jpg',
@@ -60,8 +57,6 @@ export const experiences: Record<string, Experience> = {
   northeastern: {
     id: 'northeastern',
     title: 'Northeastern University',
-    location: 'Boston, MA',
-    year: '2014-2018',
     slides: [
       {
         image: '/images/experiences/placeholder3.jpg',
