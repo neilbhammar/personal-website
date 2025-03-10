@@ -211,239 +211,119 @@ const UltraMinimal = () => {
     }
   };
 
-  // Professional school buses animation with data visualization aesthetic
+  // Enhanced school buses effect with improved animation
   const handleBusesHoverStart = () => {
     if (busesHoverTimerRef.current) return;
 
     busesHoverTimerRef.current = setTimeout(() => {
-      if (busesRef.current && !busesActive) {
-        setBusesActive(true);
+      setBusesActive(true);
+      busesHoverTimerRef.current = null;
 
-        // Create SVG container for high-quality animation
-        const svgContainer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svgContainer.setAttribute("width", "100%");
-        svgContainer.setAttribute("height", "80");
-        svgContainer.setAttribute("viewBox", "0 0 400 80");
-        svgContainer.style.position = "absolute";
-        svgContainer.style.top = "100%";
-        svgContainer.style.left = "0";
-        svgContainer.style.opacity = "0";
-        svgContainer.style.overflow = "visible";
-
-        // Create defs for gradients and filters
-        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-
-        // Create gradient for route
-        const routeGradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-        routeGradient.setAttribute("id", "routeGradient");
-        routeGradient.setAttribute("x1", "0%");
-        routeGradient.setAttribute("y1", "0%");
-        routeGradient.setAttribute("x2", "100%");
-        routeGradient.setAttribute("y2", "0%");
-
-        const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-        stop1.setAttribute("offset", "0%");
-        stop1.setAttribute("stop-color", "#2563eb");
-
-        const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-        stop2.setAttribute("offset", "100%");
-        stop2.setAttribute("stop-color", "#3b82f6");
-
-        routeGradient.appendChild(stop1);
-        routeGradient.appendChild(stop2);
-
-        // Create glow filter
-        const glowFilter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-        glowFilter.setAttribute("id", "glow");
-        glowFilter.setAttribute("x", "-20%");
-        glowFilter.setAttribute("y", "-20%");
-        glowFilter.setAttribute("width", "140%");
-        glowFilter.setAttribute("height", "140%");
-
-        const feGaussianBlur = document.createElementNS("http://www.w3.org/2000/svg", "feGaussianBlur");
-        feGaussianBlur.setAttribute("stdDeviation", "2");
-        feGaussianBlur.setAttribute("result", "blur");
-
-        const feComposite = document.createElementNS("http://www.w3.org/2000/svg", "feComposite");
-        feComposite.setAttribute("in", "SourceGraphic");
-        feComposite.setAttribute("in2", "blur");
-        feComposite.setAttribute("operator", "over");
-
-        glowFilter.appendChild(feGaussianBlur);
-        glowFilter.appendChild(feComposite);
-
-        defs.appendChild(routeGradient);
-        defs.appendChild(glowFilter);
-        svgContainer.appendChild(defs);
-
-        // Create the route path
-        const routePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        routePath.setAttribute("d", "M0,40 C100,20 300,60 400,40");
-        routePath.setAttribute("stroke", "url(#routeGradient)");
-        routePath.setAttribute("stroke-width", "3");
-        routePath.setAttribute("fill", "none");
-        routePath.setAttribute("stroke-dasharray", "400");
-        routePath.setAttribute("stroke-dashoffset", "400");
-        routePath.setAttribute("filter", "url(#glow)");
-
-        svgContainer.appendChild(routePath);
-
-        // Add data points along the route
-        const dataPoints = [
-          { x: 50, y: 32, label: "Fleet" },
-          { x: 150, y: 43, label: "Routes" },
-          { x: 250, y: 30, label: "Safety" },
-          { x: 350, y: 38, label: "Efficiency" }
-        ];
-
-        dataPoints.forEach((point, index) => {
-          // Create point
-          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-          circle.setAttribute("cx", point.x.toString());
-          circle.setAttribute("cy", point.y.toString());
-          circle.setAttribute("r", "0");
-          circle.setAttribute("fill", "#ffffff");
-          circle.setAttribute("stroke", "#3b82f6");
-          circle.setAttribute("stroke-width", "1.5");
-          circle.setAttribute("filter", "url(#glow)");
-          circle.style.opacity = "0";
-
-          // Create label
-          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          text.setAttribute("x", point.x.toString());
-          text.setAttribute("y", (point.y - 10).toString());
-          text.setAttribute("text-anchor", "middle");
-          text.setAttribute("font-size", "8");
-          text.setAttribute("fill", "#64748b");
-          text.setAttribute("font-family", "Inter, system-ui, sans-serif");
-          text.textContent = point.label;
-          text.style.opacity = "0";
-
-          svgContainer.appendChild(circle);
-          svgContainer.appendChild(text);
-
-          // Animate point and label appearance
-          gsap.to(circle, {
-            attr: { r: 4 },
-            opacity: 1,
-            delay: 0.5 + (index * 0.2),
-            duration: 0.4,
-            ease: "back.out"
-          });
-
-          gsap.to(text, {
-            opacity: 1,
-            delay: 0.6 + (index * 0.2),
-            duration: 0.3
-          });
+      if (busesRef.current) {
+        // Apply a subtle highlight effect to the text first
+        busesRef.current && gsap.to(busesRef.current, {
+          backgroundColor: 'rgba(255, 221, 0, 0.2)',
+          borderRadius: '3px',
+          padding: '0 4px',
+          duration: 0.5
         });
 
-        // Create a sophisticated bus icon
-        const bus = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        bus.setAttribute("transform", "translate(0, 40) scale(0.25)");
+        // Create a small map/route visualization next to the text
+        const routeContainer = document.createElement('div');
+        routeContainer.className = 'route-container';
+        routeContainer.style.position = 'absolute';
+        routeContainer.style.top = '100%';
+        routeContainer.style.left = '0';
+        routeContainer.style.width = '100%';
+        routeContainer.style.height = '4px';
+        routeContainer.style.background = 'linear-gradient(90deg, #FFDD00 0%, #FFC107 100%)';
+        routeContainer.style.marginTop = '4px';
+        routeContainer.style.borderRadius = '2px';
+        routeContainer.style.opacity = '0';
+        routeContainer.style.boxShadow = '0 0 5px rgba(255, 221, 0, 0.3)';
 
-        // Bus body
-        const busBody = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        busBody.setAttribute("d", "M0,0 L60,0 C65,0 70,-5 70,-10 L70,-30 C70,-35 65,-40 60,-40 L10,-40 C5,-40 0,-35 0,-30 L0,0 Z");
-        busBody.setAttribute("fill", "#1e40af");
-        busBody.setAttribute("stroke", "#1e3a8a");
-        busBody.setAttribute("stroke-width", "1");
+        // Add small stop points along the route
+        const stopCount = 5;
+        for (let i = 0; i < stopCount; i++) {
+          const stop = document.createElement('div');
+          stop.style.position = 'absolute';
+          stop.style.width = '6px';
+          stop.style.height = '6px';
+          stop.style.borderRadius = '50%';
+          stop.style.backgroundColor = 'white';
+          stop.style.border = '1px solid rgba(0,0,0,0.2)';
+          stop.style.top = '-2px';
+          stop.style.left = `${(i+1) * (100 / (stopCount+1))}%`;
+          stop.style.transform = 'scale(0)';
+          stop.style.boxShadow = '0 0 3px rgba(255, 255, 255, 0.5)';
 
-        // Bus windows
-        const busWindows = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        busWindows.setAttribute("d", "M10,-35 L60,-35 C62,-35 65,-33 65,-30 L65,-15 C65,-12 62,-10 60,-10 L10,-10 C8,-10 5,-12 5,-15 L5,-30 C5,-33 8,-35 10,-35 Z");
-        busWindows.setAttribute("fill", "#93c5fd");
-        busWindows.setAttribute("stroke", "#60a5fa");
-        busWindows.setAttribute("stroke-width", "0.5");
+          routeContainer.appendChild(stop);
 
-        // Front lights
-        const frontLight = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        frontLight.setAttribute("cx", "5");
-        frontLight.setAttribute("cy", "-5");
-        frontLight.setAttribute("r", "2");
-        frontLight.setAttribute("fill", "#fef3c7");
-        frontLight.setAttribute("filter", "url(#glow)");
+          // Animate each stop appearing
+          gsap.to(stop, {
+            scale: 1,
+            delay: 0.3 + (i * 0.1),
+            duration: 0.2,
+            ease: 'back.out'
+          });
+        }
 
-        // Wheels
-        const wheel1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        wheel1.setAttribute("cx", "15");
-        wheel1.setAttribute("cy", "0");
-        wheel1.setAttribute("r", "5");
-        wheel1.setAttribute("fill", "#1f2937");
-        wheel1.setAttribute("stroke", "#4b5563");
-        wheel1.setAttribute("stroke-width", "1");
-
-        const wheel2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        wheel2.setAttribute("cx", "55");
-        wheel2.setAttribute("cy", "0");
-        wheel2.setAttribute("r", "5");
-        wheel2.setAttribute("fill", "#1f2937");
-        wheel2.setAttribute("stroke", "#4b5563");
-        wheel2.setAttribute("stroke-width", "1");
-
-        bus.appendChild(busBody);
-        bus.appendChild(busWindows);
-        bus.appendChild(frontLight);
-        bus.appendChild(wheel1);
-        bus.appendChild(wheel2);
-
-        svgContainer.appendChild(bus);
-        busesRef.current.appendChild(svgContainer);
-
-        // Animate SVG appearance
-        gsap.to(svgContainer, {
-          opacity: 1,
-          duration: 0.4
-        });
+        // Create a tiny school bus that moves along the route
+        const miniBus = document.createElement('div');
+        miniBus.style.position = 'absolute';
+        miniBus.style.width = '12px';
+        miniBus.style.height = '8px';
+        miniBus.style.backgroundColor = '#FFDD00';
+        miniBus.style.borderRadius = '2px';
+        miniBus.style.top = '-4px';
+        miniBus.style.left = '0';
+        miniBus.style.transform = 'translateX(-50%)';
+        miniBus.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        
+        // Add windows to the bus for more detail
+        const busWindows = document.createElement('div');
+        busWindows.style.position = 'absolute';
+        busWindows.style.top = '2px';
+        busWindows.style.left = '2px';
+        busWindows.style.right = '2px';
+        busWindows.style.height = '2px';
+        busWindows.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+        
+        miniBus.appendChild(busWindows);
+        routeContainer.appendChild(miniBus);
+        busesRef.current.appendChild(routeContainer);
 
         // Animate the route appearing
-        gsap.to(routePath, {
-          strokeDashoffset: 0,
-          duration: 1.5,
-          ease: "power2.inOut"
+        gsap.to(routeContainer, {
+          opacity: 1,
+          duration: 0.3
         });
 
-        // Path motion for the bus
-        const pathMotion = {
-          path: routePath,
-          align: "self",
-          alignOrigin: [0.1, 0.5],
-          autoRotate: true,
-          start: 0,
-          end: 1
-        };
-
-        // Animate the bus moving along the path
-        gsap.to(bus, {
-          motionPath: pathMotion,
-          duration: 4,
-          ease: "power1.inOut",
-          onUpdate: function() {
-            // Add subtle bounce to wheels
-            const progress = this.progress();
-            const bounceY = Math.sin(progress * Math.PI * 10) * 1;
-
-            gsap.set(wheel1, { 
-              attr: { cy: bounceY }
-            });
-            gsap.set(wheel2, { 
-              attr: { cy: bounceY }
-            });
+        // Animate the bus moving along the route with a small bounce effect
+        gsap.to(miniBus, {
+          left: '100%',
+          duration: 3,
+          ease: 'power1.inOut',
+          onUpdate: () => {
+            // Add a small up/down motion as the bus moves
+            const progress = gsap.getProperty(miniBus, 'left') as number / 100;
+            const bounce = Math.sin(progress * Math.PI * 8) * 1;
+            miniBus.style.top = `${-4 + bounce}px`;
           },
           onComplete: () => {
-            // Fade out the SVG when finished
-            gsap.to(svgContainer, {
+            // Fade out the route when finished
+            gsap.to(routeContainer, {
               opacity: 0,
-              duration: 0.5,
+              duration: 0.3,
               onComplete: () => {
                 // Reset the text styling
                 busesRef.current && gsap.to(busesRef.current, {
                   backgroundColor: 'transparent',
                   padding: '0',
-                  duration: 0.3,
+                  duration: 0.5,
                   onComplete: () => {
-                    if (busesRef.current && busesRef.current.contains(svgContainer)) {
-                      busesRef.current.removeChild(svgContainer);
+                    if (busesRef.current && busesRef.current.contains(routeContainer)) {
+                      busesRef.current.removeChild(routeContainer);
                     }
                     setBusesActive(false);
                   }
@@ -453,7 +333,7 @@ const UltraMinimal = () => {
           }
         });
       }
-    }, 500); // Reduced delay for better responsiveness
+    }, 1000); // 1 second delay
   };
 
   const handleBusesHoverEnd = () => {

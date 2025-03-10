@@ -186,25 +186,6 @@ body {
     transition: opacity 0.3s ease;
     opacity: 0;
   }
-
-/* Bus animation with professional styling */
-@keyframes wheel-rotation {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes data-pulse {
-  0% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 0.7; transform: scale(1); }
-}
-
-@keyframes path-glow {
-  0% { filter: drop-shadow(0px 0px 2px rgba(59, 130, 246, 0.5)); }
-  50% { filter: drop-shadow(0px 0px 4px rgba(59, 130, 246, 0.8)); }
-  100% { filter: drop-shadow(0px 0px 2px rgba(59, 130, 246, 0.5)); }
-}
-
   
   .flashlight-effect.active {
     opacity: 1;
