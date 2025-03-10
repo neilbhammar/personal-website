@@ -43,7 +43,7 @@ const UltraMinimal = () => {
     return () => document.removeEventListener('mousemove', handleMouseMove);
   }, [flashlightActive]);
 
-  // Auto-disable effects after 8 seconds
+  // Auto-disable effects after 5 seconds
   useEffect(() => {
     if (flashlightActive || bananagramsActive || busesActive) {
       if (effectTimeoutRef.current) {
@@ -54,7 +54,7 @@ const UltraMinimal = () => {
         setFlashlightActive(false);
         setBananagramsActive(false);
         setBusesActive(false);
-      }, 8000);
+      }, 5000);
     }
     
     return () => {
@@ -90,38 +90,63 @@ const UltraMinimal = () => {
       
       // Apply the tile effect animation
       if (bananagramsRef.current) {
-        const letters = bananagramsRef.current.textContent?.split('') || [];
-        bananagramsRef.current.innerHTML = '';
+        // Store the original word
+        const originalWord = 'bananagrams';
         
-        letters.forEach((letter, index) => {
-          const tile = document.createElement('span');
-          tile.className = 'bananagram-tile';
-          tile.textContent = letter;
-          tile.style.display = 'inline-block';
-          tile.style.backgroundColor = '#f8f0d8';
-          tile.style.border = '1px solid #e6d6b5';
-          tile.style.borderRadius = '3px';
-          tile.style.padding = '2px 3px';
-          tile.style.margin = '0 1px';
-          tile.style.fontFamily = 'monospace';
-          tile.style.fontSize = '0.9em';
-          tile.style.fontWeight = 'bold';
-          tile.style.color = '#000';
-          tile.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-          tile.style.transform = 'scale(0)';
+        // We'll keep the original span but add a wrapper to maintain layout
+        const wrapper = document.createElement('span');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+        wrapper.style.whiteSpace = 'nowrap';
+        
+        // Add the wrapper while keeping the original text for spacing
+        const parent = bananagramsRef.current.parentNode;
+        if (parent) {
+          // Create an invisible clone to preserve text spacing
+          const invisibleClone = document.createElement('span');
+          invisibleClone.textContent = originalWord;
+          invisibleClone.style.visibility = 'hidden';
+          invisibleClone.style.position = 'absolute';
+          invisibleClone.style.pointerEvents = 'none';
           
-          bananagramsRef.current?.appendChild(tile);
+          // Clear the reference span and add the wrapper
+          bananagramsRef.current.textContent = '';
+          bananagramsRef.current.appendChild(invisibleClone);
+          bananagramsRef.current.appendChild(wrapper);
           
-          // Animate each tile popping in
-          gsap.to(tile, {
-            scale: 1,
-            duration: 0.3,
-            delay: index * 0.05,
-            ease: 'back.out(1.7)',
+          // Create and animate individual letter tiles within the wrapper
+          originalWord.split('').forEach((letter, index) => {
+            const tile = document.createElement('span');
+            tile.className = 'bananagram-tile';
+            tile.textContent = letter;
+            tile.style.display = 'inline-block';
+            tile.style.position = 'relative';
+            tile.style.backgroundColor = '#f8f0d8';
+            tile.style.border = '1px solid #e6d6b5';
+            tile.style.borderRadius = '3px';
+            tile.style.padding = '1px 2px';
+            tile.style.margin = '0 1px';
+            tile.style.fontFamily = 'monospace';
+            tile.style.fontSize = '0.9em';
+            tile.style.fontWeight = 'bold';
+            tile.style.color = '#000';
+            tile.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+            tile.style.transformOrigin = 'center';
+            tile.style.transform = 'rotateY(90deg)';
+            
+            wrapper.appendChild(tile);
+            
+            // Flip each tile with a staggered delay
+            gsap.to(tile, {
+              rotateY: 0,
+              duration: 0.4,
+              delay: index * 0.05,
+              ease: 'back.out(1.2)',
+            });
           });
-        });
+        }
       }
-    }, 2000); // 2 second delay
+    }, 1000); // 1 second delay
   };
   
   const handleBananagramsHoverEnd = () => {
@@ -151,7 +176,7 @@ const UltraMinimal = () => {
     lostHoverTimerRef.current = setTimeout(() => {
       setFlashlightActive(true);
       lostHoverTimerRef.current = null;
-    }, 2000); // 2 second delay
+    }, 1000); // 1 second delay
   };
   
   const handleLostHoverEnd = () => {
@@ -161,7 +186,7 @@ const UltraMinimal = () => {
     }
   };
 
-  // School buses effect
+  // School buses effect - much more subtle and polished
   const handleBusesHoverStart = () => {
     if (busesHoverTimerRef.current) return;
     
@@ -169,86 +194,103 @@ const UltraMinimal = () => {
       setBusesActive(true);
       busesHoverTimerRef.current = null;
       
-      // Apply the school bus animation
       if (busesRef.current) {
-        // Create bus animation elements
-        const busCount = 3; // Multiple buses
+        // Apply a subtle highlight effect to the text first
+        busesRef.current && gsap.to(busesRef.current, {
+          backgroundColor: 'rgba(255, 221, 0, 0.2)',
+          borderRadius: '3px',
+          padding: '0 4px',
+          duration: 0.5
+        });
         
-        for (let i = 0; i < busCount; i++) {
-          const busContainer = document.createElement('div');
-          busContainer.className = 'bus-container';
-          busContainer.style.position = 'fixed';
-          busContainer.style.left = '-150px';
-          busContainer.style.bottom = `${60 + (i * 40)}px`;
-          busContainer.style.zIndex = '100';
-          busContainer.style.transform = 'scale(0.5)';
-          busContainer.style.transformOrigin = 'center';
+        // Create a small map/route visualization next to the text
+        const routeContainer = document.createElement('div');
+        routeContainer.className = 'route-container';
+        routeContainer.style.position = 'absolute';
+        routeContainer.style.top = '100%';
+        routeContainer.style.left = '0';
+        routeContainer.style.width = '100%';
+        routeContainer.style.height = '2px';
+        routeContainer.style.background = '#FFDD00';
+        routeContainer.style.marginTop = '2px';
+        routeContainer.style.borderRadius = '1px';
+        routeContainer.style.opacity = '0';
+        
+        // Add small stop points along the route
+        const stopCount = 5;
+        for (let i = 0; i < stopCount; i++) {
+          const stop = document.createElement('div');
+          stop.style.position = 'absolute';
+          stop.style.width = '4px';
+          stop.style.height = '4px';
+          stop.style.borderRadius = '50%';
+          stop.style.backgroundColor = 'white';
+          stop.style.border = '1px solid rgba(0,0,0,0.2)';
+          stop.style.top = '-2px';
+          stop.style.left = `${(i+1) * (100 / (stopCount+1))}%`;
+          stop.style.transform = 'scale(0)';
           
-          // Create the bus
-          const bus = document.createElement('div');
-          bus.className = 'bus';
-          bus.style.width = '100px';
-          bus.style.height = '40px';
-          bus.style.backgroundColor = '#FFDD00';
-          bus.style.borderRadius = '8px';
-          bus.style.position = 'relative';
-          bus.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+          routeContainer.appendChild(stop);
           
-          // Create the windows
-          const windowCount = 3;
-          for (let j = 0; j < windowCount; j++) {
-            const busWindow = document.createElement('div');
-            busWindow.style.width = '15px';
-            busWindow.style.height = '15px';
-            busWindow.style.backgroundColor = '#87CEEB';
-            busWindow.style.position = 'absolute';
-            busWindow.style.top = '5px';
-            busWindow.style.left = `${25 + (j * 20)}px`;
-            busWindow.style.borderRadius = '3px';
-            bus.appendChild(busWindow);
-          }
-          
-          // Create the wheels
-          for (let j = 0; j < 2; j++) {
-            const wheel = document.createElement('div');
-            wheel.style.width = '15px';
-            wheel.style.height = '15px';
-            wheel.style.backgroundColor = '#333';
-            wheel.style.borderRadius = '50%';
-            wheel.style.position = 'absolute';
-            wheel.style.bottom = '-8px';
-            wheel.style.left = j === 0 ? '15px' : '70px';
-            bus.appendChild(wheel);
-          }
-          
-          busContainer.appendChild(bus);
-          document.body.appendChild(busContainer);
-          
-          // Animate the bus moving across the screen
-          gsap.to(busContainer, {
-            x: window.innerWidth + 150,
-            duration: 6 - (i * 0.5),
-            delay: i * 0.5,
-            ease: 'power1.inOut',
-            onComplete: () => {
-              document.body.removeChild(busContainer);
-              if (i === busCount - 1) {
-                setBusesActive(false);
-              }
-            }
-          });
-          
-          // Slightly bounce the bus
-          gsap.to(bus, {
-            y: -3,
-            duration: 0.5,
-            repeat: -1,
-            yoyo: true,
-            ease: 'power1.inOut'
+          // Animate each stop appearing
+          gsap.to(stop, {
+            scale: 1,
+            delay: 0.3 + (i * 0.1),
+            duration: 0.2,
+            ease: 'back.out'
           });
         }
+        
+        // Create a tiny bus that moves along the route
+        const miniBus = document.createElement('div');
+        miniBus.style.position = 'absolute';
+        miniBus.style.width = '8px';
+        miniBus.style.height = '6px';
+        miniBus.style.backgroundColor = '#FFDD00';
+        miniBus.style.borderRadius = '2px';
+        miniBus.style.top = '-3px';
+        miniBus.style.left = '0';
+        miniBus.style.transform = 'translateX(-50%)';
+        miniBus.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+        
+        routeContainer.appendChild(miniBus);
+        busesRef.current.appendChild(routeContainer);
+        
+        // Animate the route appearing
+        gsap.to(routeContainer, {
+          opacity: 1,
+          duration: 0.3
+        });
+        
+        // Animate the bus moving along the route
+        gsap.to(miniBus, {
+          left: '100%',
+          duration: 3,
+          ease: 'power1.inOut',
+          onComplete: () => {
+            // Fade out the route when finished
+            gsap.to(routeContainer, {
+              opacity: 0,
+              duration: 0.3,
+              onComplete: () => {
+                // Reset the text styling
+                busesRef.current && gsap.to(busesRef.current, {
+                  backgroundColor: 'transparent',
+                  padding: '0',
+                  duration: 0.5,
+                  onComplete: () => {
+                    if (busesRef.current && busesRef.current.contains(routeContainer)) {
+                      busesRef.current.removeChild(routeContainer);
+                    }
+                    setBusesActive(false);
+                  }
+                });
+              }
+            });
+          }
+        });
       }
-    }, 2000); // 2 second delay
+    }, 1000); // 1 second delay
   };
   
   const handleBusesHoverEnd = () => {
