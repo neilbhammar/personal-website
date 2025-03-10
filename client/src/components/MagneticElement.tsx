@@ -1,6 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
-import { cn } from '@/lib/utils';
 
 interface MagneticElementProps {
   children: React.ReactNode;
@@ -12,123 +11,141 @@ interface MagneticElementProps {
 
 const MagneticElement: React.FC<MagneticElementProps> = ({
   children,
-  className,
+  className = '',
   strength = 0.5,
   damping = 0.1,
   interactive = true,
 }) => {
   const elementRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  
-  // Animation properties
-  const boundingClientRect = useRef<DOMRect | null>(null);
-  const targetRotation = useRef({ x: 0, y: 0 });
-  const targetPosition = useRef({ x: 0, y: 0 });
-  
-  // Mouse enter handler
-  const handleMouseEnter = () => {
-    if (!interactive) return;
-    setIsHovered(true);
-    
-    if (elementRef.current) {
-      // Store the element dimensions for calculations
-      boundingClientRect.current = elementRef.current.getBoundingClientRect();
-    }
-  };
-  
-  // Mouse leave handler
-  const handleMouseLeave = () => {
-    if (!interactive) return;
-    setIsHovered(false);
-    
-    // Reset position and rotation when mouse leaves
-    gsap.to(elementRef.current, {
-      x: 0,
-      y: 0,
-      rotationX: 0,
-      rotationY: 0,
-      duration: 1,
-      ease: 'elastic.out(1, 0.3)',
-    });
-  };
-  
-  // Mouse move handler
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isHovered || !interactive || !boundingClientRect.current) return;
-    
-    // Calculate center point of the element
-    const centerX = boundingClientRect.current.left + boundingClientRect.current.width / 2;
-    const centerY = boundingClientRect.current.top + boundingClientRect.current.height / 2;
-    
-    // Calculate mouse distance from center
-    const distanceX = e.clientX - centerX;
-    const distanceY = e.clientY - centerY;
-    
-    // Calculate normalized distances (from -1 to 1)
-    const normalizedX = distanceX / (boundingClientRect.current.width / 2);
-    const normalizedY = distanceY / (boundingClientRect.current.height / 2);
-    
-    // Calculate target position and rotation based on distance
-    targetPosition.current = {
-      x: normalizedX * strength * 15,
-      y: normalizedY * strength * 15,
+  const boundingRef = useRef<DOMRect | null>(null);
+  const isHovering = useRef(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const raf = useRef<number | null>(null);
+  const animation = useRef<gsap.core.Tween | null>(null);
+
+  // Update bounding box on resize
+  useEffect(() => {
+    const updateBounds = () => {
+      if (elementRef.current) {
+        boundingRef.current = elementRef.current.getBoundingClientRect();
+      }
     };
-    
-    targetRotation.current = {
-      x: -normalizedY * strength * 10,
-      y: normalizedX * strength * 10,
+
+    // Initialize bounds
+    updateBounds();
+
+    // Update bounds on resize
+    window.addEventListener('resize', updateBounds);
+    window.addEventListener('scroll', updateBounds);
+
+    return () => {
+      window.removeEventListener('resize', updateBounds);
+      window.removeEventListener('scroll', updateBounds);
+      
+      if (raf.current) {
+        cancelAnimationFrame(raf.current);
+      }
+      
+      if (animation.current) {
+        animation.current.kill();
+      }
     };
-  };
-  
-  // Animation effect
+  }, []);
+
+  // Handle mouse interaction
   useEffect(() => {
     if (!interactive) return;
     
-    let rafId: number;
-    let currentX = 0;
-    let currentY = 0;
-    let currentRotationX = 0;
-    let currentRotationY = 0;
-    
-    const animate = () => {
-      // Calculate new position with damping
-      currentX += (targetPosition.current.x - currentX) * damping;
-      currentY += (targetPosition.current.y - currentY) * damping;
-      currentRotationX += (targetRotation.current.x - currentRotationX) * damping;
-      currentRotationY += (targetRotation.current.y - currentRotationY) * damping;
+    const element = elementRef.current;
+    if (!element) return;
+
+    // Mouse enter handler
+    const handleMouseEnter = () => {
+      isHovering.current = true;
+      if (boundingRef.current) {
+        gsap.to(element, {
+          scale: 1.1,
+          duration: 0.4,
+          ease: 'power2.out',
+        });
+      }
+    };
+
+    // Mouse leave handler
+    const handleMouseLeave = () => {
+      isHovering.current = false;
+      gsap.to(element, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 0.7,
+        ease: 'elastic.out(1, 0.3)',
+      });
+    };
+
+    // Mouse move handler
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!boundingRef.current || !isHovering.current) return;
+
+      const { left, top, width, height } = boundingRef.current;
       
-      // Apply the transforms
-      if (elementRef.current) {
-        gsap.set(elementRef.current, {
-          x: currentX,
-          y: currentY,
-          rotationX: currentRotationX,
-          rotationY: currentRotationY,
+      // Calculate relative position (0 to 1)
+      const x = (e.clientX - left) / width - 0.5;
+      const y = (e.clientY - top) / height - 0.5;
+      
+      setMousePosition({ x, y });
+    };
+
+    // Add event listeners
+    element.addEventListener('mouseenter', handleMouseEnter);
+    element.addEventListener('mouseleave', handleMouseLeave);
+    element.addEventListener('mousemove', handleMouseMove);
+
+    // Animate magnetic effect
+    const animateMagnetism = () => {
+      if (isHovering.current && boundingRef.current) {
+        const { width, height } = boundingRef.current;
+        
+        // Calculate target position based on mouse position and element size
+        const targetX = mousePosition.x * width * strength;
+        const targetY = mousePosition.y * height * strength;
+        
+        // Create smooth animation to follow mouse
+        animation.current = gsap.to(element, {
+          x: targetX,
+          y: targetY,
+          duration: damping,
+          ease: 'power2.out',
+          overwrite: true,
         });
       }
       
-      // Continue animation
-      rafId = requestAnimationFrame(animate);
+      raf.current = requestAnimationFrame(animateMagnetism);
     };
     
-    // Start animation if hovered
-    if (isHovered) {
-      animate();
-    }
-    
-    // Cleanup animation frame on unmount or when hover state changes
+    raf.current = requestAnimationFrame(animateMagnetism);
+
+    // Clean up
     return () => {
-      cancelAnimationFrame(rafId);
+      element.removeEventListener('mouseenter', handleMouseEnter);
+      element.removeEventListener('mouseleave', handleMouseLeave);
+      element.removeEventListener('mousemove', handleMouseMove);
+      
+      if (raf.current) {
+        cancelAnimationFrame(raf.current);
+      }
+      
+      if (animation.current) {
+        animation.current.kill();
+      }
     };
-  }, [isHovered, damping, interactive]);
-  
+  }, [interactive, strength, damping, mousePosition]);
+
   return (
     <div
       ref={elementRef}
-      className={cn('magnetic-element', className)}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
+      className={`magnetic-element ${className}`}
+      style={{ display: 'inline-block', transform: 'translate3d(0, 0, 0)' }}
     >
       {children}
     </div>
