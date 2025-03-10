@@ -446,7 +446,7 @@ const UltraMinimal = () => {
 
         <p>
           I'm not sure what's next for me — I'm honestly a little{" "}
-          <span className="interactive-text" ref={funRef}>
+          <span className="interactive-text" ref={funRef} onMouseEnter={handleLostHoverStart} onMouseLeave={handleLostHoverEnd}>
             lost
           </span>
           , but I think that's part of the process. I'm a tinkerer by nature, so
