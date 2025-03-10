@@ -521,8 +521,8 @@ const UltraMinimal = () => {
           >
             lost
           </span>
-          , but I've been told that's part of the process. I'm a tinkerer by
-          nature, so I might find myself posting fun projects here.
+          , but I think that's part of the process. I'm a tinkerer by nature, so
+          I might find myself posting fun projects here.
         </p>
 
         <p>
