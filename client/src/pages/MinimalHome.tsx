@@ -36,7 +36,7 @@ const MinimalHome = () => {
 
   return (
     <FlashlightEffect isActive={flashlightActive}>
-      <div className="min-h-screen bg-white text-gray-800 flex flex-col justify-center">
+      <div className="min-h-screen bg-white text-gray-800 flex flex-col">
         {/* Subtle header */}
         <SubtleHeader>
           <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
@@ -65,7 +65,7 @@ const MinimalHome = () => {
         </SubtleHeader>
 
         {/* Main content with subtle styling */}
-        <div className="flex-1 flex flex-col items-center justify-center mx-auto" ref={contentRef}>
+        <div className="flex-1 pt-24" ref={contentRef}>
           {/* Tiles effect that appears when triggered */}
           <TilesEffect
             text="bananagrams"

@@ -399,8 +399,8 @@ const UltraMinimal = () => {
   }, []);
 
   return (
-    <main className="py-10 px-8 md:py-16 md:px-16 relative flex justify-center items-center min-h-screen">
-      <div ref={contentRef} className="max-w-2xl w-full mx-auto space-y-8">
+    <main className="py-10 px-8 md:py-16 md:px-16 relative">
+      <div ref={contentRef} className="max-w-2xl mx-auto space-y-8">
         <h1 className="text-2xl">Hi, I'm Neil.</h1>
 
         <p>
