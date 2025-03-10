@@ -8,18 +8,21 @@ import NewHome from "@/pages/NewHome";
 import MinimalHome from "@/pages/MinimalHome";
 import UltraMinimal from "@/pages/UltraMinimal";
 import { useEffect } from "react";
+// Added import for FeatureFlagProvider (assuming it exists elsewhere)
+import { FeatureFlagProvider } from './context/FeatureFlagContext'; // Adjust path as needed
+
 
 function Router() {
   // Implement smooth scrolling
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
-    
+
     // Clean up
     return () => {
       document.documentElement.style.scrollBehavior = '';
     };
   }, []);
-  
+
   return (
     <Switch>
       <Route path="/" component={UltraMinimal} />
@@ -34,8 +37,10 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
+      <FeatureFlagProvider>
+        <Router />
+        <Toaster />
+      </FeatureFlagProvider>
     </QueryClientProvider>
   );
 }

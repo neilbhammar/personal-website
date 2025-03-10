@@ -569,3 +569,95 @@ const UltraMinimal = () => {
 };
 
 export default UltraMinimal;
+import React from 'react';
+import CanvasAnimation from '@/components/CanvasAnimation';
+import ExperienceTooltip from '@/components/ExperienceTooltip';
+import FeatureFlagControls from '@/components/FeatureFlagControls';
+import { useEnhancedTooltip } from '@/hooks/use-enhanced-tooltip';
+import { FeatureFlagProvider } from '@/contexts/FeatureFlagContext';
+
+// Sample data for tooltips
+const experiences = {
+  busright: {
+    title: "That time a customer got a tattoo of our logo.",
+    description: "Pretty sure this is unheard of in SaaS. I mean who tattoos a SaaS logo? This felt pretty damn good.",
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+  },
+  frontend: {
+    title: "Frontend Development",
+    description: "React, Next.js, TypeScript, Tailwind CSS, and more.",
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+  },
+  backend: {
+    title: "Backend Development",
+    description: "Node.js, Express, PostgreSQL, MongoDB, and more.",
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+  }
+};
+
+const UltraMinimal: React.FC = () => {
+  const { 
+    activeTooltip, 
+    anchorRef, 
+    hideTooltip, 
+    createTooltipTrigger,
+    tooltipPosition
+  } = useEnhancedTooltip();
+
+  return (
+    <FeatureFlagProvider>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <CanvasAnimation />
+        
+        <main className="max-w-4xl mx-auto relative z-10">
+          <h1 className="text-4xl font-bold mb-6">Interactive Demo</h1>
+          
+          <p className="text-lg mb-8">
+            I was building a company ({
+              createTooltipTrigger('busright', <span className="text-blue-500 font-medium">BusRight</span>)
+            }) that was creating incredible customer experiences. Our focus was on 
+            building amazing teams and amazing customer experience following our 
+            {createTooltipTrigger('frontend', <span className="ml-1 text-blue-500">frontend</span>)} and 
+            {createTooltipTrigger('backend', <span className="ml-1 text-blue-500">backend</span>)} best practices.
+          </p>
+          
+          {/* Enhanced tooltips for each keyword */}
+          {activeTooltip === 'busright' && (
+            <ExperienceTooltip
+              data={experiences.busright}
+              visible={activeTooltip === 'busright'}
+              anchorRef={anchorRef}
+              onClose={hideTooltip}
+              position={tooltipPosition}
+            />
+          )}
+          
+          {activeTooltip === 'frontend' && (
+            <ExperienceTooltip
+              data={experiences.frontend}
+              visible={activeTooltip === 'frontend'}
+              anchorRef={anchorRef}
+              onClose={hideTooltip}
+              position={tooltipPosition}
+            />
+          )}
+          
+          {activeTooltip === 'backend' && (
+            <ExperienceTooltip
+              data={experiences.backend}
+              visible={activeTooltip === 'backend'}
+              anchorRef={anchorRef}
+              onClose={hideTooltip}
+              position={tooltipPosition}
+            />
+          )}
+        </main>
+        
+        {/* Controls to toggle features */}
+        <FeatureFlagControls />
+      </div>
+    </FeatureFlagProvider>
+  );
+};
+
+export default UltraMinimal;
