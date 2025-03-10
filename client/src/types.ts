@@ -1,17 +1,13 @@
 
 export interface Experience {
-  id: string;
   title: string;
-  subtitle?: string;
-  description: string;
-  image?: string;
-  period?: string;
   company?: string;
-  items?: ExperienceItem[];
-}
-
-export interface ExperienceItem {
-  title: string;
+  period?: string;
   description: string;
   image?: string;
+  items?: {
+    title: string;
+    description: string;
+    image?: string;
+  }[];
 }
