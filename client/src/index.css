@@ -683,3 +683,23 @@ body {
     opacity: 1;
   }
 }
+.interactive-text {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.interactive-text::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -1px;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.interactive-text:hover::after {
+  width: 100%;
+}

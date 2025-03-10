@@ -26,6 +26,8 @@ const UltraMinimal = () => {
   const busrightRef = useRef<HTMLAnchorElement>(null);
   const dormRoomFundRef = useRef<HTMLAnchorElement>(null);
   const northeasternRef = useRef<HTMLAnchorElement>(null);
+  const funAlongTheWayRef = useRef<HTMLSpanElement>(null); // Added ref for new span
+  const investedInFoundersRef = useRef<HTMLSpanElement>(null); // Added ref for new span
 
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -459,12 +461,53 @@ const UltraMinimal = () => {
             school buses
           </span>
           . I joined as employee #1, before we had any customers or much of a
-          product and had a ton of fun along the way. I recently wrapped up that
-          chapter after a 4 year run leading Ops & CX (through our Series B).
+          product and{" "}
+          <span
+            ref={funAlongTheWayRef}
+            className="interactive-text underline"
+            onMouseEnter={() => {
+              if (isMobile || experienceHoverTimerRef.current) return;
+              experienceHoverTimerRef.current = setTimeout(() => {
+                setActiveExperience("busright");
+                setTooltipVisible(true);
+                experienceHoverTimerRef.current = null;
+              }, 1000);
+            }}
+            onMouseLeave={() => {
+              if (experienceHoverTimerRef.current) {
+                clearTimeout(experienceHoverTimerRef.current);
+                experienceHoverTimerRef.current = null;
+              }
+            }}
+          >
+            had a ton of fun along the way
+          </span>
+          . I recently wrapped up that chapter after a 4 year run leading Ops & CX (through our Series B).
         </p>
 
         <p>
-          Before that, I invested in and supported founders at{" "}
+          Before that, I{" "}
+          <span
+            ref={investedInFoundersRef}
+            className="interactive-text underline"
+            onMouseEnter={() => {
+              if (isMobile || experienceHoverTimerRef.current) return;
+              experienceHoverTimerRef.current = setTimeout(() => {
+                setActiveExperience("dormRoomFund");
+                setTooltipVisible(true);
+                experienceHoverTimerRef.current = null;
+              }, 1000);
+            }}
+            onMouseLeave={() => {
+              if (experienceHoverTimerRef.current) {
+                clearTimeout(experienceHoverTimerRef.current);
+                experienceHoverTimerRef.current = null;
+              }
+            }}
+          >
+            invested in and supported founders
+          </span>{" "}
+          at{" "}
           <a
             ref={dormRoomFundRef}
             href="https://www.dormroomfund.com"
