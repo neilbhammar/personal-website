@@ -4,7 +4,7 @@ import copy from 'clipboard-copy';
 import ExperienceTooltip from '../components/ExperienceTooltip';
 import { experiences } from '../data/experiences';
 // Import Feature Flag Context
-import { useFeatureFlags } from '../context/FeatureFlagContext';
+import { useFeatureFlags } from '../contexts/FeatureFlagContext';
 
 
 const UltraMinimal = () => {
