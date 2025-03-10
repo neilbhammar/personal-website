@@ -65,7 +65,7 @@ const MinimalHome = () => {
         </SubtleHeader>
 
         {/* Main content with subtle styling */}
-        <div className="flex-1 pt-24" ref={contentRef}>
+        <div className="flex-1 pt-24 flex flex-col items-center" ref={contentRef}>
           {/* Tiles effect that appears when triggered */}
           <TilesEffect
             text="bananagrams"
