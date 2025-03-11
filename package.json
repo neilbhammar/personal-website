@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx server/index.ts",
-    "build": "vite build",
-    "start": "node dist/index.js",
+    "build": "vite build --outDir dist",
+    "start": "node dist/server/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
