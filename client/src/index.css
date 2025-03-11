@@ -258,8 +258,8 @@ body {
     height: 100%;
     background: rgba(0, 0, 0, 0.92);
     pointer-events: none;
-    mask-image: radial-gradient(circle 180px at var(--x) var(--y), transparent 0%, black 180px);
-    -webkit-mask-image: radial-gradient(circle 180px at var(--x) var(--y), transparent 0%, black 180px);
+    mask-image: radial-gradient(circle 60px at var(--x) var(--y), transparent 0%, black 60px);
+    -webkit-mask-image: radial-gradient(circle 60px at var(--x) var(--y), transparent 0%, black 60px);
     transition: opacity 0.3s ease;
     opacity: 0;
   }
@@ -377,67 +377,105 @@ body {
   100% { opacity: 0.5; }
 }
 
-    transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    pointer-events: none;
-    transform: translateX(-150px);
-  }
+.bus-animation-container {
+  transition: transform 2s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  pointer-events: none;
+  transform: translateX(-150px);
+}
 
-  .bus-animation-container.active {
-    transform: translateX(calc(100vw + 150px));
-  }
+.bus-animation-container.active {
+  transform: translateX(calc(100vw + 150px));
+}
 
-  /* Word highlight effect */
-  .highlight-word {
-    position: relative;
-    cursor: pointer;
-    transition: color 0.3s ease;
-  }
+/* Word highlight effect */
+.highlight-word {
+  position: relative;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
 
-  .highlight-word:hover {
-    color: hsl(var(--primary));
-  }
+.highlight-word:hover {
+  color: hsl(var(--primary));
+}
 
-  .highlight-word::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: hsl(var(--primary));
-    transition: width 0.3s ease;
-  }
+.highlight-word::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: hsl(var(--primary));
+  transition: width 0.3s ease;
+}
 
-  .highlight-word:hover::after {
-    width: 100%;
-  }
+.highlight-word:hover::after {
+  width: 100%;
+}
 
 @layer components {
   .social-icon {
-    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(209, 213, 219, 0.3);
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 
+      0 1px 3px rgba(0, 0, 0, 0.05),
+      0 1px 2px rgba(0, 0, 0, 0.1),
+      inset 0 1px 1px rgba(255, 255, 255, 0.2);
   }
 
   .social-icon:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    border-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
   }
 
-  .social-icon svg {
-    transition: stroke 0.2s ease;
+  .social-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    opacity: 0;
   }
 
-  .social-icon:hover svg {
-    stroke: #000;
+  .social-icon:hover::before {
+    opacity: 0.7;
+    animation: shine 1.5s ease;
+  }
+
+  @keyframes shine {
+    0% {
+      transform: scale(0) rotate(45deg);
+      opacity: 0;
+    }
+    80% {
+      transform: scale(1.5) rotate(45deg);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(2) rotate(45deg);
+      opacity: 0;
+    }
   }
 
   /* Interactive text effects for hover-based interactions */
   .interactive-text {
     position: relative;
+    display: inline-block;
     text-decoration: none;
     color: inherit;
-    border-bottom: 1px dotted #ddd;
+    cursor: pointer;
+    border-bottom: 1px dotted rgba(78, 78, 78, 0.4);
     padding-bottom: 1px;
     transition: all 0.3s ease;
-    cursor: crosshair;
   }
 
   .interactive-text:hover {
@@ -525,53 +563,6 @@ body {
     width: 100%;
   }
 
-  /* Enhanced social icons */
-  .social-icon {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    border-color: rgba(0, 0, 0, 0.15);
-  }
-
-  .social-icon:hover {
-    transform: translateY(-4px);
-    border-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-  }
-
-  .social-icon::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-    transform: rotate(45deg);
-    transition: all 0.3s ease;
-    opacity: 0;
-  }
-
-  .social-icon:hover::before {
-    opacity: 0.7;
-    animation: shine 1.5s ease;
-  }
-
-  @keyframes shine {
-    0% {
-      transform: scale(0) rotate(45deg);
-      opacity: 0;
-    }
-    80% {
-      transform: scale(1.5) rotate(45deg);
-      opacity: 0.5;
-    }
-    100% {
-      transform: scale(2) rotate(45deg);
-      opacity: 0;
-    }
-  }
-
   /* Copy toast */
   .copy-toast {
     position: fixed;
@@ -636,4 +627,5 @@ body {
     transition: width 0.3s ease;
     border-bottom: 1px dotted rgba(0, 0, 0, 0.5);
   }
+}
 }

@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import copy from "clipboard-copy";
-// ExperienceTooltip import removed
-import { experiences } from "../data/experiences";
 import useIsMobile from "../hooks/useIsMobile";
 
 const UltraMinimal = () => {
@@ -569,8 +567,8 @@ const UltraMinimal = () => {
             backgroundColor: "rgba(0, 0, 0, 0.95)",
             backdropFilter: "blur(8px)",
             WebkitBackdropFilter: "blur(8px)",
-            maskImage: `radial-gradient(circle 150px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`,
-            WebkitMaskImage: `radial-gradient(circle 150px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`,
+            maskImage: `radial-gradient(circle 120px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`,
+            WebkitMaskImage: `radial-gradient(circle 120px at ${mousePosition.x}px ${mousePosition.y}px, transparent 0%, black 100%)`,
           }}
         >
           {/* Close button */}
