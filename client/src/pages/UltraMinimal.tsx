@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import copy from "clipboard-copy";
 import useIsMobile from "../hooks/useIsMobile";
+import { trackEvent } from '../services/analytics';
 
 const UltraMinimal = () => {
   const isMobile = useIsMobile();
@@ -94,7 +95,8 @@ const UltraMinimal = () => {
 
   // Bananagrams tile effect
   const handleBananagramsHoverStart = () => {
-    if (isMobile || bananagramsTriggered) return; // Prevent on mobile or re-triggering
+    if (isMobile || bananagramsTriggered) return;
+    trackEvent('Interaction', 'hover', 'bananagrams');
 
     if (bananagramsHoverTimerRef.current) return;
 
@@ -198,6 +200,7 @@ const UltraMinimal = () => {
   // Handle hover on "lost"
   const handleLostHoverStart = (e: React.MouseEvent) => {
     if (isMobile || lostHoverTimerRef.current) return;
+    trackEvent('Interaction', 'hover', 'lost');
 
     // Pre-set the mouse position so the flashlight starts in the right place
     initializeFlashlightPosition(e);
