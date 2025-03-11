@@ -10,18 +10,20 @@ echo "Creating clean App.tsx for build..."
 # Backup original App.tsx
 cp src/App.tsx src/App.tsx.backup
 
-# Create a clean version of App.tsx without the toaster
+# Create a clean version of App.tsx with correct wouter syntax
 cat > src/App.tsx << 'EOL'
-import { Routes, Route } from "wouter";
+import { Switch, Route } from "wouter";
 import UltraMinimal from "./pages/UltraMinimal";
 import NotFound from "./pages/not-found";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" component={UltraMinimal} />
-      <Route component={NotFound} />
-    </Routes>
+    <>
+      <Switch>
+        <Route path="/" component={UltraMinimal} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 EOL
