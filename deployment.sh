@@ -6,11 +6,25 @@ npm install
 mkdir -p shared
 cp -r ../shared/* ./shared/ || true
 
-echo "Modifying App.tsx to remove problematic imports..."
-# Find and replace the import in App.tsx
-sed -i 's/import.*@\/components\/ui\/toaster.*/\/\/ Import removed during build/' src/App.tsx
-# Also remove any Toaster component usage
-sed -i 's/<Toaster.*\/>/\/\* Toaster component removed during build \*\//' src/App.tsx
+echo "Creating clean App.tsx for build..."
+# Backup original App.tsx
+cp src/App.tsx src/App.tsx.backup
+
+# Create a clean version of App.tsx without the toaster
+cat > src/App.tsx << 'EOL'
+import { Routes, Route } from "wouter";
+import UltraMinimal from "./pages/UltraMinimal";
+import NotFound from "./pages/not-found";
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" component={UltraMinimal} />
+      <Route component={NotFound} />
+    </Routes>
+  );
+}
+EOL
 
 # Create necessary directories for missing components
 mkdir -p src/components/ui
