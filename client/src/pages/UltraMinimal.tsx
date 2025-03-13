@@ -467,11 +467,7 @@ const UltraMinimal = () => {
           . I joined as employee #1, before we had any customers or much of a
           product, and had a ton of fun along the way. I recently wrapped up
           that chapter after a 4 year run leading Ops & CX (through our Series
-          B).
-        </p>
-
-        <p>
-          Before that, I invested in and supported founders at{" "}
+          B). Before that, I invested in and supported founders at{" "}
           <a
             ref={dormRoomFundRef}
             href="https://www.dormroomfund.com"
@@ -489,13 +485,13 @@ const UltraMinimal = () => {
           <span className="interactive-text" ref={funRef} onMouseEnter={handleLostHoverStart} onMouseLeave={handleLostHoverEnd}>
             lost
           </span>
-          , but I think that's part of the process. I'm a tinkerer by nature, so
-          I might find myself posting fun projects here.
+          , but I think that's part of the process.
         </p>
-
-        <p>
-          You can connect with me on socials (though I'm more of a lurker there)
-          or shoot me an email at bhammar.neil@gmail.com.
+        <p className="mt-4">
+          I'm excited to spend the next few months catching up on learning and tinkering, and I'll probably post some of that here.
+        </p>
+        <p className="mt-4">
+          You can connect with me on socials or shoot me an email at <a href="mailto:bhammar.neil@gmail.com">bhammar.neil@gmail.com</a>.
         </p>
 
         {/* Social icons */}
@@ -556,6 +552,24 @@ const UltraMinimal = () => {
               <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
               <rect x="2" y="9" width="4" height="12" />
               <circle cx="4" cy="4" r="2" />
+            </svg>
+          </a>
+
+          {/* GitHub */}
+          <a
+            href="https://github.com/neilbhammar"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-icon w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"
+            aria-label="GitHub"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 5.304 3.438 9.8 8.205 11.387.6.111.82-.261.82-.577 0-.287-.011-1.243-.017-2.25-3.338.724-4.043-1.607-4.043-1.607-.546-1.384-1.333-1.754-1.333-1.754-1.089-.743.083-.728.083-.728 1.204.084 1.836 1.236 1.836 1.236 1.067 1.826 2.8 1.298 3.48.992.108-.774.418-1.298.76-1.598-2.665-.303-5.466-1.333-5.466-5.933 0-1.313.469-2.386 1.236-3.227-.124-.303-.536-1.53.117-3.187 0 0 1.008-.322 3.303 1.227.957-.266 1.986-.399 3.003-.404 1.017.005 2.046.138 3.003.404 2.295-1.549 3.303-1.227 3.303-1.227.653 1.657.241 2.884.118 3.187.77.841 1.236 1.914 1.236 3.227 0 4.608-2.805 5.623-5.475 5.92.43.372.815 1.103.815 2.222 0 1.606-.014 2.903-.014 3.295 0 .319.218.694.825.577C20.563 21.8 24 17.304 24 12c0-6.627-5.373-12-12-12z" />
             </svg>
           </a>
         </div>
