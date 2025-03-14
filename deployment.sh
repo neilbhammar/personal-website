@@ -18,6 +18,7 @@ cp src/App.tsx src/App.tsx.backup
 cat > src/App.tsx << 'EOL'
 import { Switch, Route } from "wouter";
 import UltraMinimal from "./pages/UltraMinimal";
+import Projects from "./pages/projects";
 import NotFound from "./pages/not-found";
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
     <>
       <Switch>
         <Route path="/" component={UltraMinimal} />
+        <Route path="/projects" component={Projects} />
         <Route component={NotFound} />
       </Switch>
     </>

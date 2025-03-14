@@ -485,7 +485,7 @@ const UltraMinimal = () => {
           <span className="interactive-text" ref={funRef} onMouseEnter={handleLostHoverStart} onMouseLeave={handleLostHoverEnd}>
             lost
           </span>
-          , but I think that's part of the process.
+          , but I know that's part of the process.
         </p>
         <p className="mt-4">
           I'm excited to spend the next few months catching up on learning and tinkering, and I'll probably post some of that <a 
