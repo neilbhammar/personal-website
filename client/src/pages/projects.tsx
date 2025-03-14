@@ -1,55 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-// Types for our projects
-type ProjectType = "SaaS" | "Internal Tool" | "article" | "video" | "other";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  type: ProjectType;
-  image: string;
-  date: Date;
-  links: {
-    live?: string;
-    article?: string;
-    video?: string;
-    code?: string;
-  };
-  tags: string[];
-}
-
-// Sample projects data - you'll want to move this to a separate file
-const projects: Project[] = [
-  {
-    id: "mailmop",
-    title: "MailMop: Clean Your Gmail Inbox (Securely and For Free)",
-    description: "After 6 years of neglecting my personal inbox, it felt unsalvagable. I had no clue where to even start with cleaning it up. I built MailMop for myself so that I could easily understand which senders where cluttering my inbox and easily take back control. Built to work entirely client side so that it could be free and secure.",
-    type: "SaaS" as ProjectType,
-    date: new Date("2025-03-15"),
-    image: "/images/projects/mailmop.png",
-    links: {
-      live: "https://mailmop.neilbhammar.com",
-    },
-    tags: ["Email", "Productivity"]
-  },
-
-  {
-    id: "busright-roi-calculator",
-    title: "BusRight ROI Calculator",
-    description: "This waas my little gift to our sales team on Christmas. Built and deployed with Replit in a day. Entirely client side and features url params to easily share ROI scenarios.",
-    type: "Internal Tool" as ProjectType,
-    date: new Date("2024-12-25"),
-    image: "/images/projects/roi-calculator.png",
-    links: {
-      live: "https://calculator.busright.com",
-    },
-    tags: ["Replit"]
-  }
-  // Add more projects here
-].sort((a, b) => b.date.getTime() - a.date.getTime());
+import { Project, ProjectType, projects } from "@/data/projects";
 
 export default function Projects() {
   const [selectedType, setSelectedType] = useState<ProjectType | "all">("all");
