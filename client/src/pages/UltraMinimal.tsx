@@ -488,7 +488,10 @@ const UltraMinimal = () => {
           , but I think that's part of the process.
         </p>
         <p className="mt-4">
-          I'm excited to spend the next few months catching up on learning and tinkering, and I'll probably post some of that here.
+          I'm excited to spend the next few months catching up on learning and tinkering, and I'll probably post some of that <a 
+    href="/projects" 
+    className="text-foreground hover:text-foreground/90 underline underline-offset-4 decoration-muted-foreground/30"
+  > here. </a>
         </p>
         <p className="mt-4">
           You can connect with me on socials or shoot me an email at <a href="mailto:bhammar.neil@gmail.com">bhammar.neil@gmail.com</a>.

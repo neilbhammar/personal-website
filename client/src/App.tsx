@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import UltraMinimal from "@/pages/UltraMinimal";
+import Projects from "@/pages/projects";
 import { useEffect } from "react";
 
 // Router component handles which page to show based on the current URL
@@ -23,6 +24,7 @@ function Router() {
     <Switch>
       {/* Show the UltraMinimal page when user visits the home page "/" */}
       <Route path="/" component={UltraMinimal} />
+      <Route path="/projects" component={Projects} />
       {/* Show the NotFound page for any other URL */}
       <Route component={NotFound} />
     </Switch>

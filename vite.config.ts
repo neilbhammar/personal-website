@@ -13,6 +13,7 @@ const clientRoot = path.resolve(projectRoot, "client");
 export default defineConfig({
   plugins: [react()],
   root: clientRoot,
+  publicDir: 'public',
   resolve: {
     alias: {
       "@": path.resolve(clientRoot, "src"),
