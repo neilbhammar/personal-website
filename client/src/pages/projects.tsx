@@ -114,6 +114,8 @@ export default function Projects() {
 }
 
 function ProjectCard({ project }: { project: Project }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <motion.div
       layout
@@ -122,13 +124,28 @@ function ProjectCard({ project }: { project: Project }) {
       exit={{ opacity: 0 }}
       className="group grid grid-cols-1 md:grid-cols-2 gap-8 items-start"
     >
-      {/* Project Image */}
-      <div className="aspect-[16/9] overflow-hidden rounded-lg bg-muted/5">
+      {/* Project Image with Skeleton */}
+      <div className="aspect-[16/9] overflow-hidden rounded-lg bg-muted/5 relative">
+        {/* Skeleton loader */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-muted/10 animate-pulse" />
+        )}
+        
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          onError={() => console.error(`Failed to load image: ${project.image}`)}
+          loading="lazy" // Add native lazy loading
+          className={cn(
+            "w-full h-full object-cover transition-all duration-300",
+            "group-hover:scale-[1.02]",
+            !imageLoaded && "opacity-0", // Hide image until loaded
+            imageLoaded && "opacity-100" // Show image when loaded
+          )}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            console.error(`Failed to load image: ${project.image}`);
+            setImageLoaded(true); // Remove skeleton even if image fails
+          }}
         />
       </div>
 
