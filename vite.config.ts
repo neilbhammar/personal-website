@@ -14,6 +14,7 @@ export default defineConfig({
   plugins: [react()],
   root: clientRoot,
   publicDir: 'public',
+  base: '/',
   resolve: {
     alias: {
       "@": path.resolve(clientRoot, "src"),

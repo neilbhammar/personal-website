@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e  # Exit immediately if a command fails
 
+# Clean up previous build
+rm -rf dist
+
+# Build the client
 cd client
 npm install
 mkdir -p shared
@@ -141,4 +145,7 @@ EOL
 # Run build with more verbose output
 echo "Starting Vite build..."
 npx vite build || { echo "Build failed"; cat src/App.tsx; exit 1; }
-echo "Build completed successfully" 
+echo "Build completed successfully"
+
+# Move back to root
+cd .. 
