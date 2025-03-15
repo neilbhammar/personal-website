@@ -5,9 +5,15 @@ interface BlogPostProps {
   project: Project;
 }
 
+// Each blog post can define its own publish date
+const publishedAt = new Date("2025-03-14"); // Your desired blog publish date
+
 export default function InternalToolsBlog({ project }: BlogPostProps) {
   return (
-    <BlogLayout project={project}>
+    <BlogLayout project={{
+      ...project,
+      date: publishedAt // Override the project date just for the blog layout
+    }}>
       <div className="space-y-12">
         {/* Introduction */}
         <section>
