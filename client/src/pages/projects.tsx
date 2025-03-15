@@ -6,15 +6,16 @@ import { Project, ProjectType, projects } from "@/data/projects";
 export default function Projects() {
   const [selectedType, setSelectedType] = useState<ProjectType | "all">("all");
 
-  // Get unique types that have at least one project
+  // Get unique types from all projects' type arrays
   const availableTypes = useMemo(() => {
-    const types = new Set(projects.map(project => project.type));
+    const types = new Set(projects.flatMap(project => project.types));
     return ["all", ...Array.from(types)] as (ProjectType | "all")[];
   }, []);
 
+  // Update filter to check if project has the selected type
   const filteredProjects = selectedType === "all" 
     ? projects
-    : projects.filter(project => project.type === selectedType);
+    : projects.filter(project => project.types.includes(selectedType));
 
   return (
     <main className="py-10 px-8 md:py-16 md:px-16 relative min-h-screen">
@@ -106,18 +107,32 @@ function ProjectCard({ project }: { project: Project }) {
         <div className="space-y-2">
           {/* Tags and Date */}
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs text-muted-foreground">
-              {project.type}
-            </span>
-            {project.tags.map(tag => (
-              <span key={tag} className="text-xs text-muted-foreground">
-                • {tag}
-              </span>
-            ))}
+            {/* Types displayed as text with dots */}
+            <div className="flex flex-wrap text-xs text-muted-foreground">
+              {project.types.map((type, index) => (
+                <span key={type}>
+                  {type}{index < project.types.length - 1 ? '\u00A0\u00A0•\u00A0\u00A0' : ''}
+                </span>
+              ))}
+            </div>
+            
+            {/* Tags with pill styling */}
+            <div className="flex gap-2 flex-wrap">
+              {project.tags.map(tag => (
+                <span 
+                  key={tag} 
+                  className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Date stays the same */}
             <span className="text-xs text-muted-foreground ml-auto">
               {project.date.toLocaleDateString('en-US', { 
                 month: 'short',
-                day: 'numeric',
+                day: 'numeric', 
                 year: 'numeric'
               })}
             </span>

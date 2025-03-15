@@ -34,7 +34,7 @@ export function BlogLayout({ project, children }: BlogLayoutProps) {
         <header className="space-y-4">
           <div className="flex flex-wrap gap-2 items-center">
             <span className="text-xs text-muted-foreground">
-              {project.type}
+              {project.types.join(" • ")}
             </span>
             {project.tags.map(tag => (
               <span key={tag} className="text-xs text-muted-foreground">
