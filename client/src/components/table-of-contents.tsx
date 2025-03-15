@@ -117,7 +117,7 @@ export function TableOfContents({ contentRef }: TableOfContentsProps) {
 
   return (
     <nav 
-      className="fixed top-24 right-4 z-50 hidden xl:block h-[calc(100vh-8rem)]"
+      className="fixed top-26 right-4 z-50 hidden md:block h-[calc(100vh-8rem)]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -150,11 +150,11 @@ export function TableOfContents({ contentRef }: TableOfContentsProps) {
             : "opacity-0 translate-x-2 pointer-events-none"
         )}
       >
-        <div className="p-3 rounded-md bg-background/60 backdrop-blur-sm border shadow-sm">
+        <div className="p-3 rounded-md bg-background/90 backdrop-blur-sm border shadow-sm">
           {/* Top Navigation */}
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-4"
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-2"
           >
             <ChevronUp className="w-3 h-3" />
             <span>Top</span>
@@ -184,7 +184,7 @@ export function TableOfContents({ contentRef }: TableOfContentsProps) {
           {/* Bottom Navigation */}
           <button
             onClick={scrollToBottom}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-4"
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-2"
           >
             <ChevronDown className="w-3 h-3" />
             <span>Bottom</span>
