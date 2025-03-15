@@ -186,7 +186,7 @@ export default function InternalToolsBlog({ project }: BlogPostProps) {
         {/* Conclusion */}
         <section>
           <p className="text-muted-foreground">
-            Over the years, I loved building tons of other internal tools. I built a bunch of Zapier automations—my favorites being 100+ step workflows with custom code blocks. I put together custom fundraising CRMs to power our raises, internal report generation tools, and Streamlit apps to speed up workflows.
+            Over the years, I've loved building tons of other internal tools. I built a bunch of Zapier automations—one of my favorites being 100+ step workflows with custom blocks. I put together fundraising CRMs to power our raises, internal report generation tools, and Streamlit apps to speed up workflows.
           </p>
           <p className="text-muted-foreground mt-4">
             I'm not an engineer, but I had a lot of fun tinkering with these things, thinking through their logic & requirements, and learning as I went along. Using AI coding assistants so aggressively also made it abundantly clear to me how AI will continue to expand people's abilities — I would not have been able to build these tools 2+ years ago at remotely the same speed.
