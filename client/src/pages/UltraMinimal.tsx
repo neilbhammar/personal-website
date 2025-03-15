@@ -4,6 +4,18 @@ import copy from "clipboard-copy";
 import useIsMobile from "../hooks/useIsMobile";
 import { trackEvent } from '../services/analytics';
 
+// Update Toast component to accept a color prop
+const Toast = ({ message, color = "yellow" }: { message: string; color?: "yellow" | "green" }) => (
+  <div 
+    className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 
+    bg-white/75 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg 
+    border border-gray-100/20 flex items-center gap-2"
+  >
+    <div className={`w-1 h-4 rounded-full ${color === "yellow" ? "bg-yellow-400/90" : "bg-green-500/90"}`}/>
+    <p className="text-sm text-gray-700/90 whitespace-nowrap">{message}</p>
+  </div>
+);
+
 const UltraMinimal = () => {
   const isMobile = useIsMobile();
   const [flashlightActive, setFlashlightActive] = useState(false);
@@ -13,6 +25,7 @@ const UltraMinimal = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [showMobileToast, setShowMobileToast] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const flashlightRef = useRef<HTMLDivElement>(null);
@@ -32,6 +45,18 @@ const UltraMinimal = () => {
   const foundersHoverTimerRef = useRef<NodeJS.Timeout | null>(null); //Added timer for new tooltip
   const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Show toast if on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setShowMobileToast(true);
+      // Auto-hide after 5 seconds
+      const timer = setTimeout(() => {
+        setShowMobileToast(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile]);
 
   // Set initial mouse position when flashlight is activated
   const initializeFlashlightPosition = (e: React.MouseEvent) => {
@@ -77,11 +102,11 @@ const UltraMinimal = () => {
     };
   }, [flashlightActive, bananagramsActive, busesActive]);
 
-  // Handle copy to clipboard with toast
+  // Update the handleCopyEmail function to use the new Toast
   const handleCopyEmail = (email: string) => {
     copy(email).then(() => {
-      setToastMessage("Email copied to clipboard!");
       setShowToast(true);
+      setToastMessage("Email copied to clipboard");
 
       if (toastTimeoutRef.current) {
         clearTimeout(toastTimeoutRef.current);
@@ -428,6 +453,16 @@ const UltraMinimal = () => {
 
   return (
     <main className="py-10 px-8 md:py-16 md:px-16 relative flex justify-center items-center min-h-screen">
+      {/* Mobile Toast Notification */}
+      {showMobileToast && (
+        <Toast message="Heads up - some animations are disabled on mobile" color="yellow" />
+      )}
+
+      {/* Email Copy Toast */}
+      {showToast && (
+        <Toast message={toastMessage} color="green" />
+      )}
+
       <div ref={contentRef} className="max-w-2xl w-full mx-auto space-y-8">
         <h1 className="text-2xl">Hi, I'm Neil.</h1>
 
@@ -611,11 +646,6 @@ const UltraMinimal = () => {
           </button>
         </div>
       )}
-
-      {/* Toast message */}
-      <div className={`copy-toast ${showToast ? "visible" : ""}`}>
-        {toastMessage}
-      </div>
     </main>
   )
 };
