@@ -150,18 +150,18 @@ export function TableOfContents({ contentRef }: TableOfContentsProps) {
             : "opacity-0 translate-x-2 pointer-events-none"
         )}
       >
-        <div className="p-3 rounded-lg bg-background/40 backdrop-blur-sm border shadow-sm">
+        <div className="p-3 rounded-md bg-background/60 backdrop-blur-sm border shadow-sm">
           {/* Top Navigation */}
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-1"
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-4"
           >
             <ChevronUp className="w-3 h-3" />
             <span>Top</span>
           </button>
 
           {/* Headings */}
-          <div className="my-2 space-y-[2px] max-h-[60vh] overflow-y-auto">
+          <div className="my-2 space-y-[6px] max-h-[60vh] overflow-y-auto">
             {headings.map((heading) => (
               <button
                 key={heading.id}
@@ -184,7 +184,7 @@ export function TableOfContents({ contentRef }: TableOfContentsProps) {
           {/* Bottom Navigation */}
           <button
             onClick={scrollToBottom}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-1"
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full px-2 py-4"
           >
             <ChevronDown className="w-3 h-3" />
             <span>Bottom</span>
