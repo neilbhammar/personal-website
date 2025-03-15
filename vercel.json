@@ -3,9 +3,18 @@
   "buildCommand": "bash deployment.sh",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/projects", "destination": "/" },
-    { "source": "/blog/:slug", "destination": "/" },
-    { "source": "/(.*)", "destination": "/" }
+    { 
+      "source": "/blog/:path*",
+      "destination": "/" 
+    },
+    { 
+      "source": "/projects",
+      "destination": "/" 
+    },
+    { 
+      "source": "/(.*)", 
+      "destination": "/" 
+    }
   ],
   "headers": [
     {

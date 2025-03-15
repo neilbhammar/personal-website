@@ -19,6 +19,7 @@ cat > src/App.tsx << 'EOL'
 import { Switch, Route } from "wouter";
 import UltraMinimal from "./pages/UltraMinimal";
 import Projects from "./pages/projects";
+import BlogPost from "./pages/blog/index";
 import NotFound from "./pages/not-found";
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
       <Switch>
         <Route path="/" component={UltraMinimal} />
         <Route path="/projects" component={Projects} />
+        <Route path="/blog/:slug" component={BlogPost} />
         <Route component={NotFound} />
       </Switch>
     </>
