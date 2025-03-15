@@ -4,6 +4,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/projects", "destination": "/" },
+    { "source": "/blog/:slug", "destination": "/" },
     { "source": "/(.*)", "destination": "/" }
   ],
   "headers": [
