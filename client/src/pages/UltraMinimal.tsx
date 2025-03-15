@@ -617,7 +617,7 @@ const UltraMinimal = () => {
         {toastMessage}
       </div>
     </main>
-  );
+  )
 };
 
 export default UltraMinimal;

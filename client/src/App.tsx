@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import UltraMinimal from "@/pages/UltraMinimal";
 import Projects from "@/pages/projects";
 import { useEffect } from "react";
+import BlogPost from "@/pages/blog/index";
 
 // Router component handles which page to show based on the current URL
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       {/* Show the UltraMinimal page when user visits the home page "/" */}
       <Route path="/" component={UltraMinimal} />
       <Route path="/projects" component={Projects} />
+      <Route path="/blog/:slug" component={BlogPost} />
       {/* Show the NotFound page for any other URL */}
       <Route component={NotFound} />
     </Switch>

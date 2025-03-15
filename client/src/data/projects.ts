@@ -38,7 +38,7 @@ export const projects: Project[] = [
     image: "/images/projects/roi-calculator.png",
     links: {
       live: "https://calculator.busright.com",
-      article: "https://neilbhammar.com/blog/internal-tools-at-busright",
+      article: "/blog/internal-tools-at-busright",
     },
     tags: ["Replit"]
   }
