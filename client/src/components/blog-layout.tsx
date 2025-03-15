@@ -1,6 +1,10 @@
+'use client';
+
 import { motion } from "framer-motion";
 import { Project } from "@/data/projects";
 import { format } from "date-fns";
+import { TableOfContents } from "./table-of-contents";
+import { useRef } from "react";
 
 interface BlogLayoutProps {
   project: Project;
@@ -8,12 +12,14 @@ interface BlogLayoutProps {
 }
 
 export function BlogLayout({ project, children }: BlogLayoutProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
   return (
     <motion.main
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="py-10 px-8 md:py-16 md:px-16 min-h-screen"
+      className="py-10 px-8 md:py-16 md:px-16 min-h-screen relative"
     >
       <article className="max-w-4xl mx-auto space-y-8">
         {/* Back button */}
@@ -42,9 +48,12 @@ export function BlogLayout({ project, children }: BlogLayoutProps) {
           </time>
         </header>
 
-        {/* Blog content */}
-        <div className="prose prose-neutral dark:prose-invert max-w-none">
-          {children}
+        {/* Blog content with Table of Contents */}
+        <div className="relative">
+          <TableOfContents contentRef={contentRef} />
+          <div ref={contentRef} className="prose prose-neutral dark:prose-invert max-w-none">
+            {children}
+          </div>
         </div>
       </article>
     </motion.main>
