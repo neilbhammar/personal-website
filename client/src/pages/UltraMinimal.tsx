@@ -33,9 +33,7 @@ const UltraMinimal = () => {
   const busesRef = useRef<HTMLSpanElement>(null);
   const busrightRef = useRef<HTMLAnchorElement>(null);
   const dormRoomFundRef = useRef<HTMLAnchorElement>(null);
-  const northeasternRef = useRef<HTMLAnchorElement>(null);
   const funRef = useRef<HTMLSpanElement>(null); //Added ref for new tooltip
-  const foundersRef = useRef<HTMLSpanElement>(null); //Added ref for new tooltip
 
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lostHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
