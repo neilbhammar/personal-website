@@ -97,7 +97,7 @@ export default function InternalToolsBlog({ project }: BlogPostProps) {
                   Every 30 days, I required all customer account owners (myself included) to document a CXM pulse (healthy, concerning, or poor) along with a title and explanation to our Customer Success Platform (Vitally). These account owner pulses were a major contributor to our health scores in Vitally given our high-touch, concierge model.
                 </p>
                 <p className="text-muted-foreground mt-4">
-                  The problem? Vitally didn't have a mobile app, and logging these updates manually on the web app, felt slow and tedious (because it was a custom object that didn't have keyboard shortcuts, etc.). A lot of times, I'd be making these updates right after a slew of customer check-in phone calls, and having to sit at my computer to do it felt unnecessary. My ideal workflow was simple:
+                  The problem? Vitally didn't have a mobile app, and logging these updates manually on the web app felt slow and tedious (because it was a custom object that didn't have keyboard shortcuts, etc.). A lot of times, I'd be making these updates right after a slew of customer check-in phone calls, and having to sit at my computer to do it felt unnecessary. My ideal workflow was simple:
                 </p>
                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-2">
                   <li>Make a bunch of quick check-in calls while on a walk.</li>
@@ -133,7 +133,7 @@ export default function InternalToolsBlog({ project }: BlogPostProps) {
                 <li>Submit the custom object (called CXM Pulse) to Vitally via their custom objects api</li>
               </ol>
               <p className="text-muted-foreground mt-4">
-                That sounded pretty feasible, but again — not an engineer — so I learned a ton while doing this. I started by simaltaneously tackling steps 1 and 5 at the same time. In my Replit repo — by the way, at this point I was using Replit because it was so much less duanting then having to set up an environment, download dependencies on my own, etc — I created small test interfaces to try each of these things:
+                That sounded pretty feasible, but again — not an engineer — so I learned a ton while doing this. I started by simultaneously tackling steps 1 and 5 at the same time. In my Replit repo — by the way, at this point I was using Replit because it was so much less duanting then having to set up an environment, download dependencies on my own, etc — I created small test interfaces to try each of these things:
               </p>
               <p className="text-muted-foreground mt-4">
                 I landed on using the Asssembly AI api for transcription and built a test of that, it worked great.

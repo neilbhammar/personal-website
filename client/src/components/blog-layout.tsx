@@ -33,14 +33,26 @@ export function BlogLayout({ project, children }: BlogLayoutProps) {
         {/* Header */}
         <header className="space-y-4">
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs text-muted-foreground">
-              {project.types.join(" • ")}
-            </span>
-            {project.tags.map(tag => (
-              <span key={tag} className="text-xs text-muted-foreground">
-                • {tag}
-              </span>
-            ))}
+            {/* Types displayed as text with dots */}
+            <div className="flex flex-wrap text-xs text-muted-foreground whitespace-pre">
+              {project.types.map((type, index) => (
+                <span key={type}>
+                  {type}{index < project.types.length - 1 ? '\u00A0\u00A0•\u00A0\u00A0' : ''}
+                </span>
+              ))}
+            </div>
+            
+            {/* Tags with pill styling */}
+            <div className="flex gap-2 flex-wrap">
+              {project.tags.map(tag => (
+                <span 
+                  key={tag} 
+                  className="text-xs px-2 py-0.5 rounded-md bg-gray-100 text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
           <h1 className="text-3xl font-medium">{project.title}</h1>
           <time className="block text-sm text-muted-foreground">

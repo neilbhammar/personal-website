@@ -7,7 +7,7 @@ import { trackEvent } from '../services/analytics';
 // Update Toast component to accept a color prop
 const Toast = ({ message, color = "yellow" }: { message: string; color?: "yellow" | "green" }) => (
   <div 
-    className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 
+    className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 
     bg-white/75 backdrop-blur-sm px-4 py-3 rounded-lg shadow-lg 
     border border-gray-100/20 flex items-center gap-2"
   >

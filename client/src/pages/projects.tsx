@@ -30,9 +30,9 @@ export default function Projects() {
 
         {/* Header with subtitle */}
         <div className="space-y-2">
-          <h1 className="text-2xl">Recent Projects</h1>
+          <h1 className="text-2xl">Recent Activity</h1>
           <p className="text-muted-foreground">
-            A collection of things I've built, written about, or created. <br/><br/>I'm not an engineer, but I've been fascinated by learning good engineering principles and putting them to use with AI Code Generation Tools. I'm also creating space to indulge my curiousities more often,
+            A collection of things I've recently built, written about, or created. <br/><br/>I'm not an engineer, but I've been fascinated by learning good engineering principles and putting them to use with AI Code Generation Tools. I'm also creating space to indulge my curiousities more often,
           </p>
         </div>
 
