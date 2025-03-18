@@ -20,14 +20,13 @@ export const projects: Project[] = [
   {
     id: "mailmop",
     title: "MailMop: Clean Your Gmail Inbox (Securely and For Free)",
-    description: "After 6 years of neglecting my personal inbox, it felt unsalvagable. I had no clue where to even start with cleaning it up. I built MailMop for myself so that I could easily understand which senders where cluttering my inbox and easily take back control. Built to work entirely client side so that it could be free and secure.",
+    description: "WORK IN PROGRESS:After 6 years of neglecting my personal inbox, it felt unsalvagable. I had no clue where to even start with cleaning it up. I'm building MailMop as a small project to help me (and others) reclaim control of our inboxes.",
     types: ["SaaS" as ProjectType],
     date: new Date("2025-03-15"),
     image: "/images/projects/mailmop.png",
     links: {
-      live: "https://mailmop.neilbhammar.com",
     },
-    tags: ["Email", "Productivity"]
+    tags: ["Work In Progress", "Email", "Productivity"]
   },
   {
     id: "busright-roi-calculator",
