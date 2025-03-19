@@ -10,41 +10,6 @@ npm install
 mkdir -p shared
 cp -r ../shared/* ./shared/ || true
 
-echo "Creating clean App.tsx for build..."
-# Backup original App.tsx
-cp src/App.tsx src/App.tsx.backup
-
-# Create a clean version of App.tsx with correct wouter syntax
-cat > src/App.tsx << 'EOL'
-import { Switch, Route } from "wouter";
-import UltraMinimal from "./pages/UltraMinimal";
-import Projects from "./pages/projects";
-import BlogPost from "./pages/blog/index";
-import NotFound from "./pages/not-found";
-import UnbakedThoughts from "./pages/unbaked-thoughts";
-import TestPage from "./pages/test-page";
-import SimpleThoughts from "./pages/simple-thoughts";
-import Thoughts from "./pages/thoughts";
-
-export default function App() {
-  return (
-    <>
-      <Switch>
-        <Route path="/" component={UltraMinimal} />
-        <Route path="/projects" component={Projects} />
-        <Route path="/blog/:slug" component={BlogPost} />
-        <Route path="/unbaked-thoughts" component={UnbakedThoughts} />
-        <Route path="/unbakedthoughts" component={UnbakedThoughts} />
-        <Route path="/test-page" component={TestPage} />
-        <Route path="/simple-thoughts" component={SimpleThoughts} />
-        <Route path="/thoughts" component={Thoughts} />
-        <Route component={NotFound} />
-      </Switch>
-    </>
-  );
-}
-EOL
-
 # Create necessary directories for missing components
 mkdir -p src/components/ui
 
