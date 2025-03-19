@@ -41,9 +41,15 @@ export default function UnbakedThoughts() {
     async function fetchThoughts() {
       try {
         const response = await fetch(`${SHEET_URL}?_=${new Date().getTime()}`);
-        if (!response.ok) throw new Error('Failed to fetch thoughts');
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        if (!response.ok) {
+          console.error('Response not ok:', await response.text());
+          throw new Error(`Failed to fetch thoughts: ${response.status}`);
+        }
         
         const text = await response.text();
+        console.log('Raw response text:', text.substring(0, 200));
         const jsonText = text.replace('/*O_o*/', '').replace(/(google\.visualization\.Query\.setResponse\(|\);$)/g, '');
         const data = JSON.parse(jsonText);
         
