@@ -12,6 +12,10 @@
       "destination": "/" 
     },
     { 
+      "source": "/unbaked-thoughts",
+      "destination": "/" 
+    },
+    { 
       "source": "/(.*)", 
       "destination": "/index.html" 
     }
