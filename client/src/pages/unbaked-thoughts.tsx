@@ -17,8 +17,8 @@ interface Cell {
   }>;
 }
 
-// Update the URL to use the visualization API
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/1eAkCKWwGWcpAGHXxxRKUi-e_bsb73S3NmL5YVyXRqAs/gviz/tq?tqx=version:0.6";
+// Update the URL to use the visualization API with JSONP format to avoid CORS issues
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1eAkCKWwGWcpAGHXxxRKUi-e_bsb73S3NmL5YVyXRqAs/gviz/tq?tqx=out:json";
 
 // Add this helper function at the top of the file
 function linkifyText(text: string): string {
@@ -40,107 +40,131 @@ export default function UnbakedThoughts() {
   useEffect(() => {
     async function fetchThoughts() {
       try {
-        const response = await fetch(`${SHEET_URL}?_=${new Date().getTime()}`);
+        console.log('Fetching from URL:', `${SHEET_URL}&_=${new Date().getTime()}`);
+        const response = await fetch(`${SHEET_URL}&_=${new Date().getTime()}`, {
+          method: 'GET',
+          mode: 'cors', // Try explicit CORS mode
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+        
         console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
+        console.log('Response headers:', JSON.stringify(Array.from(response.headers.entries())));
+        
         if (!response.ok) {
-          console.error('Response not ok:', await response.text());
+          const errorText = await response.text();
+          console.error('Response not ok:', errorText);
           throw new Error(`Failed to fetch thoughts: ${response.status}`);
         }
         
         const text = await response.text();
-        console.log('Raw response text:', text.substring(0, 200));
-        const jsonText = text.replace('/*O_o*/', '').replace(/(google\.visualization\.Query\.setResponse\(|\);$)/g, '');
-        const data = JSON.parse(jsonText);
+        console.log('Raw response text (first 200 chars):', text.substring(0, 200));
         
-        console.log('Raw rows:', data.table.rows); // Log raw rows
+        // Handle the JSONP-style response
+        try {
+          // Remove the callback wrapper
+          const jsonText = text.replace(/google\.visualization\.Query\.setResponse\((.*)\);?$/, '$1');
+          console.log('Processed JSON text (first 200 chars):', jsonText.substring(0, 200));
+          
+          const data = JSON.parse(jsonText);
+          console.log('Parsed data table:', data.table);
+          
+          if (!data.table || !data.table.rows) {
+            console.error('Invalid data format:', data);
+            throw new Error('Invalid data format from Google Sheets');
+          }
+          
+          // Parse the response
+          const thoughtsData = data.table.rows
+            .map((row: any, index: number) => {
+              // Add debug logging
+              console.log(`Processing row ${index}:`, row);
+              
+              // Check if we have cell data
+              if (!row.c || !Array.isArray(row.c)) {
+                console.log(`Skipping row ${index}: No cell data`);
+                return null;
+              }
+              
+              // Get thought and date from cells
+              const thoughtCell = row.c[0];
+              const dateCell = row.c[1];
 
-        // Parse the response
-        const thoughtsData = data.table.rows
-          .map((row: any, index: number) => {
-            // Add debug logging
-            console.log(`Processing row ${index}:`, row);
-            
-            // Check if we have cell data
-            if (!row.c || !Array.isArray(row.c)) {
-              console.log(`Skipping row ${index}: No cell data`);
-              return null;
-            }
-            
-            // Get thought and date from cells
-            const thoughtCell = row.c[0];
-            const dateCell = row.c[1];
+              // Skip if no thought
+              if (!thoughtCell) {
+                console.log(`Skipping row ${index}: No thought cell`);
+                return null;
+              }
 
-            // Skip if no thought
-            if (!thoughtCell) {
-              console.log(`Skipping row ${index}: No thought cell`);
-              return null;
-            }
+              console.log('Thought cell data:', JSON.stringify(thoughtCell, null, 2));
 
-            console.log('Thought cell data:', JSON.stringify(thoughtCell, null, 2));
-
-            // Get the thought value and handle any formatting
-            let thought = '';
-            if (thoughtCell.p) {
-              // p property might contain rich text formatting
-              console.log('Found rich text:', thoughtCell.p);
-              thought = thoughtCell.p.map((part: any) => {
-                if (part.v && part.l) {
-                  // This is a hyperlink
-                  return `<a href="${part.l}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${part.v}</a>`;
-                }
-                return part.v || '';
-              }).join('');
-            } else {
-              thought = linkifyText(thoughtCell.f || thoughtCell.v || '');
-            }
-
-            console.log(`Processed thought cell:`, thoughtCell);
-
-            // Handle date - it might come in different formats
-            let date = '';
-            if (dateCell) {
-              if (dateCell.f) {
-                date = dateCell.f;
-              } else if (dateCell.v) {
-                if (typeof dateCell.v === 'string' && dateCell.v.startsWith('Date(')) {
-                  const dateParts = dateCell.v.match(/Date\((\d+),(\d+),(\d+)\)/);
-                  if (dateParts) {
-                    const [_, year, month, day] = dateParts.map(Number);
-                    date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+              // Get the thought value and handle any formatting
+              let thought = '';
+              if (thoughtCell.p) {
+                // p property might contain rich text formatting
+                console.log('Found rich text:', thoughtCell.p);
+                thought = thoughtCell.p.map((part: any) => {
+                  if (part.v && part.l) {
+                    // This is a hyperlink
+                    return `<a href="${part.l}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">${part.v}</a>`;
                   }
-                } else {
-                  date = dateCell.v;
+                  return part.v || '';
+                }).join('');
+              } else {
+                thought = linkifyText(thoughtCell.f || thoughtCell.v || '');
+              }
+
+              console.log(`Processed thought cell:`, thoughtCell);
+
+              // Handle date - it might come in different formats
+              let date = '';
+              if (dateCell) {
+                if (dateCell.f) {
+                  date = dateCell.f;
+                } else if (dateCell.v) {
+                  if (typeof dateCell.v === 'string' && dateCell.v.startsWith('Date(')) {
+                    const dateParts = dateCell.v.match(/Date\((\d+),(\d+),(\d+)\)/);
+                    if (dateParts) {
+                      const [_, year, month, day] = dateParts.map(Number);
+                      date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    }
+                  } else {
+                    date = dateCell.v;
+                  }
                 }
               }
-            }
 
-            console.log(`Processed row ${index}:`, { thought, date });
+              console.log(`Processed row ${index}:`, { thought, date });
 
-            return {
-              thought,
-              date
-            };
-          })
-          .filter((entry: Thought | null): entry is Thought => {
-            if (!entry) {
-              console.log('Filtering out null entry');
-              return false;
-            }
-            return true;
-          })
-          .sort((a: Thought, b: Thought) => {
-            const dateA = a.date ? new Date(a.date).getTime() : 0;
-            const dateB = b.date ? new Date(b.date).getTime() : 0;
-            
-            if (dateA === 0 && dateB === 0) return 0;
-            if (dateA === 0) return 1;
-            if (dateB === 0) return -1;
-            return dateB - dateA;
-          });
+              return {
+                thought,
+                date
+              };
+            })
+            .filter((entry: Thought | null): entry is Thought => {
+              if (!entry) {
+                console.log('Filtering out null entry');
+                return false;
+              }
+              return true;
+            })
+            .sort((a: Thought, b: Thought) => {
+              const dateA = a.date ? new Date(a.date).getTime() : 0;
+              const dateB = b.date ? new Date(b.date).getTime() : 0;
+              
+              if (dateA === 0 && dateB === 0) return 0;
+              if (dateA === 0) return 1;
+              if (dateB === 0) return -1;
+              return dateB - dateA;
+            });
 
-        console.log('Final parsed thoughts:', thoughtsData);
-        setThoughts(thoughtsData);
+          console.log('Final parsed thoughts:', thoughtsData);
+          setThoughts(thoughtsData);
+        } catch (err) {
+          console.error('Error processing JSONP response:', err);
+          setError(err instanceof Error ? err.message : 'Failed to process JSONP response');
+        }
       } catch (err) {
         console.error('Error fetching thoughts:', err);
         setError(err instanceof Error ? err.message : 'Failed to load thoughts');

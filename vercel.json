@@ -2,18 +2,10 @@
   "version": 2,
   "buildCommand": "bash deployment.sh",
   "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        }
-      ]
-    }
+  "routes": [
+    { "src": "/unbaked-thoughts", "dest": "/index.html" },
+    { "src": "/projects", "dest": "/index.html" },
+    { "src": "/blog/(.*)", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 } 
