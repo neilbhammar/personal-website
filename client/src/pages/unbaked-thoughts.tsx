@@ -213,22 +213,18 @@ export default function UnbakedThoughts() {
         )}
 
         {/* Thoughts List */}
-        <motion.div 
-          layout
-          className="space-y-2"
-        >
+        <div className="space-y-2">
           {thoughts.map((thought, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ 
-                duration: 0.4,
-                ease: "easeInOut",
-                delay: index * 0.05 // Reduced delay for more subtle staggering
+                duration: 0.5,
+                delay: index * 0.05
               }}
               className={cn(
-                "py-6 flex justify-between gap-2",
+                "py-6 flex justify-between gap-4",
                 index !== thoughts.length - 1 && "border-b border-gray-200"
               )}
             >
@@ -245,7 +241,7 @@ export default function UnbakedThoughts() {
               </p>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </main>
   );
