@@ -4,6 +4,9 @@ import copy from "clipboard-copy";
 import useIsMobile from "../hooks/useIsMobile";
 import { trackEvent } from '../services/analytics';
 
+// Add this near the top of the file, after imports
+const SHOW_UNBAKED_THOUGHTS = false;
+
 // Update Toast component to accept a color prop
 const Toast = ({ message, color = "yellow" }: { message: string; color?: "yellow" | "green" }) => (
   <div 
@@ -612,6 +615,38 @@ const UltraMinimal = () => {
               <path d="M12 0C5.373 0 0 5.373 0 12c0 5.304 3.438 9.8 8.205 11.387.6.111.82-.261.82-.577 0-.287-.011-1.243-.017-2.25-3.338.724-4.043-1.607-4.043-1.607-.546-1.384-1.333-1.754-1.333-1.754-1.089-.743.083-.728.083-.728 1.204.084 1.836 1.236 1.836 1.236 1.067 1.826 2.8 1.298 3.48.992.108-.774.418-1.298.76-1.598-2.665-.303-5.466-1.333-5.466-5.933 0-1.313.469-2.386 1.236-3.227-.124-.303-.536-1.53.117-3.187 0 0 1.008-.322 3.303 1.227.957-.266 1.986-.399 3.003-.404 1.017.005 2.046.138 3.003.404 2.295-1.549 3.303-1.227 3.303-1.227.653 1.657.241 2.884.118 3.187.77.841 1.236 1.914 1.236 3.227 0 4.608-2.805 5.623-5.475 5.92.43.372.815 1.103.815 2.222 0 1.606-.014 2.903-.014 3.295 0 .319.218.694.825.577C20.563 21.8 24 17.304 24 12c0-6.627-5.373-12-12-12z" />
             </svg>
           </a>
+
+          {/* Unbaked Thoughts - Only show if enabled */}
+          {SHOW_UNBAKED_THOUGHTS && (
+            <a
+              href="/unbaked-thoughts"
+              className="social-icon w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center"
+              aria-label="Unbaked Thoughts"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {/* Baguette base - more elongated */}
+                <path 
+                  d="M3 14C3 10 5 8 12 8C19 8 21 10 21 14C21 18 19 20 12 20C5 20 3 18 3 14Z" 
+                  transform="rotate(-35 12 12)"
+                />
+                {/* Diagonal slash marks on top */}
+                <path 
+                  d="M8 11L10 13M12 11L14 13M16 11L18 13" 
+                  transform="rotate(-35 12 12)"
+                  strokeWidth="1"
+                />
+              </svg>
+            </a>
+          )}
         </div>
       </div>
 

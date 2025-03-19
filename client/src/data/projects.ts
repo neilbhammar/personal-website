@@ -20,7 +20,7 @@ export const projects: Project[] = [
   {
     id: "mailmop",
     title: "MailMop: Clean Your Gmail Inbox (Securely and For Free)",
-    description: "WORK IN PROGRESS: After 5 years of neglecting my personal inbox, it felt unsalvagable. I had no clue where to even start with cleaning it up. I'm building MailMop as a small project to help me (and others) reclaim control of our inboxes..",
+    description: "WORK IN PROGRESS (started on March 19th, 2025): After 5 years of neglecting my personal inbox, it felt unsalvagable. I had no clue where to even start with cleaning it up. I'm building MailMop as a small project to help me (and others) reclaim control of our inboxes..",
     types: ["SaaS" as ProjectType],
     date: new Date("2025-03-15"),
     image: "/images/projects/mailmop.png",
