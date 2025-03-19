@@ -3,10 +3,7 @@
   "buildCommand": "bash deployment.sh",
   "outputDirectory": "dist",
   "rewrites": [
-    {
-      "source": "/(.*)", 
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
