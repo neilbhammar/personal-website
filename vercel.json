@@ -2,10 +2,7 @@
   "version": 2,
   "buildCommand": "bash deployment.sh",
   "outputDirectory": "dist",
-  "routes": [
-    { "src": "/unbaked-thoughts", "dest": "/index.html" },
-    { "src": "/projects", "dest": "/index.html" },
-    { "src": "/blog/(.*)", "dest": "/index.html" },
-    { "src": "/(.*)", "dest": "/$1" }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 } 
