@@ -15,6 +15,9 @@ function Router() {
   // Enable smooth scrolling when the page loads
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
+    
+    // Add debug logging
+    console.log('Current path:', window.location.pathname);
 
     // Clean up the smooth scrolling when component unmounts
     return () => {
