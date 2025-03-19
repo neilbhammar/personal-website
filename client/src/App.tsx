@@ -31,7 +31,13 @@ function Router() {
       <Route path="/" component={UltraMinimal} />
       <Route path="/projects" component={Projects} />
       <Route path="/blog/:slug" component={BlogPost} />
-      <Route path="/unbaked-thoughts" component={UnbakedThoughts} />
+      <Route 
+        path="/unbaked-thoughts" 
+        component={() => {
+          console.log('UnbakedThoughts route matched');
+          return <UnbakedThoughts />;
+        }} 
+      />
       {/* Show the NotFound page for any other URL */}
       <Route component={NotFound} />
     </Switch>
