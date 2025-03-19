@@ -10,6 +10,9 @@ import { useEffect } from "react";
 import BlogPost from "@/pages/blog/index";
 import UnbakedThoughts from "@/pages/unbaked-thoughts";
 import UnbakedThoughtsRedirect from "@/pages/unbaked-thoughts-redirect";
+import TestPage from "@/pages/test-page";
+import SimpleThoughts from "@/pages/simple-thoughts";
+import Thoughts from "@/pages/thoughts";
 
 // Router component handles which page to show based on the current URL
 function Router() {
@@ -29,10 +32,17 @@ function Router() {
       <Route path="/" component={UltraMinimal} />
       <Route path="/projects" component={Projects} />
       <Route path="/blog/:slug" component={BlogPost} />
+      
+      {/* Multiple variations of the problematic route */}
       <Route path="/unbaked-thoughts" component={UnbakedThoughts} />
-      <Route path="/Unbaked-Thoughts" component={UnbakedThoughts} />
-      <Route path="/UNBAKED-THOUGHTS" component={UnbakedThoughts} />
+      <Route path="/unbakedthoughts" component={UnbakedThoughts} /> {/* Try without hyphen */}
       <Route path="/unbaked" component={UnbakedThoughtsRedirect} />
+      
+      {/* Test route to see if it's path-specific */}
+      <Route path="/test-page" component={TestPage} />
+      <Route path="/simple-thoughts" component={SimpleThoughts} />
+      <Route path="/thoughts" component={Thoughts} />
+      
       {/* Show the NotFound page for any other URL */}
       <Route component={NotFound} />
     </Switch>
