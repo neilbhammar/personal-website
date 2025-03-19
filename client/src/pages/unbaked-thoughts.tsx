@@ -63,8 +63,11 @@ export default function UnbakedThoughts() {
         
         // Handle the JSONP-style response
         try {
-          // Remove the callback wrapper
-          const jsonText = text.replace(/google\.visualization\.Query\.setResponse\((.*)\);?$/, '$1');
+          // Remove the /*O_o*/ prefix and callback wrapper
+          const jsonText = text
+            .replace(/\/\*O_o\*\/\s*/, '') // Remove the /*O_o*/ prefix
+            .replace(/google\.visualization\.Query\.setResponse\((.*)\);?$/, '$1');
+          
           console.log('Processed JSON text (first 200 chars):', jsonText.substring(0, 200));
           
           const data = JSON.parse(jsonText);
@@ -217,9 +220,13 @@ export default function UnbakedThoughts() {
           {thoughts.map((thought, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ 
+                duration: 0.4,
+                ease: "easeInOut",
+                delay: index * 0.05 // Reduced delay for more subtle staggering
+              }}
               className={cn(
                 "py-6 flex justify-between gap-2",
                 index !== thoughts.length - 1 && "border-b border-gray-200"

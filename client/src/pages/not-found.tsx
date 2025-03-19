@@ -35,8 +35,7 @@ export default function NotFound() {
         >
           {/* Clever startup-themed error message */}
           <p className="text-muted-foreground/80 text-md mb-10 max-w-md mx-auto leading-relaxed">
-            A lot of building a winning startup is about having finding and betting on something early. 
-            In this case you are a little too early because this page does not exist yet.
+            You're a little too early! This page does not exist yet.
           </p>
           
           {/* Home page link */}
