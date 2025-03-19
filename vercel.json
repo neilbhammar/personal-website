@@ -3,21 +3,9 @@
   "buildCommand": "bash deployment.sh",
   "outputDirectory": "dist",
   "rewrites": [
-    { 
-      "source": "/blog/:path*",
-      "destination": "/" 
-    },
-    { 
-      "source": "/projects",
-      "destination": "/" 
-    },
-    { 
-      "source": "/unbaked-thoughts",
-      "destination": "/" 
-    },
-    { 
+    {
       "source": "/(.*)", 
-      "destination": "/index.html" 
+      "destination": "/index.html"
     }
   ],
   "headers": [
