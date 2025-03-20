@@ -8,15 +8,6 @@ interface Thought {
   date: string;
 }
 
-interface Cell {
-  v?: string;  // value
-  f?: string;  // formatted value
-  p?: Array<{   // parts (for rich text)
-    v: string;  // text content
-    l?: string; // link URL
-  }>;
-}
-
 // Update the URL to use the visualization API with JSONP format to avoid CORS issues
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1eAkCKWwGWcpAGHXxxRKUi-e_bsb73S3NmL5YVyXRqAs/gviz/tq?tqx=out:json";
 

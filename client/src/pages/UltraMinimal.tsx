@@ -503,7 +503,7 @@ const UltraMinimal = () => {
           . I joined as employee #1, before we had any customers or much of a
           product, and had a ton of fun along the way. I recently wrapped up
           that chapter after a 4 year run leading Ops & CX (through our Series
-          B). Before that, I invested in and supported founders at{" "}
+          A and then some). Before that, I invested in and supported founders at{" "}
           <a
             ref={dormRoomFundRef}
             href="https://www.dormroomfund.com"
