@@ -477,7 +477,7 @@ const UltraMinimal = () => {
           >
             bananagrams
           </span>{" "}
-          champ (at least in my house), and amateur pickleball aficionado.
+          champ (at least in my house), and wannabe pickleball-pro.
         </p>
         <p>
           I spent the last 5.5 years building and scaling a company (
@@ -503,7 +503,7 @@ const UltraMinimal = () => {
           . I joined as employee #1, before we had any customers or much of a
           product, and had a ton of fun along the way. I recently wrapped up
           that chapter after a 4 year run leading Ops & CX (through our Series
-          A and then some). Before that, I invested in and supported founders at{" "}
+          B). Before that, I invested in and supported founders at{" "}
           <a
             ref={dormRoomFundRef}
             href="https://www.dormroomfund.com"
