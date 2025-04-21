@@ -33,7 +33,7 @@ export default function InternalToolsBlog({ project }: BlogPostProps) {
               <div>
                 <h3 className="text-lg font-medium mb-4">The Problem</h3>
                 <p className="text-muted-foreground">
-                  On December 23rd, Keith, our CEO, shot me a message asking if I could put together an ROI calculator spreadsheet for our sales team. It was something on someone's backlog somewhere, but it never quite made it to the top of the priority list.
+                  On December 23rd, our CEO shot me a message asking if I could put together an ROI calculator spreadsheet for our sales team. It was something on someone's backlog somewhere, but it never quite made it to the top of the priority list.
                 </p>
                 <p className="text-muted-foreground mt-4">
                   The ROI of BusRight was always pretty clear to transportation departments, but we had an opportunity to make the numbers incredibly clear to executive stakeholders, too, in a more comprehensive way. Instead of just putting together a spreadsheet, I figured I'd take a shot and going a step further.
