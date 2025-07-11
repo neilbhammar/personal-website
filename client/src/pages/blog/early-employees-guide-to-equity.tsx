@@ -141,7 +141,8 @@ export default function EarlyEmployeesGuideToEquity({ project }: BlogPostProps) 
               >
                 <div className="space-y-6">
                   <p className="text-xl text-gray-700 leading-relaxed">
-                    If you're joining an early-stage startup as one of the first 10 employees, or you're a founder trying to figure out early equity grants, I wrote this to try and demistify some of it - especially Qualified Small Business Stock (QSBS). It's not comprehensive and you should definitely check out sources like Compound and Carta, but it has the things I cared about saying loudly!
+                    If you're joining an early-stage startup as one of the first 10 employees, or you're a founder trying to figure out early equity grants, I wrote this to try and demystify some of it - especially Qualified Small Business Stock (QSBS).<br/><br/>
+                    It's not comprehensive and you should definitely check out sources like Compound and Carta, but it has the things I cared about saying loudly!
                   </p>
                   
                   <p className="text-xl text-gray-700">
