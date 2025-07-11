@@ -21,7 +21,7 @@ const EquityChoiceCard: React.FC<EquityChoiceCardProps> = ({
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "w-full text-left px-4 py-0 rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 group bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2",
+        "w-full text-left px-6 py-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 group bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2",
         className
       )}
     >

@@ -22,7 +22,7 @@ const EmployeeChoice: React.FC<EmployeeChoiceProps> = ({ onEquityTypeSelect }) =
       </div>
 
       <div className="space-y-6">
-        <div className="bg-gray-50 border border-none rounded-xl p-">
+        <div className="bg-gray-50 border border-none rounded-xl p-6">
           
           <div className="space-y-4">
             <EquityChoiceCard

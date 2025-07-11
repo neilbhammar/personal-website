@@ -9,6 +9,7 @@ import Projects from "@/pages/projects";
 import { useEffect } from "react";
 import BlogPost from "@/pages/blog/index";
 import UnbakedThoughts from "@/pages/unbaked-thoughts";
+import { HelmetProvider } from 'react-helmet-async';
 
 // Router component handles which page to show based on the current URL
 function Router() {
@@ -38,11 +39,13 @@ function Router() {
 // Main App component that wraps everything with necessary providers
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router />
-      {/* Toaster shows pop-up notifications */}
-      <Toaster />
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <Router />
+        {/* Toaster shows pop-up notifications */}
+        <Toaster />
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
