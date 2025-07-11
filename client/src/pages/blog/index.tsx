@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 // Import all blog posts
 const blogPosts = {
   'internal-tools-at-busright': () => import('./internal-tools-at-busright'),
+  'early-employees-guide-to-equity': () => import('./early-employees-guide-to-equity'),
   // Add new blog posts here
 };
 

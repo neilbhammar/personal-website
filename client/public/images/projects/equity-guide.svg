@@ -1,0 +1,12 @@
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="450" fill="#f8f9fa"/>
+  <text x="400" y="200" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" fill="#6b7280">
+    Early Employee's
+  </text>
+  <text x="400" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" fill="#6b7280">
+    Guide to Equity
+  </text>
+  <circle cx="400" cy="320" r="30" fill="#e5e7eb" opacity="0.5"/>
+  <circle cx="350" cy="340" r="20" fill="#d1d5db" opacity="0.3"/>
+  <circle cx="450" cy="340" r="20" fill="#d1d5db" opacity="0.3"/>
+</svg> 

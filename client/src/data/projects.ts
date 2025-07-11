@@ -18,11 +18,23 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "equity-guide",
+    title: "An Early Employee's Guide to Equity: How to Save Millions in Taxes",
+    description: "The most comprehensive, interactive guide to equity compensation on the internet. Covers QSBS, 83B elections, early exercise strategies, and real-world examples that can save you millions. Written for both founders and employees.",
+    types: ["Writing" as ProjectType],
+    date: new Date("2025-07-10"),
+    image: "/images/projects/equity-guide.svg",
+    links: {
+      article: "/blog/early-employees-guide-to-equity",
+    },
+    tags: ["Equity", "Startups", "Finance"]
+  },
+  {
     id: "mailmop",
     title: "MailMop: Clean Your Gmail Inbox (Securely and For Free)",
     description: "I needed a way to clean my Gmail inbox without compromising my privacy, so I built one. MailMop runs entirely in your browser (your emails never leave your device) to help you reclaim your digital space. My first real production-ready project - was super fun and took about 88 hours total",
     types: ["SaaS" as ProjectType],
-    date: new Date("2025-04-07"),
+    date: new Date("2025-07-08"),
     image: "/images/projects/mailmop.png",
     links: {
       live: "https://www.mailmop.com",
