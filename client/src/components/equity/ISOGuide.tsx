@@ -90,7 +90,7 @@ const ISOGuide: React.FC<EquityGuideProps> = () => (
       </div>
       {/* Tiny AMT call-out inside ISO card */}
       <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-        <p className="text-gray-700 font-semibold mb-1">Wait,what’s AMT?</p>
+        <p className="text-gray-700 font-semibold mb-1">Wait, what’s AMT?</p>
         <p className="text-gray-700">It’s a backup 28&nbsp;% tax that can trigger <em>only</em> for ISOs if your “spread” (fair-market value minus strike/exercise price) is large when you buy. Under ~$70-90&nbsp;K total spread you’re usually safe, but this varies by filing status.</p>
       </div>
     </section>
