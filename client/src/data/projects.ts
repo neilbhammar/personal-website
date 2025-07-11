@@ -20,7 +20,7 @@ export const projects: Project[] = [
   {
     id: "equity-guide",
     title: "An Early Employee's Guide to Equity: How to Save Millions in Taxes",
-    description: "The most comprehensive, interactive guide to equity compensation on the internet. Covers QSBS, 83B elections, early exercise strategies, and real-world examples that can save you millions. Written for both founders and employees.",
+    description: "A guide to equity compensation for early employees at VC backed startups. Stuff I wish someone had told me.",
     types: ["Writing" as ProjectType],
     date: new Date("2025-07-10"),
     image: "/images/projects/equity-guide.svg",
