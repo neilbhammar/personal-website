@@ -56,7 +56,6 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Update port from 5000 to 3000
   const port = 3000;
   server.listen({
     port,

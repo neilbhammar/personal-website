@@ -196,7 +196,7 @@ const UltraMinimal = () => {
       )}
 
       <div ref={contentRef} className="max-w-2xl w-full mx-auto space-y-6">
-        <h1 className="text-2xl">Hi, I'm Neil.</h1>
+        <h1 className="text-2xl"></h1>
 
         <p>
           I'm a founder (
@@ -208,7 +208,7 @@ const UltraMinimal = () => {
           >
             shortkit.dev
           </a>
-          ), fmr operator (
+          ) and former operator (
           <a
             href="https://www.busright.com"
             target="_blank"
@@ -217,28 +217,11 @@ const UltraMinimal = () => {
           >
             BusRight
           </a>
-          ), and I angel invest when time allows.
+          ). I occasionally angel invest.
         </p>
 
         <p>
-          I'm also eerily good at{" "}
-          <a
-            href="https://nanagrams.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-          >
-            <span
-              ref={bananagramsRef}
-              className="interactive-text"
-              onMouseEnter={handleBananagramsHoverStart}
-              onMouseLeave={handleBananagramsHoverEnd}
-            >
-              Bananagrams
-            </span>
-          </a>
-          {" "}and have an unusually strong pickleball backhand (my net game
-          suffers, though).
+          I find immense joy in competitive sports, live music, and time with family.
         </p>
 
         <p>
@@ -251,7 +234,7 @@ const UltraMinimal = () => {
             Michael
           </a>
           {" "}and I are working on empowering every developer with the same video
-          technology that powers the most powerful platforms in the world, like TikTok.
+          technology that powers platforms like TikTok and Instagram.
           We think there are going to be incredibly cool (non-brainrot) things built
           on top of short-form video if the underlying technology becomes more
           accessible. You can read more about{" "}
@@ -288,14 +271,6 @@ const UltraMinimal = () => {
           the world.
         </p>
 
-        <p>
-          Competitive sports (including building startups 😉), live music, and
-          family bring me immense joy.
-        </p>
-
-        <p>
-          Say hi — <a href="mailto:bhammar.neil@gmail.com" className={linkClass}>bhammar.neil@gmail.com</a>.
-        </p>
 
         {/* Social icons */}
         <div className="flex space-x-4 py-2">
