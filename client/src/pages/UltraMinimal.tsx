@@ -24,7 +24,7 @@ const UltraMinimal = () => {
   const [showMobileToast, setShowMobileToast] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const bananagramsRef = useRef<HTMLSpanElement>(null);
+  const bananagramsRef = useRef<HTMLAnchorElement>(null);
   const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
   const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -88,7 +88,7 @@ const UltraMinimal = () => {
 
       if (bananagramsRef.current) {
         const originalText =
-          bananagramsRef.current.textContent || "Bananagrams";
+          bananagramsRef.current.textContent || "bananagrams";
 
         const letters = originalText.split("");
         bananagramsRef.current.textContent = "";
@@ -144,7 +144,7 @@ const UltraMinimal = () => {
           }, index * 150);
         });
       }
-    }, 1000);
+    }, 200);
   };
 
   const handleBananagramsHoverEnd = () => {
@@ -157,11 +157,11 @@ const UltraMinimal = () => {
   // Clean up bananagrams effect
   useEffect(() => {
     if (!bananagramsActive && bananagramsRef.current) {
-      if (bananagramsRef.current.textContent !== "Bananagrams") {
+      if (bananagramsRef.current.textContent !== "bananagrams") {
         while (bananagramsRef.current.firstChild) {
           bananagramsRef.current.removeChild(bananagramsRef.current.firstChild);
         }
-        bananagramsRef.current.textContent = "Bananagrams";
+        bananagramsRef.current.textContent = "bananagrams";
       }
     }
   }, [bananagramsActive]);
@@ -199,29 +199,25 @@ const UltraMinimal = () => {
         <h1 className="text-2xl"></h1>
 
         <p>
-          I'm a founder (
-          <a
-            href="https://shortkit.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-          >
-            shortkit.dev
-          </a>
-          ) and former operator (
-          <a
-            href="https://www.busright.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-          >
-            BusRight
-          </a>
-          ). I occasionally angel invest.
+          I'm a founder, former operator, and self-proclaimed tinkerer. I
+          occasionally angel invest.
         </p>
 
         <p>
-          I find immense joy in competitive sports, live music, and time with family.
+          I find immense joy in competitive sports, live music, time with
+          family, and{" "}
+          <a
+            ref={bananagramsRef}
+            href="https://nanagrams.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            onMouseEnter={handleBananagramsHoverStart}
+            onMouseLeave={handleBananagramsHoverEnd}
+            className={`${linkClass}${bananagramsActive ? " decoration-transparent" : ""}`}
+          >
+            bananagrams
+          </a>
+          {" "}(I run the best online bananagrams site, believe it or not).
         </p>
 
         <p>
@@ -234,10 +230,10 @@ const UltraMinimal = () => {
             Michael
           </a>
           {" "}and I are working on empowering every developer with the same video
-          technology that powers platforms like TikTok and Instagram.
-          We think there are going to be incredibly cool (non-brainrot) things built
-          on top of short-form video if the underlying technology becomes more
-          accessible. You can read more about{" "}
+          technology that powers platforms like TikTok and Instagram. We think
+          consumer is evolving around media and that there will be incredibly
+          cool, additive experiences built on top of video if the underlying
+          technology becomes more accessible. You can read more about{" "}
           <a
             href="https://shortkit.dev"
             target="_blank"
@@ -251,10 +247,13 @@ const UltraMinimal = () => {
         <p>
           Before ShortKit, I spent 6 years building and scaling BusRight. We built
           technology for the largest mass transit system in the country: school
-          buses. By the time I left, we were powering transportation systems in 30+
-          states and had raised $35M+ from awesome investors. I led operations
-          and customer experience. I cared about our customers deeply and tried
-          to build systems around that. One of our customers even{" "}
+          buses. I joined as the first employee when we were still three kids in
+          college — no customers and no revenue. By the time I left, we were
+          powering transportation systems in 30+ states and had raised $35M+ from
+          incredible investors. I spent time in every part of the business, from
+          early sales to product, and ended my time there leading operations and
+          post-sales. I cared about our customers deeply and tried to build
+          systems around that. One of our customers even{" "}
           <a
             href="https://www.ubqt.vc/p/customer-gets-tattoo-of-busright-logo"
             target="_blank"
