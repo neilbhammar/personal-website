@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { gsap } from "gsap";
 import copy from "clipboard-copy";
 import useIsMobile from "../hooks/useIsMobile";
-import { trackEvent } from '../services/analytics';
 
 const Toast = ({ message, color = "yellow" }: { message: string; color?: "yellow" | "green" }) => (
   <div
@@ -17,16 +15,11 @@ const Toast = ({ message, color = "yellow" }: { message: string; color?: "yellow
 
 const UltraMinimal = () => {
   const isMobile = useIsMobile();
-  const [bananagramsActive, setBananagramsActive] = useState(false);
-  const [bananagramsTriggered, setBananagramsTriggered] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showMobileToast, setShowMobileToast] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const bananagramsRef = useRef<HTMLAnchorElement>(null);
-  const bananagramsHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const effectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Show toast if on mobile
@@ -39,25 +32,6 @@ const UltraMinimal = () => {
       return () => clearTimeout(timer);
     }
   }, [isMobile]);
-
-  // Auto-disable effects after 5 seconds
-  useEffect(() => {
-    if (bananagramsActive) {
-      if (effectTimeoutRef.current) {
-        clearTimeout(effectTimeoutRef.current);
-      }
-
-      effectTimeoutRef.current = setTimeout(() => {
-        setBananagramsActive(false);
-      }, 5000);
-    }
-
-    return () => {
-      if (effectTimeoutRef.current) {
-        clearTimeout(effectTimeoutRef.current);
-      }
-    };
-  }, [bananagramsActive]);
 
   const handleCopyEmail = (email: string) => {
     copy(email).then(() => {
@@ -74,107 +48,9 @@ const UltraMinimal = () => {
     });
   };
 
-  // Bananagrams tile effect
-  const handleBananagramsHoverStart = () => {
-    if (isMobile || bananagramsTriggered) return;
-    trackEvent('Interaction', 'hover', 'bananagrams');
-
-    if (bananagramsHoverTimerRef.current) return;
-
-    bananagramsHoverTimerRef.current = setTimeout(() => {
-      setBananagramsActive(true);
-      setBananagramsTriggered(true);
-      bananagramsHoverTimerRef.current = null;
-
-      if (bananagramsRef.current) {
-        const originalText =
-          bananagramsRef.current.textContent || "bananagrams";
-
-        const letters = originalText.split("");
-        bananagramsRef.current.textContent = "";
-
-        const letterElements: HTMLSpanElement[] = [];
-
-        letters.forEach((letter) => {
-          const letterSpan = document.createElement("span");
-          letterSpan.textContent = letter;
-          letterSpan.style.display = "inline-block";
-          bananagramsRef.current!.appendChild(letterSpan);
-          letterElements.push(letterSpan);
-        });
-
-        letters.forEach((letter, index) => {
-          setTimeout(() => {
-            if (!letterElements[index]) return;
-
-            const tile = document.createElement("span");
-            tile.textContent = letter;
-            tile.className = "bananagram-tile";
-            tile.style.backgroundColor = "#f8f0d0";
-            tile.style.border = "1px solid #ddd";
-            tile.style.borderRadius = "3px";
-            tile.style.padding = "1px 3px";
-            tile.style.margin = "0 1px";
-            tile.style.fontFamily = "monospace";
-            tile.style.fontSize = "0.9em";
-            tile.style.fontWeight = "bold";
-            tile.style.color = "#000";
-            tile.style.boxShadow = "0 1px 2px rgba(0,0,0,0.1)";
-            tile.style.transformOrigin = "center";
-            tile.style.transform = "rotateY(90deg)";
-
-            gsap.to(letterElements[index], {
-              opacity: 0,
-              duration: 0.2,
-              onComplete: () => {
-                if (letterElements[index] && letterElements[index].parentNode) {
-                  letterElements[index].parentNode.replaceChild(
-                    tile,
-                    letterElements[index],
-                  );
-
-                  gsap.to(tile, {
-                    rotateY: 0,
-                    duration: 0.4,
-                    ease: "back.out(1.2)",
-                  });
-                }
-              },
-            });
-          }, index * 150);
-        });
-      }
-    }, 200);
-  };
-
-  const handleBananagramsHoverEnd = () => {
-    if (bananagramsHoverTimerRef.current) {
-      clearTimeout(bananagramsHoverTimerRef.current);
-      bananagramsHoverTimerRef.current = null;
-    }
-  };
-
-  // Clean up bananagrams effect
-  useEffect(() => {
-    if (!bananagramsActive && bananagramsRef.current) {
-      if (bananagramsRef.current.textContent !== "bananagrams") {
-        while (bananagramsRef.current.firstChild) {
-          bananagramsRef.current.removeChild(bananagramsRef.current.firstChild);
-        }
-        bananagramsRef.current.textContent = "bananagrams";
-      }
-    }
-  }, [bananagramsActive]);
-
-  // Clean up all timers on unmount
+  // Clean up the toast timer on unmount
   useEffect(() => {
     return () => {
-      if (bananagramsHoverTimerRef.current) {
-        clearTimeout(bananagramsHoverTimerRef.current);
-      }
-      if (effectTimeoutRef.current) {
-        clearTimeout(effectTimeoutRef.current);
-      }
       if (toastTimeoutRef.current) {
         clearTimeout(toastTimeoutRef.current);
       }
@@ -205,19 +81,16 @@ const UltraMinimal = () => {
 
         <p>
           I find immense joy in competitive sports, live music, time with
-          family, and{" "}
+          family, and bananagrams (I{" "}
           <a
-            ref={bananagramsRef}
             href="https://nanagrams.io"
             target="_blank"
             rel="noopener noreferrer"
-            onMouseEnter={handleBananagramsHoverStart}
-            onMouseLeave={handleBananagramsHoverEnd}
-            className={`${linkClass}${bananagramsActive ? " decoration-transparent" : ""}`}
+            className={linkClass}
           >
-            bananagrams
+            run the best online bananagrams game
           </a>
-          {" "}(I run the best online bananagrams site, believe it or not).
+          , believe it or not).
         </p>
 
         <p>
