@@ -81,16 +81,16 @@ const UltraMinimal = () => {
 
         <p>
           I find immense joy in competitive sports, live music, time with
-          family, and bananagrams (I{" "}
+          family, and bananagrams (I built{" "}
           <a
             href="https://nanagrams.io"
             target="_blank"
             rel="noopener noreferrer"
             className={linkClass}
           >
-            run the best online bananagrams game
+            Nanagrams, the best way to play bananagrams online
           </a>
-          , believe it or not).
+          {" "}— believe it or not).
         </p>
 
         <p>
