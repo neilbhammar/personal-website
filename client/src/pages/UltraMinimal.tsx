@@ -88,9 +88,9 @@ const UltraMinimal = () => {
             rel="noopener noreferrer"
             className={linkClass}
           >
-            Nanagrams, the best way to play bananagrams online
+            the most popular online bananagrams game, called nanagrams
           </a>
-          {" "}— believe it or not).
+          ).
         </p>
 
         <p>
